@@ -19,6 +19,14 @@ def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)
 
     return angle
 
+def calculate_distance(a, b): ## 거리계산 좌표사이의 거리 공식
+    a = np.array(a)  # First
+    b = np.array(b)  # second
+    
+    distance = np.sqrt(np.sum(np.square(a-b)))
+    
+    return distance
+
 def detection_body_part(landmarks, body_part_name): ## keypoint 좌표값 변환
     return [
         landmarks[mp_pose.PoseLandmark[body_part_name].value].x,
@@ -36,7 +44,7 @@ def detection_body_parts(landmarks): ## 좌표값 데이터값 변환
 
     return body_parts
 
-def score_table(exercise, counter, status, set, feedback, count): ## table 표기내용
+def score_table(exercise, counter, status, set, feedback, pose_feedback, count): ## table 표기내용
     score_table = cv2.imread("C:/CD_Code/table.png") ## table 위치
     cv2.putText(score_table, "CapstoneDisign1 Team-1", ## 제목
                 (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2,
@@ -52,6 +60,8 @@ def score_table(exercise, counter, status, set, feedback, count): ## table 표�
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
     cv2.putText(score_table, "Feedback : " + str(feedback), (10, 205), ## table 피드백
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
-    cv2.putText(score_table, "Timer : " + str(count), (10, 240), #3 table 타이머
+    cv2.putText(score_table, "PoseFeedback : " + str(pose_feedback), (10, 240), ## table 피드백
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
+    cv2.putText(score_table, "Timer : " + str(count), (10, 275), #3 table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
     cv2.imshow("Table", score_table) ## table 출력
