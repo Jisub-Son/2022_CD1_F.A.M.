@@ -2,6 +2,7 @@ import numpy as np ## 스켈레톤 탐지 후 각도/거리 계산
 from body_part_angle import BodyPartAngle ## body_part_angle 불러오기
 from body_part_distance import BodyPartDistance
 from utils import * ## utils 불러오기
+import time
   
 class TypeOfExercise(BodyPartAngle):
     def __init__(self, landmarks):
@@ -57,10 +58,14 @@ class TypeOfExercise(BodyPartAngle):
                 status = False
                 feedback = "Success" ## 성공
                 if counter == 5: ## 1세트
-                  counter = 0 ## 초기화
-                  set += 1 ## 1세트 종료
-                  feedback = "Tack some rest, 60sec" ## 1분 휴식
-                  count = 60 ## 타이머 60초
+                    counter = 0 ## 초기화
+                    set += 1 ## 1세트 종료
+                    feedback = "Tack some rest, 60sec" ## 1분 휴식
+                    count = 60 ## 타이머 60초
+                
+                while(count != 0):
+                    count -= 1
+                    time.sleep(1)
                   
                 if count == 0: ## 타이머 0초
                     feedback = "Rest time is done, Start exercise" ## 휴식시간 1분
