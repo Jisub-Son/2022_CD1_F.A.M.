@@ -5,6 +5,7 @@ from utils import *             # utils 불러오기
 from datetime import datetime
 
 '''detect -> self로 다시 수정 : python class 선언에서 관례적으로 쓰는거라 변경 안하는게 맞을 듯'''
+'''손지섭 pull test'''
 
 cur = 0.0
 prev = 0.0
