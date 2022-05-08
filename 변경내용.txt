@@ -1,0 +1,7 @@
+지섭이 코멘트 삭제 : 발표해야되니까 일단 삭제함
+
+count -> timer로 변경 : 나도 헷갈려서 timer로 바꿈
+
+frame = cv2.resize(frame, (800, 480), interpolation=cv2.INTER_AREA) # recolor frame to RGB : 삭제
+
+푸쉬업에 같은 로직 추가
