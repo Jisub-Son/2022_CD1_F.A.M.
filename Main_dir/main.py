@@ -1,5 +1,11 @@
+# 
+# 2022-1 CD1 Team-1
+# Project Name  : F.A.M.(Fitness Assistant Module)
+# Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
+# 
+
 import cv2                      # opencv import        
-import argparse                 # 실행 인자 추가, 이거 필요없을 것 같은데 뺄 수 있음 빼자 
+import argparse                 # 실행 인자 추가 
 import mediapipe as mp          # 스켈레톤 구현 
 from utils import *             # utils
 from keypoint import KEYPOINT   # keypoint 불러오기

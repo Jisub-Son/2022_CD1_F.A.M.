@@ -2,7 +2,6 @@ import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
 import time                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
-from datetime import datetime   # 타이머
 
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
@@ -61,7 +60,7 @@ class EXERCISE(KEYPOINT):
                 # print('운동 끝')              # 아직 별다른 조치 안함
                 feedback = 'Well done!'         # 운동 끝
                 pass
-        return [reps, status, sets, feedback,timer]
+        return [reps, status, sets, feedback, timer]
 
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer):
@@ -94,7 +93,8 @@ class EXERCISE(KEYPOINT):
                 pass
         return [reps, status, sets, feedback,timer]
     
-    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer): ## 운동횟수 계산
+    # 운동횟수 계산
+    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer): 
         if exercise == "pushup":
             reps, status, sets, feedback, timer = EXERCISE(self.landmarks).pushup(
                 reps, status, sets, feedback, timer)
