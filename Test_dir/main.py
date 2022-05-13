@@ -97,7 +97,7 @@ def camPreview(previewName, camID):
         cv2.destroyAllWindows() # 모든 영상 창을 닫아줌
         
 # Create two threads as follows
-thread1 = camThread("Camera 1", 0)
-thread2 = camThread("Camera 2", 1)
+thread1 = camThread("Camera 0", 0)
+thread2 = camThread("Camera 1", 1)
 thread1.start()
 thread2.start()
