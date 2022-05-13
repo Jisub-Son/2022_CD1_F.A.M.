@@ -1,8 +1,7 @@
-import mediapipe as mp  # 스켈레톤
-import pandas as pd     # keypoint간 빠른계산
-import numpy as np      # 스켈레톤 다차원배열 구현
-import cv2              # opencv
-from utils import *     # utils 불러오기
+import mediapipe as mp ## 스켈레톤
+import pandas as pd ## keypoint간 빠른계산
+import numpy as np ## 스켈레톤 다차원배열 구현
+from utils import * ## utils 불러오기
 
 class KEYPOINT:
     def __init__(self, landmarks):
@@ -33,13 +32,13 @@ class KEYPOINT:
         return calculate_angle(r_hip, r_knee, r_ankle)
 
     def angle_of_the_right_spine(self):  ## 스쿼트 + 푸쉬업 (오른쪽 척추(허리, 어깨 목) 각도)
-        r_mouth = detection(self.landmarks, "RIGHT_MOUTH")
+        r_knee = detection(self.landmarks, "RIGHT_KNEE")
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_hip = detection(self.landmarks, "RIGHT_HIP")
-        return calculate_angle(r_mouth, r_shoulder, r_hip, "RIGHT_SPINE")
+        return calculate_angle(r_knee, r_shoulder, r_hip, "RIGHT_SPINE")
     
     def angle_of_the_left_spine(self):  ## 스쿼트 + 푸쉬업 (왼쪽 척추(허리, 어깨 목) 각도)
-        l_mouth = detection(self.landmarks, "LEFT_MOUTH")
+        l_knee = detection(self.landmarks, "LEFT_MOUTH")
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_hip = detection(self.landmarks, "LEFT_HIP")
-        return calculate_angle(l_mouth, l_shoulder, l_hip, "LEFT_SPINE")
+        return calculate_angle(l_knee, l_shoulder, l_hip, "LEFT_SPINE")

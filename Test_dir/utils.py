@@ -1,11 +1,11 @@
-import mediapipe as mp  # 스켈레톤 구현
-import pandas as pd     # keypoint간 빠른계산
-import numpy as np      # 스켈레톤 다차원 배열
-import cv2              # opencv
+import mediapipe as mp ## 스켈레톤 구현
+import pandas as pd ## keypoint간 빠른계산
+import numpy as np ## 스켈레톤 다차원 배열
+import cv2 ## opencv
 
-mp_pose = mp.solutions.pose     # 스켈레톤
+mp_pose = mp.solutions.pose ## 스켈레톤
 
-def calculate_angle(a, b, c):   # 각도계산 로직(라디안 -> 각도)
+def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)
     a = np.array(a) ## 좌표값
     b = np.array(b)
     c = np.array(c)
@@ -36,7 +36,7 @@ def detections(landmarks): ## 좌표값 데이터값 변환
 
     return keypoints
 
-def table(exercise, reps, status, sets, feedback, count): ## table 표기내용
+def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     table = cv2.imread("./table.PNG") ## table 위치
     cv2.putText(table, "CapstoneDisign1 Team-1", ## opencv문자열: 제목
                 (250, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
@@ -44,14 +44,14 @@ def table(exercise, reps, status, sets, feedback, count): ## table 표기내용
     cv2.putText(table, "Exercise : " + exercise.replace("-", " "), ## opencv문자열: table 운동타입(입력한 운동타입)
                 (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
                 cv2.LINE_AA)
-    cv2.putText(table, "Count : " + str(reps), (10, 160), ## opencv문자열: table 운동 카운트
+    cv2.putText(table, "Reps : " + str(reps), (10, 160), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Status : " + str(status), (10, 220), ## opencv문자열: table 운동 상태
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "Set : " + str(sets), (10, 280), ## opencv문자열: table 세트수
+    cv2.putText(table, "Sets : " + str(sets), (10, 280), ## opencv문자열: table 세트수
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Feedback : " + str(feedback), (10, 340), ## opencv문자열: table 피드백
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "Timer : " + str(count), (10, 400), ## opencv문자열: table 타이머
+    cv2.putText(table, "Timer : " + str(timer), (10, 400), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table", table) ## table 출력
