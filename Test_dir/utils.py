@@ -37,6 +37,7 @@ def detections(landmarks): ## 좌표값 데이터값 변환
     return keypoints
 
 def table(exercise, reps, status, sets, feedback, timer, camID): ## table 표기내용
+    
     table = cv2.imread("./table.PNG") ## table 위치
     cv2.putText(table, "CapstoneDisign1 Team-1", ## opencv문자열: 제목
                 (250, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
