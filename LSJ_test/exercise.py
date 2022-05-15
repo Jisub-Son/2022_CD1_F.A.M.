@@ -42,29 +42,33 @@ class EXERCISE(KEYPOINT):
         
         left_knee_angle = self.angle_of_the_left_knee()
         right_knee_angle = self.angle_of_the_right_knee()
-        avg_knee_angle = (left_knee_angle + right_knee_angle) // 2 ## 무릎 발끝 평균각도
+        avg_knee_angle = (left_knee_angle + right_knee_angle)//2  
         
         global prev     # 전역 변수 사용 위해
         
         if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            
             if reps < 5: # 5 rerps = 1 sets // 추후 15로 변경
                 if status == 'Up': ## count 조건
-                    if avg_knee_angle < 90: ## 무릎이 발끝보다 뒤쪽일 때
+                    if avg_knee_angle > 160: ## 무릎이 발끝보다 뒤쪽일 때
                         status = 'Up' ## 운동 상태
                         feedback = 'knees are in the right' ## 올바른 자세라는 feedback
-                        Break
-                        if avg_leg_angle < 120:      # 무릎 충분히 굽혔을 때
-                           reps += 1               # 운동 동작 timer
-                           status = 'Down'         # 운동 상태
-                           prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음                                      
-                           feedback = 'Success'    # 피드백
-                           Break
+                        print("knee : ", avg_knee_angle)
+                        ##Break
+                        if avg_leg_angle < 90:      # 무릎 충분히 굽혔을 때
+                            print("leg : ", avg_leg_angle)
+                            reps += 1               # 운동 동작 timer
+                            status = 'Down'         # 운동 상태
+                            prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음                                      
+                            feedback = 'Success'    # 피드백
+                            ##Break
                 else:                    
-                    if avg_leg_angle > 160:     # 무릎 충분히 폈을 때
+                    if avg_leg_angle > 100:     # 무릎 충분히 폈을 때
+                        print("leg : ", avg_leg_angle)
                         status = 'Up'           # 운동 상태
                         feedback = 'Ready'      # 피드백
                         Break ## if문 빠져나감
-                    if avg_knee_angle < 90: ## 무릎이 발끝보다 앞쪽일 때
+                    if avg_knee_angle < 150: ## 무릎이 발끝보다 앞쪽일 때
+                        print("knee : ", avg_knee_angle)
                         status = 'Up'
                         feedback = 'Place your knees behind toes' ## feedback 내용
                         Break ## if문 빠져나감
@@ -95,21 +99,25 @@ class EXERCISE(KEYPOINT):
             if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
                 if status == 'Up': ## count하기 위한 조건
                     if avg_spine_angle > 170: ## 척추 1자일 때
+                        print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동 상태
                         feedback = 'Spine is Straight' ## 올바른 자세라는 피드백
-                        Break
+                        ##Break
                         if avg_arm_angle < 90:      # 팔꿈치 충분히 굽혔을 때
-                          reps += 1               # 운동 동작 카운트
-                          status = 'Down'         # 운동 상태                      
-                          prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
-                          feedback = 'Success'    # 피드백
-                          Break
+                            print("arm: ", avg_arm_angle)
+                            reps += 1               # 운동 동작 카운트
+                            status = 'Down'         # 운동 상태                      
+                            prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
+                            feedback = 'Success'    # 피드백
+                          ##Break
                 else: ## count 하지 않을 조건
                     if avg_arm_angle > 160:     # 팔꿈치 충분히 폈을 때
-                       status = 'Up'           ## 운동 상태 변경 
-                       feedback = 'Ready'      # 피드백
-                       Break ## if문 종료                                       
+                        print("arm : ", avg_arm_angle)
+                        status = 'Up'           ## 운동 상태 변경 
+                        feedback = 'Ready'      # 피드백
+                        Break ## if문 종료                                       
                     if avg_spine_angle < 160: ## 척추 구부러졌을 때 
+                        print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동상태 변경 
                         feedback = 'Straight your spine' ## 피드백
                         Break ## if문 종료

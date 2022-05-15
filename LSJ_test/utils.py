@@ -25,7 +25,7 @@ def detection(landmarks, keypoint_name): ## keypoint 좌표값 변환
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].visibility
     ]
 
-def detections(landmarks): ## 좌표값 데이터값 변환
+"""def detections(landmarks): ## 좌표값 데이터값 변환
     keypoints = pd.DataFrame(columns=["keypoint", "x", "y"]) ## keypoint 좌표값
 
     
@@ -35,7 +35,7 @@ def detections(landmarks): ## 좌표값 데이터값 변환
         keypoints.loc[i] = lndmrk, cord[0], cord[1]
 
     return keypoints
-
+"""
 def table(exercise, timerer, status, set, feedback, timer,camID): ## table 표기내용
     table = cv2.imread("C:/CD_Code/table.png") ## table 위치
     cv2.putText(table, "CapstoneDisign1 Team-1", ## opencv문자열: 제목

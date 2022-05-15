@@ -45,12 +45,12 @@ class KEYPOINT:
     
     def angle_of_the_left_knee(detect): ## 스쿼트 (왼쪽 무릎, 발끝, 뒤꿈치 각도)
         l_knee = detection(detect.landmarks, "LEFT_KNEE")
+        l_ankle = detection(detect.landmarks, "LEFT_ANKLE")
         l_foot_index = detection(detect.landmarks, "LEFT_FOOT_INDEX")
-        l_heel = detection(detect.landmarks, "LEST_HEEL")
-        return calculate_angle(l_knee, l_foot_index, l_heel)
+        return calculate_angle(l_knee, l_ankle, l_foot_index)
     
     def angle_of_the_right_knee(detect): ## 스쿼트 (오른쪽 무릎, 발끝, 뒤꿈치 각도)
         r_knee = detection(detect.landmarks, "RIGHT_KNEE")
+        r_ankle = detection(detect.landmarks, "RIGHT_ANKLE")
         r_foot_index = detection(detect.landmarks, "RIGHT_FOOT_INDEX")
-        r_heel = detection(detect.landmarks, "RIGHT_HEEL")
-        return calculate_angle(r_knee, r_foot_index, r_heel)
+        return calculate_angle(r_knee, r_ankle, r_foot_index)
