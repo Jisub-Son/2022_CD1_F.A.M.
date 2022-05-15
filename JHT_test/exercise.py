@@ -106,10 +106,10 @@ class EXERCISE(KEYPOINT):
                     if (elbow_angle > 140) and (avg_spine_angle < 160) :
                         feedback = 'straighten your back and Bring your elbows together a little more'
 
-                    if (avg_spine_angle < 160):
+                    elif (avg_spine_angle < 160):
                         feedback = 'straighten your back'
 
-                    if elbow_angle > 120:
+                    elif elbow_angle > 120:
                         feedback = 'Bring your elbows together a little more'
 
 
@@ -130,10 +130,10 @@ class EXERCISE(KEYPOINT):
                     if (elbow_angle > 140) and (avg_spine_angle < 160) :
                         feedback = 'straighten your back and Bring your elbows together a little more'
 
-                    if (avg_spine_angle < 160):
+                    elif (avg_spine_angle < 160):
                         feedback = 'straighten your back'
 
-                    if elbow_angle > 120:
+                    elif elbow_angle > 120:
                         feedback = 'Bring your elbows together a little more'
                 
 

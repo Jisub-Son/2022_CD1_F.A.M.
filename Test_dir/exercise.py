@@ -14,6 +14,7 @@ class EXERCISE(KEYPOINT):
 
     # 휴식 타이머
     def Rest_timer(self, reps, status, sets, feedback, timer):
+        print("timer start..!\r\n")
         global cur, prev, timeElapsed   # 함수 내에서 전역 변수를 사용하기 위해서는 global 선언 필요
         cur = time.time()               # 현재 시간을 받아옴
         
@@ -37,12 +38,19 @@ class EXERCISE(KEYPOINT):
         right_leg_angle = self.angle_of_the_left_leg()
         avg_leg_angle = (left_leg_angle + right_leg_angle) // 2 ## 무릎 평균 각도(//2는 평균 + 정수값)
         
+        left_knee_angle = self.angle_of_the_left_knee()
+        right_knee_angle = self.angle_of_the_right_knee()
+        avg_knee_angle = (left_knee_angle + right_knee_angle) // 2
+        
+        print("leg : {}\tknee : {}".format(avg_leg_angle, avg_knee_angle))
+        
         global prev     # 전역 변수 사용 위해
         
         if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            
             if reps < 5: # 5 rerps = 1 sets
                 if status == 'Up':
-                    if avg_leg_angle < 90:      # 무릎 충분히 굽혔을 때
+                    if avg_leg_angle < 120 & avg_knee_angle < 90:      # 무릎 충분히 굽혔을 때
+                        print("leg : ", avg_leg_angle, "knee : ", avg_knee_angle)
                         reps += 1               # 운동 동작 timer
                         prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
                         status = 'Down'         # 운동 상태  

@@ -46,8 +46,8 @@ class KEYPOINT:
     def angle_of_the_elbow(self):
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
-        nose = detection(self.landmarks, "NOSE")
-        return calculate_angle(l_elbow, nose, r_elbow)
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        return calculate_angle(l_elbow, l_shoulder, r_elbow)
 
 
 
