@@ -95,7 +95,7 @@ class EXERCISE(KEYPOINT):
                     if avg_spine_angle > 160:
 
 
-                        if (avg_arm_angle < 90) and (elbow_angle < 140) :      # 무릎 충분히 굽혔을 때
+                        if (avg_arm_angle < 90) and (elbow_angle < 110) :      # 무릎 충분히 굽혔을 때
                             reps += 1               # 운동 동작 카운트                      
                             prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
                             status = 'Down'         # 운동 상태
@@ -103,13 +103,13 @@ class EXERCISE(KEYPOINT):
 
 
 
-                    if (elbow_angle > 140) and (avg_spine_angle < 160) :
-                        feedback = 'straighten your back and Bring your elbows together a little more'
+                    if (elbow_angle > 110) and (avg_spine_angle < 160) :
+                        feedback = 'straighten your back andpytho Bring your elbows together a little more'
 
                     elif (avg_spine_angle < 160):
                         feedback = 'straighten your back'
 
-                    elif elbow_angle > 120:
+                    elif elbow_angle > 110:
                         feedback = 'Bring your elbows together a little more'
 
 
@@ -121,24 +121,24 @@ class EXERCISE(KEYPOINT):
                     if avg_spine_angle > 160:
 
 
-                        if( avg_arm_angle > 160)and (elbow_angle < 140) :     # 무릎 충분히 폈을 때
+                        if( avg_arm_angle > 160)and (elbow_angle < 110) :     # 무릎 충분히 폈을 때
                             status = 'Up'           # 운동 상태 
                             feedback = 'Ready'      # 피드백 
 
 
                             
-                    if (elbow_angle > 140) and (avg_spine_angle < 160) :
+                    if (elbow_angle > 110) and (avg_spine_angle < 160) :
                         feedback = 'straighten your back and Bring your elbows together a little more'
 
                     elif (avg_spine_angle < 160):
                         feedback = 'straighten your back'
 
-                    elif elbow_angle > 120:
+                    elif elbow_angle > 110:
                         feedback = 'Bring your elbows together a little more'
                 
 
 
-                        py
+                        
             else:
                 if reps == 5:                   # reps가 끝나게 되면
                     # print('run timer')
