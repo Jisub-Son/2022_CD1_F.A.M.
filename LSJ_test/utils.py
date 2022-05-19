@@ -25,19 +25,8 @@ def detection(landmarks, keypoint_name): ## keypoint 좌표값 변환
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].visibility
     ]
 
-"""def detections(landmarks): ## 좌표값 데이터값 변환
-    keypoints = pd.DataFrame(columns=["keypoint", "x", "y"]) ## keypoint 좌표값
-
-    
-    for i, lndmrk in enumerate(mp_pose.PoseLandmark): ## 파이썬 내장함수(for문 in 뒤쪽), 2차원배열에서 인덱스 오타 적음
-        lndmrk = str(lndmrk).split(".")[1]
-        cord = detection(landmarks, lndmrk)
-        keypoints.loc[i] = lndmrk, cord[0], cord[1]
-
-    return keypoints
-"""
 def table(exercise, timerer, status, set, feedback, timer,camID): ## table 표기내용
-    table = cv2.imread("./table.PNG") ## table 위치
+    table = cv2.imread("C:/CD_Code/table.png") ## table 위치
     cv2.putText(table, "CapstoneDisign1 Team-1", ## opencv문자열: 제목
                 (50, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
                 cv2.LINE_AA)

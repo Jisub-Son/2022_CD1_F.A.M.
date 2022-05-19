@@ -49,7 +49,7 @@ class EXERCISE(KEYPOINT):
         if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            
             if reps < 5: # 5 rerps = 1 sets // 추후 15로 변경
                 if status == 'Up': ## count 조건
-                    if avg_knee_angle > 160: ## 무릎이 발끝보다 뒤쪽일 때
+                    if avg_knee_angle > 150: ## 무릎이 발끝보다 뒤쪽일 때
                         status = 'Up' ## 운동 상태
                         feedback = 'knees are in the right' ## 올바른 자세라는 feedback
                         print("knee : ", avg_knee_angle)
