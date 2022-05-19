@@ -26,6 +26,30 @@ class KEYPOINT:
             return calculate_angle(r_shoulder, r_elbow, r_wrist)
         else:
             return 0
+        
+    def angle_of_the_left_spine(self):  ## 푸쉬업 (왼쪽 척추(어깨, 허리, 무릎) 각도)
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        l_hip = detection(self.landmarks, "LEFT_HIP")
+        l_knee = detection(self.landmarks, "LEFT_KNEE")
+        '''if l_shoulder[2] >= 0.8 and l_hip[2] >= 0.8 and l_knee >= 0.8:
+            print("left spine visible")
+            return calculate_angle(l_shoulder, l_hip, l_knee)
+        else:
+            return 0'''
+        # print("left spine visible")
+        return calculate_angle(l_shoulder, l_hip, l_knee)
+
+    def angle_of_the_right_spine(self):  ## 푸쉬업 (오른쪽 척추(어깨, 허리, 무릎) 각도)
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        r_hip = detection(self.landmarks, "RIGHT_HIP")
+        r_knee = detection(self.landmarks, "RIGHT_KNEE")
+        '''if r_shoulder[2] >= 0.8 and r_hip[2] >= 0.8 and r_knee >= 0.8:
+            print("right spine visible")
+            return calculate_angle(r_shoulder, r_hip, r_knee)
+        else:
+            return 0'''
+        # print("right spine visible")
+        return calculate_angle(r_shoulder, r_hip, r_knee)
 
     def angle_of_the_left_leg(self): ## 스쿼트 (왼쪽 허리, 무릎, 발목 각도)
         l_hip = detection(self.landmarks, "LEFT_HIP")
@@ -38,26 +62,6 @@ class KEYPOINT:
         r_knee = detection(self.landmarks, "RIGHT_KNEE")
         r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
         return calculate_angle(r_hip, r_knee, r_ankle)
-
-    def angle_of_the_left_spine(self):  ## 푸쉬업 (왼쪽 척추(어깨, 허리, 무릎) 각도)
-        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        l_hip = detection(self.landmarks, "LEFT_HIP")
-        l_knee = detection(self.landmarks, "LEFT_KNEE")
-        if l_shoulder[2] >= 0.8 and l_hip[2] >= 0.8 and l_knee >= 0.8:
-            print("left spine visible")
-            return calculate_angle(l_shoulder, l_hip, l_knee)
-        else:
-            return 0
-    
-    def angle_of_the_right_spine(self):  ## 푸쉬업 (오른쪽 척추(어깨, 허리, 무릎) 각도)
-        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
-        r_hip = detection(self.landmarks, "RIGHT_HIP")
-        r_knee = detection(self.landmarks, "RIGHT_KNEE")
-        if r_shoulder[2] >= 0.8 and r_hip[2] >= 0.8 and r_knee >= 0.8:
-            print("right spine visible")
-            return calculate_angle(r_shoulder, r_hip, r_knee)
-        else:
-            return 0
     
     def angle_of_the_left_knee(self): ## 스쿼트 (왼쪽 무릎, 발끝, 뒤꿈치 각도)
         l_knee = detection(self.landmarks, "LEFT_KNEE")

@@ -12,11 +12,11 @@ timeElapsed = 0.0
 
 left_arm_angle = 180.0
 right_arm_angle = 180.0
-avg_arm_angle = 180.0
+avg_arm_angle = 0.0
 
-left_spine_anlge = 0.0
-right_spine_anlge = 0.0
-avg_spine_anlge = 0.0
+left_spine_angle = 180.0
+right_spine_angle = 180.0
+avg_spine_angle = 0.0
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -94,23 +94,36 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
-        global left_arm_angle, right_arm_angle, avg_arm_angle,\
-               left_spine_anlge, right_spine_anlge, avg_spine_anlge
+        global left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
         if camID == 0:
+            # print("step 1")
             left_spine_angle = self.angle_of_the_left_spine()
+            # print("step 2 ", left_spine_angle)
             left_arm_angle = self.angle_of_the_left_arm()
+            # print("step 3 ", left_arm_angle)
         elif camID == 1:
+            # print("step 4")
             right_spine_angle = self.angle_of_the_right_spine()
+            # print("step 5", right_spine_angle)
             right_arm_angle = self.angle_of_the_right_arm()
+            # print("step 6", right_arm_angle)
+
+        # if camID == 0:
+        #     print("cam 0 ", left_arm_angle, right_arm_angle, left_spine_angle, right_spine_angle)
+        # elif camID == 1:
+        #     print("cam 1 ", left_arm_angle, right_arm_angle, left_spine_angle, right_spine_angle)
         
-            
+        print("arm : ", left_arm_angle, right_arm_angle)
+        print("spine : ", left_spine_angle, right_spine_angle)
+        
+        print("step 7")
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
-        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
+        print("left arm : ", left_arm_angle, "right arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
         
-        # print("left arm : {}\tright arm: {}\tavg arm : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
-        print("left spine : {}\tright spine: {}\tavg spine : {}".format(left_spine_angle, right_spine_angle, avg_spine_angle))
+        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
+        print("left spine : ", left_spine_angle, "right spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
 
         global prev     # 전역 변수 사용 위해
         
