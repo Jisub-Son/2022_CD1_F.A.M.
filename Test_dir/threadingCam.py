@@ -57,6 +57,7 @@ class camThread(threading.Thread):
                     reps, status, sets, feedback, timer, camID = EXERCISE(landmarks).calculate_exercise(
                         args["exercise"], reps, status, sets, feedback, timer, camID)
                     
+                    # landmark data 저장(마지막 프레임 데이터만)
                     data = detections(landmarks=landmarks)
                     data.to_csv("./data.csv")
                 except:
@@ -78,8 +79,6 @@ class camThread(threading.Thread):
                 )
                 
                 frame = cv2.flip(frame, 1)  # 카메라 좌우반전(운동 자세보기 편하게)
-
-                
 
                 cv2.imshow(previewName, frame)  # q누르면 종료
                 if cv2.waitKey(10) & 0xFF == ord('q'):
