@@ -10,13 +10,13 @@ cur = 0.0
 prev = 0.0
 timeElapsed = 0.0
 
-left_arm_angle = []
-right_arm_angle = []
-avg_arm_angle = []  
+left_arm_angle = 180.0
+right_arm_angle = 180.0
+avg_arm_angle = 180.0
 
-left_spine_anlge = []
-right_spine_anlge = []
-avg_spine_anlge = []
+left_spine_anlge = 0.0
+right_spine_anlge = 0.0
+avg_spine_anlge = 0.0
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -109,7 +109,7 @@ class EXERCISE(KEYPOINT):
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
         
-        print("left arm : {}\tright arm: {}\tavg arm : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
+        # print("left arm : {}\tright arm: {}\tavg arm : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
         print("left spine : {}\tright spine: {}\tavg spine : {}".format(left_spine_angle, right_spine_angle, avg_spine_angle))
 
         global prev     # 전역 변수 사용 위해
@@ -121,28 +121,29 @@ class EXERCISE(KEYPOINT):
                         print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동 상태
                         feedback = 'Spine is Straight' ## 올바른 자세라는 피드백
-                        ##Break
-                    if avg_arm_angle < 90:      # 팔꿈치 충분히 굽혔을 때
-                        print("arm: ", avg_arm_angle)
-                        reps += 1               # 운동 동작 카운트
-                        status = 'Down'         # 운동 상태                      
-                        prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
-                        feedback = 'Success'    # 피드백
-                        ##Break
+                        ##Break'''
+                        if avg_arm_angle < 90:      # 팔꿈치 충분히 굽혔을 때
+                            print("\r\nline 126 arms down {}\r\n".format(avg_arm_angle))
+                            reps += 1               # 운동 동작 카운트
+                            status = 'Down'         # 운동 상태                      
+                            prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
+                            feedback = 'Success'    # 피드백
+                            ##Break
                 else: ## count 하지 않을 조건
                     if avg_arm_angle > 160:     # 팔꿈치 충분히 폈을 때
+                        print("\r\nline 134 arms up {}\r\n".format(avg_arm_angle))
                         print("arm : ", avg_arm_angle)
                         status = 'Up'           ## 운동 상태 변경 
                         feedback = 'Ready'      # 피드백
-                        Break ## if문 종료                                       
+                         ## if문 종료                                       
                     if avg_spine_angle < 160: ## 척추 구부러졌을 때 
                         print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동상태 변경 
                         feedback = 'Straight your spine' ## 피드백
-                        Break ## if문 종료
+                        Break ## if문 종료'''
             else:
                 if reps == 5:                   # reps가 끝나게 되면
-                    # print('run timer')
+                    print('run timer')
                     reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # 타이머 함수 호출
         else:
             if sets == 3:                       # sets가 끝나게 되면

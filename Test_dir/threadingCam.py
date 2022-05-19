@@ -86,4 +86,4 @@ class camThread(threading.Thread):
                     break
                 
             capture.release()       # 캡쳐 객체를 없애줌
-            cv2.destroyAllWindows() # 모든 영상 창을 닫아줌
+            cv2.destroyAllWindows(camID) # 모든 영상 창을 닫아줌

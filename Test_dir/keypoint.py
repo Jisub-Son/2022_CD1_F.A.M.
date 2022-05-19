@@ -12,7 +12,7 @@ class KEYPOINT:
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
         l_wrist = detection(self.landmarks, "LEFT_WRIST")
         if l_shoulder[2] >= 0.8 and l_elbow[2]  >= 0.8 and l_wrist[2] >= 0.8:
-            print("left arm visible")
+            # print("left arm visible")
             return calculate_angle(l_shoulder, l_elbow, l_wrist)
         else:
             return 0
@@ -22,7 +22,7 @@ class KEYPOINT:
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
         r_wrist = detection(self.landmarks, "RIGHT_WRIST")
         if r_shoulder[2] >= 0.8 and r_elbow[2]  >= 0.8 and r_wrist[2] >= 0.8:
-            print("right arm visible")
+            # print("right arm visible")
             return calculate_angle(r_shoulder, r_elbow, r_wrist)
         else:
             return 0
