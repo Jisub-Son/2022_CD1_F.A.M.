@@ -54,8 +54,8 @@ class camThread(threading.Thread):
                 
                 try:    # 스켈레톤을 통해 운동횟수 계산
                     landmarks = results.pose_landmarks.landmark
-                    reps, status, sets, feedback, timer = EXERCISE(landmarks).calculate_exercise(
-                        args["exercise"], reps, status, sets, feedback, timer)
+                    reps, status, sets, feedback, timer, camID = EXERCISE(landmarks).calculate_exercise(
+                        args["exercise"], reps, status, sets, feedback, timer, camID)
                     
                     data = detections(landmarks=landmarks)
                     data.to_csv("./data.csv")

@@ -39,17 +39,23 @@ class KEYPOINT:
         r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
         return calculate_angle(r_hip, r_knee, r_ankle)
 
-    def angle_of_the_right_spine(self):  ## 스쿼트 + 푸쉬업 (오른쪽 척추(허리, 어깨 목) 각도)
-        r_knee = detection(self.landmarks, "RIGHT_KNEE")
-        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
-        r_hip = detection(self.landmarks, "RIGHT_HIP")
-        return calculate_angle(r_knee, r_shoulder, r_hip, "RIGHT_SPINE")
+    def angle_of_the_left_spine(detect):  ## 푸쉬업 (왼쪽 척추(어깨, 허리, 무릎) 각도)
+        l_shoulder = detection(detect.landmarks, "LEFT_SHOULDER")
+        l_hip = detection(detect.landmarks, "LEFT_HIP")
+        l_knee = detection(detect.landmarks, "LEFT_KNEE")
+        if l_shoulder[2] > 0.8 and l_hip[2] > 0.8 and l_knee > 0.8:
+           return calculate_angle(l_shoulder, l_hip, l_knee)
+        else:
+            return 0
     
-    def angle_of_the_left_spine(self):  ## 스쿼트 + 푸쉬업 (왼쪽 척추(허리, 어깨 목) 각도)
-        l_knee = detection(self.landmarks, "LEFT_MOUTH")
-        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        l_hip = detection(self.landmarks, "LEFT_HIP")
-        return calculate_angle(l_knee, l_shoulder, l_hip, "LEFT_SPINE")
+    def angle_of_the_right_spine(detect):  ## 푸쉬업 (오른쪽 척추(어깨, 허리, 무릎) 각도)
+        r_shoulder = detection(detect.landmarks, "RIGHT_SHOULDER")
+        r_hip = detection(detect.landmarks, "RIGHT_HIP")
+        r_knee = detection(detect.landmarks, "RIGHT_KNEE")
+        if r_shoulder[2] > 0.8 and r_hip[2] > 0.8 and r_knee > 0.8:
+           return calculate_angle(r_shoulder, r_hip, r_knee)
+        else:
+            return 0
     
     def angle_of_the_left_knee(self): ## 스쿼트 (왼쪽 무릎, 발끝, 뒤꿈치 각도)
         l_knee = detection(self.landmarks, "LEFT_KNEE")

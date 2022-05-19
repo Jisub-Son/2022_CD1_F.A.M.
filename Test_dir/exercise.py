@@ -2,6 +2,7 @@ import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
 import time                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
+from ast import Break
 
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
@@ -33,7 +34,7 @@ class EXERCISE(KEYPOINT):
         return [reps, status, sets, feedback, timer]
                             
     # 스쿼트
-    def squat(self, reps, status, sets, feedback, timer): ## 스쿼트
+    def squat(self, reps, status, sets, feedback, timer, camID): ## 스쿼트
         left_leg_angle = self.angle_of_the_right_leg() ## 무릎각도
         right_leg_angle = self.angle_of_the_left_leg()
         avg_leg_angle = (left_leg_angle + right_leg_angle) // 2 ## 무릎 평균 각도(//2는 평균 + 정수값)
@@ -71,28 +72,46 @@ class EXERCISE(KEYPOINT):
         return [reps, status, sets, feedback, timer]
 
     # 푸쉬업
-    def pushup(self, reps, status, sets, feedback, timer):
-        left_arm_angle = self.angle_of_the_left_arm()
-        # print("left : {}".format(left_arm_angle))
-        right_arm_angle = self.angle_of_the_right_arm()
-        # print("right : {}".format(right_arm_angle))
+    def pushup(self, reps, status, sets, feedback, timer, camID):
+        if camID == 0:
+            left_arm_angle = self.angle_of_the_left_arm()
+        elif camID == 1:
+            right_arm_angle = self.angle_of_the_right_arm()
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
+        
+        left_spine_angle = self.angle_of_the_left_spine()
+        right_spine_angle = self.angle_of_the_right_spine()
+        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
         
         print("left : {}\tright : {}\tavg : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
         global prev     # 전역 변수 사용 위해
         
-        if sets < 3:                                
-            if reps < 5:
-                if status == 'Up':
-                    if avg_arm_angle < 90:      # 무릎 충분히 굽혔을 때
-                        reps += 1               # 운동 동작 카운트                      
-                        prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
-                        status = 'Down'         # 운동 상태
-                        feedback = 'Success'    # 피드백
-                else:
-                    if avg_arm_angle > 160:     # 무릎 충분히 폈을 때
-                        status = 'Up'           # 운동 상태 
-                        feedback = 'Ready'      # 피드백 
+        if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
+            if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
+                if status == 'Up': ## count하기 위한 조건
+                    if avg_spine_angle > 170: ## 척추 1자일 때
+                        print("spine: ", avg_spine_angle)
+                        status = 'Up' ## 운동 상태
+                        feedback = 'Spine is Straight' ## 올바른 자세라는 피드백
+                        ##Break
+                        if avg_arm_angle < 90:      # 팔꿈치 충분히 굽혔을 때
+                            print("arm: ", avg_arm_angle)
+                            reps += 1               # 운동 동작 카운트
+                            status = 'Down'         # 운동 상태                      
+                            prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
+                            feedback = 'Success'    # 피드백
+                          ##Break
+                else: ## count 하지 않을 조건
+                    if avg_arm_angle > 160:     # 팔꿈치 충분히 폈을 때
+                        print("arm : ", avg_arm_angle)
+                        status = 'Up'           ## 운동 상태 변경 
+                        feedback = 'Ready'      # 피드백
+                        Break ## if문 종료                                       
+                    if avg_spine_angle < 160: ## 척추 구부러졌을 때 
+                        print("spine: ", avg_spine_angle)
+                        status = 'Up' ## 운동상태 변경 
+                        feedback = 'Straight your spine' ## 피드백
+                        Break ## if문 종료
             else:
                 if reps == 5:                   # reps가 끝나게 되면
                     # print('run timer')
@@ -102,16 +121,17 @@ class EXERCISE(KEYPOINT):
                 # print('운동 끝')                # 아직 별다른 조치 안함
                 feedback = 'well done!'         # 피드백
                 pass
-        return [reps, status, sets, feedback,timer]
+        return [reps, status, sets, feedback, timer]
+  
     
     # 운동횟수 계산
-    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer): 
+    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer, camID): 
         if exercise == "pushup":
-            reps, status, sets, feedback, timer = EXERCISE(self.landmarks).pushup(
-                reps, status, sets, feedback, timer)
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
+                reps, status, sets, feedback, timer, camID)
         elif exercise == "squat":
-            reps, status, sets, feedback, timer = EXERCISE(self.landmarks).squat(
-                reps, status, sets, feedback, timer)
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).squat(
+                reps, status, sets, feedback, timer, camID)
         
-        return [reps, status, sets, feedback, timer]
+        return [reps, status, sets, feedback, timer, camID]
     

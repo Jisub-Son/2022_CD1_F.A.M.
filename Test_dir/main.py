@@ -23,6 +23,6 @@ args = vars(ap.parse_args())
 
 # Create two threads as follows
 thread1 = camThread("Camera 0", 0, args)
-# thread2 = camThread("Camera 1", 1, args)
+thread2 = camThread("Camera 1", 1, args)
 thread1.start()
-# thread2.start()
+thread2.start()
