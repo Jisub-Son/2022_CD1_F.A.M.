@@ -11,13 +11,21 @@ class KEYPOINT:
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
         l_wrist = detection(self.landmarks, "LEFT_WRIST")
-        return calculate_angle(l_shoulder, l_elbow, l_wrist)
+        if l_shoulder[2] >= 0.8 and l_elbow[2]  >= 0.8 and l_wrist[2] >= 0.8:
+            print("left done")
+            return calculate_angle(l_shoulder, l_elbow, l_wrist)
+        else:
+            return 0
 
     def angle_of_the_right_arm(self): ## 푸쉬업 (오른쪽 어깨,팔꿈치,손목 각도)
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
         r_wrist = detection(self.landmarks, "RIGHT_WRIST")
-        return calculate_angle(r_shoulder, r_elbow, r_wrist)
+        if r_shoulder[2] >= 0.8 and r_elbow[2]  >= 0.8 and r_wrist[2] >= 0.8:
+            print("right done")
+            return calculate_angle(r_shoulder, r_elbow, r_wrist)
+        else:
+            return 0
 
     def angle_of_the_left_leg(self): ## 스쿼트 (왼쪽 허리, 무릎, 발목 각도)
         l_hip = detection(self.landmarks, "LEFT_HIP")

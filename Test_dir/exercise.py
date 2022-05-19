@@ -73,9 +73,12 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer):
         left_arm_angle = self.angle_of_the_left_arm()
-        right_arm_angle = self.angle_of_the_left_arm()
+        # print("left : {}".format(left_arm_angle))
+        right_arm_angle = self.angle_of_the_right_arm()
+        # print("right : {}".format(right_arm_angle))
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
-
+        
+        print("left : {}\tright : {}\tavg : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
         global prev     # 전역 변수 사용 위해
         
         if sets < 3:                                

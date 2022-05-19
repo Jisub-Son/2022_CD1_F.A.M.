@@ -21,8 +21,6 @@ def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)
 
 def detection(landmarks, keypoint_name): ## keypoint 좌표값 변환
     
-    # print("landmarks : {},  keypoint_name : {}".format(landmarks, keypoint_name))
-    
     return [
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].x,
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].y,
@@ -30,12 +28,12 @@ def detection(landmarks, keypoint_name): ## keypoint 좌표값 변환
     ]
 
 def detections(landmarks): ## 좌표값 데이터값 변환
-    keypoints = pd.DataFrame(columns=["keypoint", "x", "y"]) ## keypoint 좌표값
+    keypoints = pd.DataFrame(columns=["keypoint", "x", "y","visibility"]) ## keypoint 좌표값
 
     for i, lndmrk in enumerate(mp_pose.PoseLandmark): ## 파이썬 내장함수(for문 in 뒤쪽)
         lndmrk = str(lndmrk).split(".")[1]
         cord = detection(landmarks, lndmrk)
-        keypoints.loc[i] = lndmrk, cord[0], cord[1]
+        keypoints.loc[i] = lndmrk, cord[0], cord[1], cord[2]
 
     return keypoints
 
