@@ -70,3 +70,4 @@ class KEYPOINT:
 
         return calculate_angle(shoulder_avg, hip_avg, knee_avg)
 
+
