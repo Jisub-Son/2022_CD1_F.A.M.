@@ -20,6 +20,9 @@ def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)
     return angle
 
 def detection(landmarks, keypoint_name): ## keypoint 좌표값 변환
+    
+    # print("landmarks : {},  keypoint_name : {}".format(landmarks, keypoint_name))
+    
     return [
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].x,
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].y,

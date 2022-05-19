@@ -60,6 +60,8 @@ class camThread(threading.Thread):
                     pass
                 
                 table(args["exercise"], reps, status, sets, feedback, timer, camID)    # 테이블 내용 표시
+                data = detections(landmarks)
+                data.to_csv("./data.csv")
 
                 # 랜드마크 감지/출력
                 mp_drawing.draw_landmarks(
