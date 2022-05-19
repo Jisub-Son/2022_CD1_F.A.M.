@@ -14,6 +14,10 @@ left_arm_angle = []
 right_arm_angle = []
 avg_arm_angle = []  
 
+left_spine_anlge = []
+right_spine_anlge = []
+avg_spine_anlge = []
+
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
@@ -90,7 +94,8 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
-        global left_arm_angle, right_arm_angle, avg_arm_angle
+        global left_arm_angle, right_arm_angle, avg_arm_angle,\
+               left_spine_anlge, right_spine_anlge, avg_spine_anlge
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
         if camID == 0:
@@ -105,8 +110,8 @@ class EXERCISE(KEYPOINT):
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
         
         print("left arm : {}\tright arm: {}\tavg arm : {}".format(left_arm_angle, right_arm_angle, avg_arm_angle))
-        # print("left arm : ", left_arm_angle, "rigth arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
         print("left spine : {}\tright spine: {}\tavg spine : {}".format(left_spine_angle, right_spine_angle, avg_spine_angle))
+
         global prev     # 전역 변수 사용 위해
         
         if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
