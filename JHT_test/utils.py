@@ -55,3 +55,4 @@ def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     cv2.putText(table, "Timer : " + str(timer), (10, 400), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table", table) ## table 출력
+    
