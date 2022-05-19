@@ -11,12 +11,20 @@ cur = 0.0
 prev = 0.0
 timeElapsed = 0.0  
 
+left_arm_angle = []
+right_arm_angle = []
+avg_arm_angle = []  
+
+left_spine_anlge = []
+right_spine_anlge = []
+avg_spine_anlge = []
+
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
 
     # 휴식 타이머
-    def Rest_timer(self, reps, status, sets, feedback, timer):
+    def Rest_timer(self, reps, status, sets, feedback, timer, camID):
         global cur, prev, timeElapsed   # 함수 내에서 전역 변수를 사용하기 위해서는 global 선언 필요
         cur = time.time()               # 현재 시간을 받아옴
         
@@ -32,10 +40,10 @@ class EXERCISE(KEYPOINT):
                 reps = 0            # reps 초기화
                 sets += 1           # sets 입력
         
-        return [reps, status, sets, feedback, timer]
+        return [reps, status, sets, feedback, timer, camID]
                             
     # 스쿼트
-    def squat(self, reps, status, sets, feedback, timer): ## 스쿼트
+    def squat(self, reps, status, sets, feedback, timer, camID): ## 스쿼트
         left_leg_angle = self.angle_of_the_right_leg() ## 무릎각도
         right_leg_angle = self.angle_of_the_left_leg()
         avg_leg_angle = (left_leg_angle + right_leg_angle) // 2 ## 무릎 평균 각도(//2는 평균 + 정수값)
@@ -75,23 +83,35 @@ class EXERCISE(KEYPOINT):
             else:
                 if reps == 5:                   # reps가 끝나게 되면
                     # print('run timer')
-                    reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # 타이머 함수 호출
+                    reps, status, sets, feedback, timer, camID = self.Rest_timer(reps, status, sets, feedback, timer, camID)  # 타이머 함수 호출
         else:
             if sets == 3:                       # sets가 끝나게 되면
                 # print('운동 끝')              # 아직 별다른 조치 안함
                 feedback = 'Well done!'         # 운동 끝
                 pass
-        return [reps, status, sets, feedback, timer]
+        return [reps, status, sets, feedback, timer, camID]
 
     # 푸쉬업
-    def pushup(self, reps, status, sets, feedback, timer):
-        left_arm_angle = self.angle_of_the_left_arm()
-        right_arm_angle = self.angle_of_the_left_arm()
-        avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
+    def pushup(self, reps, status, sets, feedback, timer, camID):
         
-        left_spine_angle = self.angle_of_the_left_spine()
-        right_spine_angle = self.angle_of_the_right_spine()
-        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
+        global left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_anlge, right_spine_anlge, avg_spine_anlge
+        
+        # camID 구분 -> 좌측, 우측 각각 따로 계산
+        if camID == 0:
+            left_spine_angle = self.angle_of_the_left_spine()
+            left_arm_angle = self.angle_of_the_left_arm()
+            ##print("left spine : ", left_spine_angle)
+            ##print("left arm : ", left_arm_angle)
+        elif camID == 1:
+            right_spine_angle = self.angle_of_the_right_spine()
+            right_arm_angle = self.angle_of_the_right_arm()
+            ##print("rignt spine : ", right_spine_angle)
+            ##print("right arm : ", right_arm_angle)
+                  
+        avg_arm_angle = (left_arm_angle + right_arm_angle)//2
+        ##print("avg arm : ", avg_arm_angle)
+        avg_spine_angle = (left_spine_angle + right_spine_angle)//2     
+        print("avg spine : ", avg_spine_angle)
 
         global prev     # 전역 변수 사용 위해
         
@@ -99,12 +119,12 @@ class EXERCISE(KEYPOINT):
             if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
                 if status == 'Up': ## count하기 위한 조건
                     if avg_spine_angle > 170: ## 척추 1자일 때
-                        print("spine: ", avg_spine_angle)
+                        ##print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동 상태
                         feedback = 'Spine is Straight' ## 올바른 자세라는 피드백
                         ##Break
                         if avg_arm_angle < 90:      # 팔꿈치 충분히 굽혔을 때
-                            print("arm: ", avg_arm_angle)
+                            ##print("arm: ", avg_arm_angle)
                             reps += 1               # 운동 동작 카운트
                             status = 'Down'         # 운동 상태                      
                             prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음          
@@ -112,33 +132,32 @@ class EXERCISE(KEYPOINT):
                           ##Break
                 else: ## count 하지 않을 조건
                     if avg_arm_angle > 160:     # 팔꿈치 충분히 폈을 때
-                        print("arm : ", avg_arm_angle)
+                        ##print("arm : ", avg_arm_angle)
                         status = 'Up'           ## 운동 상태 변경 
                         feedback = 'Ready'      # 피드백
                         Break ## if문 종료                                       
                     if avg_spine_angle < 160: ## 척추 구부러졌을 때 
-                        print("spine: ", avg_spine_angle)
+                        ##print("spine: ", avg_spine_angle)
                         status = 'Up' ## 운동상태 변경 
                         feedback = 'Straight your spine' ## 피드백
                         Break ## if문 종료
             else:
                 if reps == 5:                   # reps가 끝나게 되면
                     # print('run timer')
-                    reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # 타이머 함수 호출
+                    reps, status, sets, feedback, timer, camID = self.Rest_timer(reps, status, sets, feedback, timer, camID)  # 타이머 함수 호출
         else:
             if sets == 3:                       # sets가 끝나게 되면
                 # print('운동 끝')                # 아직 별다른 조치 안함
                 feedback = 'well done!'         # 피드백
                 pass
-        return [reps, status, sets, feedback, timer]
+        return [reps, status, sets, feedback, timer, camID]
     
-    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer): ## 운동횟수 계산
+    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer, camID): ## 운동횟수 계산
         if exercise == "pushup":
-            reps, status, sets, feedback, timer = EXERCISE(self.landmarks).pushup(
-                reps, status, sets, feedback, timer)
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
+                reps, status, sets, feedback, timer, camID)
         elif exercise == "squat":
-            reps, status, sets, feedback, timer = EXERCISE(self.landmarks).squat(
-                reps, status, sets, feedback, timer)
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).squat(
+                reps, status, sets, feedback, timer, camID)
         
-        return [reps, status, sets, feedback, timer]
-    
+        return [reps, status, sets, feedback, timer, camID]
