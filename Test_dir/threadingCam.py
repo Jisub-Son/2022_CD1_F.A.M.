@@ -20,7 +20,7 @@ class camThread(threading.Thread):
     def camPreview(self, previewName, camID, args):
         cv2.namedWindow(previewName)
         
-        capture = cv2.VideoCapture(camID)
+        capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
         capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         
@@ -56,14 +56,15 @@ class camThread(threading.Thread):
                     landmarks = results.pose_landmarks.landmark
                     reps, status, sets, feedback, timer, camID = EXERCISE(landmarks).calculate_exercise(
                         args["exercise"], reps, status, sets, feedback, timer, camID)
-                    
-                    # landmark data 저장(마지막 프레임 데이터만)
-                    data = detections(landmarks=landmarks)
-                    data.to_csv("./data.csv")
                 except:
                     pass
                 
                 table(args["exercise"], reps, status, sets, feedback, timer, camID)    # 테이블 내용 표시
+                
+                # landmark data 저장(마지막 프레임 데이터만)
+                # if camID == 0:                  
+                #     data = detections(landmarks=landmarks)
+                #     data.to_csv("./data.csv")
                 
                 # 랜드마크 감지/출력
                 mp_drawing.draw_landmarks(
