@@ -3,7 +3,7 @@ import time                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
 
-import pygame
+import pygame    #pip install pygame  cmd에 쳐야됨
 
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
