@@ -5,6 +5,7 @@ import time                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
 from datetime import datetime   # 타이머
+import pygame
 
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
@@ -26,6 +27,11 @@ avg_leg_angle = []
 left_knee_angle = [] ## 스쿼트 무릎/발끝 각도
 right_knee_angle = []
 avg_knee_angle = []
+
+pygame.init() ## mixer 초기화
+rest = pygame.mixer.Sound('rest_time.mp3')
+buzzer = pygame.mixer.Sound('buzzer.mp3')
+end = pygame.mixer.Sound('end.mp3')
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -57,12 +63,12 @@ class EXERCISE(KEYPOINT):
         global prev     # 전역 변수 사용 위해
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
-        if camID == 0: ## 노트북 Cam
+        if camID == 1: ## 노트북 Cam
             left_leg_angle = self.angle_of_the_left_leg()
             left_knee_angle = self.angle_of_the_left_knee()
             ##print("left leg : ", left_leg_angle)
             ##print("left knee : ", left_knee_angle)
-        elif camID == 1: ## USB Cam
+        elif camID == 0: ## USB Cam
             right_leg_angle = self.angle_of_the_right_leg()
             right_knee_angle = self.angle_of_the_right_knee()
             ##print("rignt leg : ", right_leg_angle)
@@ -77,24 +83,27 @@ class EXERCISE(KEYPOINT):
         if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            
             if reps < 5: # 5 rerps = 1 sets // 추후 15로 변경
                 if status == 'Up': ## count 조건
-                    if avg_knee_angle > 170: ## 무릎이 발끝보다 뒤쪽일 때
+                    if avg_knee_angle > 150: ## 무릎이 발끝보다 뒤쪽일 때
                         status = 'Up' ## 운동 상태
                         feedback = 'knees are in the right place' ## 올바른 자세라는 feedback
-                        print("knee : ", avg_knee_angle)
+                        ##print("knee : ", avg_knee_angle)
                         if avg_leg_angle < 90:      # 무릎 충분히 굽혔을 때
                             ##print("leg : ", avg_leg_angle)
                             reps += 1               # 운동 동작 timer
                             status = 'Down'         # 운동 상태
                             prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음                                      
                             feedback = 'Success'    # 피드백
+                            if pygame.mixer.get_busy() == False : ## 동작 중일 때 이중출력 방지
+                               if feedback == 'Success':
+                                  buzzer.play()
                 else:                    
                     if avg_leg_angle > 100:     # 무릎 충분히 폈을 때
                         ##print("leg : ", avg_leg_angle)
                         status = 'Up'           # 운동 상태
                         feedback = 'Ready'      # 피드백
                         Break ## if문 빠져나감
-                    if avg_knee_angle < 170: ## 무릎이 발끝보다 앞쪽일 때
-                        print("knee : ", avg_knee_angle)
+                    if avg_knee_angle < 150: ## 무릎이 발끝보다 앞쪽일 때
+                        ##print("knee : ", avg_knee_angle)
                         status = 'Up'
                         feedback = 'Place your knees behind toes' ## feedback 내용
                         Break ## if문 빠져나감
@@ -103,13 +112,26 @@ class EXERCISE(KEYPOINT):
                     # print('run timer')
                     feedback = 'Rest time'
                     reps, status, sets, feedback, timer, camID = self.Rest_timer(reps, status, sets, feedback, timer, camID)  # 타이머 함수 호출
+                    print("timer1 = ", timer)
+                    if camID == 0:
+                        if pygame.mixer.get_busy() == False :
+                            if timer == 5 and reps == 5: 
+                               print("timer2 = ", timer)
+                               rest.play()
+                                          
         else:
             if sets == 3:                       # sets가 끝나게 되면
-                # print('운동 끝')              # 아직 별다른 조치 안함
-                feedback = 'Well done!'         # 운동 끝
-                pass
+                # print('운동 끝')              # 아직 별다른 조치 안함                        
+                reps = 0
+                status = 'Up'
+                sets = 0
+                feedback = 'Well done!'
+                timer = 5
+                if pygame.mixer.get_busy() == False :
+                   end.play()
+                pass 
         return [reps, status, sets, feedback, timer, camID]
-
+            
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
