@@ -11,13 +11,21 @@ cur = 0.0
 prev = 0.0
 timeElapsed = 0.0  
 
-left_arm_angle = []
+left_arm_angle = [] ## 푸쉬업 팔꿈치 각도
 right_arm_angle = []
 avg_arm_angle = []  
 
-left_spine_anlge = []
-right_spine_anlge = []
-avg_spine_anlge = []
+left_spine_angle = [] ## 푸쉬업 척추 각도 
+right_spine_angle = []
+avg_spine_angle = []
+
+left_leg_angle = [] ## 스쿼트 무릎 각도
+right_leg_angle = []
+avg_leg_angle = []
+
+left_knee_angle = [] ## 스쿼트 무릎/발끝 각도
+right_knee_angle = []
+avg_knee_angle = []
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -44,38 +52,48 @@ class EXERCISE(KEYPOINT):
                             
     # 스쿼트
     def squat(self, reps, status, sets, feedback, timer, camID): ## 스쿼트
-        left_leg_angle = self.angle_of_the_right_leg() ## 무릎각도
-        right_leg_angle = self.angle_of_the_left_leg()
-        avg_leg_angle = (left_leg_angle + right_leg_angle) // 2 ## 무릎 평균 각도(//2는 평균 + 정수값)
         
-        left_knee_angle = self.angle_of_the_left_knee()
-        right_knee_angle = self.angle_of_the_right_knee()
-        avg_knee_angle = (left_knee_angle + right_knee_angle)//2  
-        
+        global left_leg_angle, right_leg_angle, avg_leg_angle, left_knee_angle, right_knee_angle, avg_knee_angle
         global prev     # 전역 변수 사용 위해
+        
+        # camID 구분 -> 좌측, 우측 각각 따로 계산
+        if camID == 0: ## 노트북 Cam
+            left_leg_angle = self.angle_of_the_left_leg()
+            left_knee_angle = self.angle_of_the_left_knee()
+            ##print("left leg : ", left_leg_angle)
+            ##print("left knee : ", left_knee_angle)
+        elif camID == 1: ## USB Cam
+            right_leg_angle = self.angle_of_the_right_leg()
+            right_knee_angle = self.angle_of_the_right_knee()
+            ##print("rignt leg : ", right_leg_angle)
+            ##print("right knee : ", right_knee_angle)
+        
+        
+        avg_leg_angle = (left_leg_angle + right_leg_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
+        ##print("avg leg : ", avg_leg_angle)
+        avg_knee_angle = (left_knee_angle + right_knee_angle) // 2
+        ##print("avg knee : ", avg_knee_angle)
         
         if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            
             if reps < 5: # 5 rerps = 1 sets // 추후 15로 변경
                 if status == 'Up': ## count 조건
-                    if avg_knee_angle > 150: ## 무릎이 발끝보다 뒤쪽일 때
+                    if avg_knee_angle > 170: ## 무릎이 발끝보다 뒤쪽일 때
                         status = 'Up' ## 운동 상태
-                        feedback = 'knees are in the right' ## 올바른 자세라는 feedback
+                        feedback = 'knees are in the right place' ## 올바른 자세라는 feedback
                         print("knee : ", avg_knee_angle)
-                        ##Break
                         if avg_leg_angle < 90:      # 무릎 충분히 굽혔을 때
-                            print("leg : ", avg_leg_angle)
+                            ##print("leg : ", avg_leg_angle)
                             reps += 1               # 운동 동작 timer
                             status = 'Down'         # 운동 상태
                             prev = time.time()      # 현재 시간 저장 -> reps == 5가 되는 순간 더 이상 갱신이 안되기 때문에 세트가 끝난 시간이라고 볼 수 있음                                      
                             feedback = 'Success'    # 피드백
-                            ##Break
                 else:                    
                     if avg_leg_angle > 100:     # 무릎 충분히 폈을 때
-                        print("leg : ", avg_leg_angle)
+                        ##print("leg : ", avg_leg_angle)
                         status = 'Up'           # 운동 상태
                         feedback = 'Ready'      # 피드백
                         Break ## if문 빠져나감
-                    if avg_knee_angle < 150: ## 무릎이 발끝보다 앞쪽일 때
+                    if avg_knee_angle < 170: ## 무릎이 발끝보다 앞쪽일 때
                         print("knee : ", avg_knee_angle)
                         status = 'Up'
                         feedback = 'Place your knees behind toes' ## feedback 내용
@@ -83,6 +101,7 @@ class EXERCISE(KEYPOINT):
             else:
                 if reps == 5:                   # reps가 끝나게 되면
                     # print('run timer')
+                    feedback = 'Rest time'
                     reps, status, sets, feedback, timer, camID = self.Rest_timer(reps, status, sets, feedback, timer, camID)  # 타이머 함수 호출
         else:
             if sets == 3:                       # sets가 끝나게 되면
@@ -94,27 +113,27 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
-        global left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_anlge, right_spine_anlge, avg_spine_anlge
+        global left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
+        global prev     # 전역 변수 사용 위해
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
-        if camID == 0:
+        if camID == 0: ## 노트북 Cam
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
             ##print("left spine : ", left_spine_angle)
             ##print("left arm : ", left_arm_angle)
-        elif camID == 1:
+        elif camID == 1: ## USB Cam
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
             ##print("rignt spine : ", right_spine_angle)
             ##print("right arm : ", right_arm_angle)
-                  
-        avg_arm_angle = (left_arm_angle + right_arm_angle)//2
-        ##print("avg arm : ", avg_arm_angle)
-        avg_spine_angle = (left_spine_angle + right_spine_angle)//2     
-        print("avg spine : ", avg_spine_angle)
-
-        global prev     # 전역 변수 사용 위해
         
+        
+        avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
+        print("avg arm : ", avg_arm_angle)
+        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2
+        print("avg spine : ", avg_spine_angle)
+           
         if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
             if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
                 if status == 'Up': ## count하기 위한 조건

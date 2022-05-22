@@ -27,8 +27,8 @@ class camThread(threading.Thread):
 def camPreview(previewName, camID):
     cv2.namedWindow(previewName)
     capture = cv2.VideoCapture(camID)
-    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 432) # 가로
-    capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 324) # 세로  
+    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 400) # 가로
+    capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 300) # 세로  
    
  # mediapipe setting
  # 스켈레톤 구현
@@ -55,8 +55,8 @@ def camPreview(previewName, camID):
         
         try:    # 스켈레톤을 통해 운동횟수 계산
             landmarks = results.pose_landmarks.landmark
-            reps, status, sets, feedback, timer = EXERCISE(landmarks).calculate_exercise(
-                args["exercise"], reps, status, sets, feedback, timer)
+            reps, status, sets, feedback, timer, camID = EXERCISE(landmarks).calculate_exercise(
+                args["exercise"], reps, status, sets, feedback, timer, camID)
         except:
             pass
         
