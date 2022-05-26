@@ -21,7 +21,7 @@ else:
     if avg_arm_angle > REF_ARM_ANGLE:     # 팔을 충분히 굽히지 않은 경우
         status = 'Up'
         feedback = 'Bend your elbows'
-    if avg_spine_angle < REF_SPINE_ANGLE: # 척추가 일자가 아닐 경우
+    elif avg_spine_angle < REF_SPINE_ANGLE: # 척추가 일자가 아닐 경우
         status = 'Up'
         feedback = 'Straight your spine'
         

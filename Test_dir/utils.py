@@ -3,6 +3,12 @@ import pandas as pd ## keypoint간 빠른계산
 import numpy as np ## 스켈레톤 다차원 배열
 import cv2 ## opencv
 
+#상수 설정
+REF_TIMER = 5                   # timer 초기화(임시로 5초 설정)
+REF_VISIBILITY = 0.7            # visibility 기준 초기화
+REF_REPS = 5                    # 기준 reps
+REF_SETS = 3                    # 기준 sets
+
 mp_pose = mp.solutions.pose ## 스켈레톤
 
 def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)

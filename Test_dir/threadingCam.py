@@ -1,11 +1,11 @@
 import cv2
-# import argparse
+import argparse
 import mediapipe as mp
 import threading
 from utils import *
-# from keypoint import KEYPOINT
+from keypoint import KEYPOINT
 from exercise import EXERCISE
-import main as m
+# from main import REF_TIMER
 
 class camThread(threading.Thread):
     def __init__(self, previewName, camID, args):
@@ -37,7 +37,7 @@ class camThread(threading.Thread):
             status = 'Up'                   # 운동 상태 초기화    
             sets = 0                        # set 수 초기화
             feedback = 'start exercise'     # feedback 초기화 : 운동 시작 전
-            timer = m.REF_TIMER             # timer 초기화(임시로 5초 설정)
+            timer = REF_TIMER             # timer 초기화(임시로 5초 설정)
             
             while capture.isOpened():
                 ret, frame = capture.read() # 카메라로부터 현재 영상을 받아 frame에 저장, 잘 받았다면 ret == True
