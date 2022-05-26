@@ -41,7 +41,7 @@ def detections(landmarks): ## 좌표값 데이터값 변환
 
     return keypoints
 
-def table(exercise, reps, status, set, feedback, timer): ## table 표기내용
+def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     table = cv2.imread("./table.PNG") ## table 위치
     cv2.putText(table, "Exercise            " + exercise.replace("-", " "), ## opencv문자열: table 운동타입(입력한 운동타입)
                 (1, 95), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
@@ -50,7 +50,7 @@ def table(exercise, reps, status, set, feedback, timer): ## table 표기내용
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Status              " + str(status), (5, 210), ## opencv문자열: table 운동 상태
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "Set                 " + str(set), (5, 270), ## opencv문자열: table 세트수
+    cv2.putText(table, "Set                 " + str(sets), (5, 270), ## opencv문자열: table 세트수
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Feedback           " + str(feedback), (5, 330), ## opencv문자열: table 피드백
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정

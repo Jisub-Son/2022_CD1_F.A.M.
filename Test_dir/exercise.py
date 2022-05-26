@@ -108,12 +108,10 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
-        global prev     # 전역 변수 사용 위해
-        global left_arm_angle, right_arm_angle, avg_arm_angle
-        global left_spine_angle, right_spine_angle, avg_spine_angle
+        global prev, left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
         
-        REF_ARM_ANGLE = 90.0
-        REF_SPINE_ANGLE = 170.0
+        # REF_ARM_ANGLE = 90.0
+        # REF_SPINE_ANGLE = 170.0
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
         if camID == 1:
@@ -125,8 +123,8 @@ class EXERCISE(KEYPOINT):
 
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
-        print("arm : ", left_arm_angle, right_knee_angle, "avg arm : ", avg_arm_angle)
-        print("spine : ", left_spine_angle, right_spine_angle, "avg spine : ", avg_spine_angle)
+        print("l_arm : ", left_arm_angle, "r_arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
+        print("l_spine : ", left_spine_angle, "r_spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
         
         '''# count logic
         if avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     # 팔꿈치를 충분히 굽히고 허리가 일자일 때
