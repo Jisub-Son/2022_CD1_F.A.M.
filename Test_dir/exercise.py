@@ -1,31 +1,25 @@
-import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
+# import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
+from audioop import avgpp
 import time
-from turtle import right                     # 타이머 사용
+# from turtle import right                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
 from ast import Break
-import pygame
-import os
+# import pygame
+# import os
+
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
 prev = 0.0
 timeElapsed = 0.0
 
-left_leg_angle = []      ## 스쿼트 무릎 각도
-right_leg_angle = []
-avg_leg_angle = []
-
-left_knee_angle = []     ## 스쿼트 무릎/발끝 각도
-right_knee_angle = []
-avg_knee_angle = []
-
 left_arm_angle = 180.0      ## 푸쉬업 팔꿈치 각도
 right_arm_angle = 180.0
 avg_arm_angle = 0.0
 
-left_spine_angle = 180.0    ## 푸쉬업 척추 각도
-right_spine_angle = 180.0
-avg_spine_angle = 0.0
+left_spine_angle = []
+right_spine_angle = []
+avg_spine_angle = []
 
 # pygame.init() ## mixer 초기화
 # os.getcwd()
@@ -39,7 +33,6 @@ class EXERCISE(KEYPOINT):
 
     # 휴식 타이머
     def Rest_timer(self, reps, status, sets, feedback, timer):
-        print("timer start..!\r\n")
         global cur, prev, timeElapsed   # 함수 내에서 전역 변수를 사용하기 위해서는 global 선언 필요
         cur = time.time()               # 현재 시간을 받아옴
         
@@ -50,7 +43,7 @@ class EXERCISE(KEYPOINT):
             timeElapsed = 0             # 시간차 초기화
             prev += 1                   # 이전 시간에 1초를 더함 -> 42line의 조건을 반복적으로 쓰기 위해
             if timer <= 0:              # 타이머가 끝나면
-                timer = REF_TIMER     # 타이머 초기화(임시로 5초 설정)
+                timer = 5     # 타이머 초기화(임시로 5초 설정)
                 reps = 0                # reps 초기화
                 sets += 1               # sets 입력
         
@@ -117,14 +110,18 @@ class EXERCISE(KEYPOINT):
         if camID == 1:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
+            print(left_arm_angle)
         elif camID == 0:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
+            print(right_arm_angle)
 
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
+        print("avg_arm : ", avg_arm_angle)
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
-        print("l_arm : ", left_arm_angle, "r_arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
-        print("l_spine : ", left_spine_angle, "r_spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
+        print("avg_spine : ", avg_spine_angle)
+        # print("l_arm : ", left_arm_angle, "r_arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
+        # print("l_spine : ", left_spine_angle, "r_spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
         
         '''# count logic
         if avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     # 팔꿈치를 충분히 굽히고 허리가 일자일 때

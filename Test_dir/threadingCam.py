@@ -1,9 +1,9 @@
 import cv2
-import argparse
+# import argparse
 import mediapipe as mp
 import threading
 from utils import *
-from keypoint import KEYPOINT
+# from keypoint import KEYPOINT
 from exercise import EXERCISE
 # from main import REF_TIMER
 
@@ -37,7 +37,7 @@ class camThread(threading.Thread):
             status = 'Up'                   # 운동 상태 초기화    
             sets = 0                        # set 수 초기화
             feedback = 'start exercise'     # feedback 초기화 : 운동 시작 전
-            timer = REF_TIMER             # timer 초기화(임시로 5초 설정)
+            timer = 5                       # timer 초기화(임시로 5초 설정)
             
             while capture.isOpened():
                 ret, frame = capture.read() # 카메라로부터 현재 영상을 받아 frame에 저장, 잘 받았다면 ret == True
@@ -46,12 +46,11 @@ class camThread(threading.Thread):
                     print("Ignoring empty camera frame\r\n")    # 오류 메세지 출력
                     continue
                 
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                 frame.flags.writeable = False
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # 카메라 RGB
                 results = pose.process(frame)   # 스켈레톤 구현
-                
                 frame.flags.writeable = True
-                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # BGR
+                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
                 
                 try:    # 스켈레톤을 통해 운동횟수 계산
                     landmarks = results.pose_landmarks.landmark
@@ -60,8 +59,8 @@ class camThread(threading.Thread):
                 except:
                     pass
                 
-                if camID == 0:
-                    table(args["exercise"], reps, status, sets, feedback, timer)    # 테이블 내용 표시
+                
+                table(args["exercise"], reps, status, sets, feedback, timer)    # 테이블 내용 표시
                 
                 # landmark data 저장(마지막 프레임 데이터만)
                 # if camID == 0:                  
