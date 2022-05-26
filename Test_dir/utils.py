@@ -44,8 +44,7 @@ def detections(landmarks): ## 좌표값 데이터값 변환
 def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     table = cv2.imread("./table.PNG") ## table 위치
     cv2.putText(table, "Exercise            " + exercise.replace("-", " "), ## opencv문자열: table 운동타입(입력한 운동타입)
-                (1, 95), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, ## 문자열: 위치, 크기, 색상(검정) 설정
-                cv2.LINE_AA)
+                (1, 95), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Reps                " + str(reps), (1, 155), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Status              " + str(status), (5, 210), ## opencv문자열: table 운동 상태
@@ -57,3 +56,13 @@ def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     cv2.putText(table, "Timer               " + str(timer), (5, 390), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table", table) ## table 출력
+    cv2.moveWindow("Table", 0, 510)
+    
+def table_angle(value1, angle1, value2, angle2):
+    table_angle = cv2.imread("./table_angle.PNG")
+    cv2.putText(table_angle, "avg " + str(value1) + " : " + str(angle1), (1, 45), ## opencv문자열: table 운동 카운트
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
+    cv2.putText(table_angle, "avg " + str(value2) + " : " + str(angle2), (1, 105), ## opencv문자열: table 운동 카운트
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
+    cv2.imshow("Table_angle", table_angle) ## table 출력
+    cv2.moveWindow("Table_angle", 1013, 510)

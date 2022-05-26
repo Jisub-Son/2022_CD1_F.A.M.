@@ -1,7 +1,5 @@
 # import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
-from audioop import avgpp
 import time
-# from turtle import right                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
 from ast import Break
@@ -13,13 +11,21 @@ cur = 0.0
 prev = 0.0
 timeElapsed = 0.0
 
+left_leg_angle = 180.0 ## 푸쉬업 팔꿈치 각도
+right_leg_angle = 180.0
+avg_leg_angle = 0.0
+
+left_knee_angle = 180.0 ## 푸쉬업 척추 각도 
+right_knee_angle = 180.0
+avg_knee_angle = 0.0
+
 left_arm_angle = 180.0      ## 푸쉬업 팔꿈치 각도
 right_arm_angle = 180.0
 avg_arm_angle = 0.0
 
-left_spine_angle = []
-right_spine_angle = []
-avg_spine_angle = []
+left_spine_angle = 180.0
+right_spine_angle = 0.0
+avg_spine_angle = 180.0
 
 # pygame.init() ## mixer 초기화
 # os.getcwd()
@@ -33,6 +39,7 @@ class EXERCISE(KEYPOINT):
 
     # 휴식 타이머
     def Rest_timer(self, reps, status, sets, feedback, timer):
+        print("run timer")
         global cur, prev, timeElapsed   # 함수 내에서 전역 변수를 사용하기 위해서는 global 선언 필요
         cur = time.time()               # 현재 시간을 받아옴
         
@@ -43,7 +50,7 @@ class EXERCISE(KEYPOINT):
             timeElapsed = 0             # 시간차 초기화
             prev += 1                   # 이전 시간에 1초를 더함 -> 42line의 조건을 반복적으로 쓰기 위해
             if timer <= 0:              # 타이머가 끝나면
-                timer = 5     # 타이머 초기화(임시로 5초 설정)
+                timer = REF_TIMER     # 타이머 초기화(임시로 5초 설정)
                 reps = 0                # reps 초기화
                 sets += 1               # sets 입력
         
@@ -57,7 +64,7 @@ class EXERCISE(KEYPOINT):
         
         left_knee_angle = self.angle_of_the_left_knee()
         right_knee_angle = self.angle_of_the_right_knee()
-        avg_knee_angle = (left_knee_angle + right_knee_angle)//2  
+        avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
         
         global prev     # 전역 변수 사용 위해
         
@@ -103,45 +110,44 @@ class EXERCISE(KEYPOINT):
         
         global prev, left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
         
-        # REF_ARM_ANGLE = 90.0
-        # REF_SPINE_ANGLE = 170.0
+        REF_ARM_ANGLE = 90.0
+        REF_SPINE_ANGLE = 170.0
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
         if camID == 1:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
-            print(left_arm_angle)
         elif camID == 0:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
-            print(right_arm_angle)
 
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
-        print("avg_arm : ", avg_arm_angle)
+        # print("avg_arm : ", avg_arm_angle)
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
-        print("avg_spine : ", avg_spine_angle)
+        # print("avg_spine : ", avg_spine_angle)
         # print("l_arm : ", left_arm_angle, "r_arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
         # print("l_spine : ", left_spine_angle, "r_spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
         
-        '''# count logic
-        if avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     # 팔꿈치를 충분히 굽히고 허리가 일자일 때
-            print("make")
+        table_angle("arm", avg_arm_angle, "spine", avg_spine_angle)
+        
+        # count logic
+        if status == 'Up' and avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     # 팔꿈치를 충분히 굽히고 허리가 일자일 때
             reps += 1
             status = 'Down'
             feedback = 'Success'
             prev = time.time()
+            print("reps ", reps)
         else:
             if avg_arm_angle > REF_ARM_ANGLE:     # 팔을 충분히 굽히지 않은 경우
                 status = 'Up'
                 feedback = 'Bend your elbows'
-                print("line 141", feedback)
             elif avg_spine_angle < REF_SPINE_ANGLE: # 척추가 일자가 아닐 경우
                 status = 'Up'
                 feedback = 'Straight your spine'
-                print("line 146", feedback)
                 
         # after 1 set
-        if reps == REF_REPS and camID == 0:
+        if reps == REF_REPS:
+            print("1 set clear")
             # if pygame.mixer.get_busy() == False:
             #     if timer == 5:
             #         rest.play()
@@ -152,9 +158,9 @@ class EXERCISE(KEYPOINT):
             reps = 0
             status = 'Up'
             sets = 0
-            feedback = "Well done!"'''
+            feedback = "Well done!"
         
-        if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
+        '''if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
             if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
                 if status == 'Up': ## count하기 위한 조건
                     if avg_spine_angle > 170: ## 척추 1자일 때
@@ -189,7 +195,7 @@ class EXERCISE(KEYPOINT):
             if sets == 3:                       # sets가 끝나게 되면
                 # print('운동 끝')                # 아직 별다른 조치 안함
                 feedback = 'well done!'         # 피드백
-                pass
+                pass'''
         
         return [reps, status, sets, feedback, timer, camID]
   

@@ -22,8 +22,8 @@ class camThread(threading.Thread):
         cv2.namedWindow(previewName)
         
         capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
-        # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         
         # mediapipe setting
         # 스켈레톤 구현
@@ -37,7 +37,7 @@ class camThread(threading.Thread):
             status = 'Up'                   # 운동 상태 초기화    
             sets = 0                        # set 수 초기화
             feedback = 'start exercise'     # feedback 초기화 : 운동 시작 전
-            timer = 5                       # timer 초기화(임시로 5초 설정)
+            timer = REF_TIMER                       # timer 초기화(임시로 5초 설정)
             
             while capture.isOpened():
                 ret, frame = capture.read() # 카메라로부터 현재 영상을 받아 frame에 저장, 잘 받았다면 ret == True
@@ -59,8 +59,8 @@ class camThread(threading.Thread):
                 except:
                     pass
                 
-                
-                table(args["exercise"], reps, status, sets, feedback, timer)    # 테이블 내용 표시
+                if camID == 0:
+                    table(args["exercise"], reps, status, sets, feedback, timer)    # 테이블 내용 표시
                 
                 # landmark data 저장(마지막 프레임 데이터만)
                 # if camID == 0:                  
@@ -81,8 +81,15 @@ class camThread(threading.Thread):
                 )
                 
                 frame = cv2.flip(frame, 1)  # 카메라 좌우반전(운동 자세보기 편하게)
-
-                cv2.imshow(previewName, frame)  # q누르면 종료
+                
+                if camID == 0:
+                    cv2.imshow(previewName, frame)  # q누르면 종료
+                    cv2.moveWindow(previewName, 0, 0)
+                elif camID == 1:
+                    cv2.imshow(previewName, frame)  # q누르면 종료
+                    cv2.moveWindow(previewName, 640, 0)
+                
+                # cv2.imshow(previewName, frame)  # q누르면 종료
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                 
