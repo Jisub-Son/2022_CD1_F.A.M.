@@ -1,22 +1,37 @@
 # import numpy as np              # 스켈레톤 탐지 후 각도/거리 계산
 import time
-from turtle import right                     # 타이머 사용
+# from turtle import right                     # 타이머 사용
 from keypoint import KEYPOINT   # keypoint 불러오기
 from utils import *             # utils 불러오기
 from ast import Break
+import pygame
+import main as m
 
 # 전역 변수로 사용(타이머 구현)
 cur = 0.0
 prev = 0.0
 timeElapsed = 0.0
 
-left_arm_angle = 180.0
+left_leg_angle = 180.0      ## 스쿼트 무릎 각도
+right_leg_angle = 180.0
+avg_leg_angle = 0.0
+
+left_knee_angle = 180.0     ## 스쿼트 무릎/발끝 각도
+right_knee_angle = 180.0
+avg_knee_angle = 0.0
+
+left_arm_angle = 180.0      ## 푸쉬업 팔꿈치 각도
 right_arm_angle = 180.0
 avg_arm_angle = 0.0
 
-left_spine_angle = 180.0
+left_spine_angle = 180.0    ## 푸쉬업 척추 각도
 right_spine_angle = 180.0
 avg_spine_angle = 0.0
+
+pygame.init() ## mixer 초기화
+rest = pygame.mixer.Sound('rest_time.mp3')
+buzzer = pygame.mixer.Sound('buzzer.mp3')
+end = pygame.mixer.Sound('end.mp3')
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -30,15 +45,14 @@ class EXERCISE(KEYPOINT):
         
         timeElapsed = cur - prev        # 시간 차를 계산 -> 1초를 계산하기 위해 사용
         
-        if timeElapsed >= 1:        # 1초가 지났으면
-            timer -= 1              # 1초를 table에 표시하기 위해 timer -= 1
-            timeElapsed = 0         # 시간차 초기화
-            prev += 1               # 이전 시간에 1초를 더함 -> 42line의 조건을 반복적으로 쓰기 위해
-            if timer <= 0:          # 타이머가 끝나면
-                # print("timer over")
-                timer = 5           # 타이머 초기화(임시로 5초 설정)
-                reps = 0            # reps 초기화
-                sets += 1           # sets 입력
+        if timeElapsed >= 1:            # 1초가 지났으면
+            timer -= 1                  # 1초를 table에 표시하기 위해 timer -= 1
+            timeElapsed = 0             # 시간차 초기화
+            prev += 1                   # 이전 시간에 1초를 더함 -> 42line의 조건을 반복적으로 쓰기 위해
+            if timer <= 0:              # 타이머가 끝나면
+                timer = m.REF_TIMER     # 타이머 초기화(임시로 5초 설정)
+                reps = 0                # reps 초기화
+                sets += 1               # sets 입력
         
         return [reps, status, sets, feedback, timer]
                             
@@ -94,38 +108,21 @@ class EXERCISE(KEYPOINT):
     # 푸쉬업
     def pushup(self, reps, status, sets, feedback, timer, camID):
         
+        global prev     # 전역 변수 사용 위해
         global left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
         
         # camID 구분 -> 좌측, 우측 각각 따로 계산
         if camID == 0:
-            # print("step 1")
             left_spine_angle = self.angle_of_the_left_spine()
-            # print("step 2 ", left_spine_angle)
             left_arm_angle = self.angle_of_the_left_arm()
-            # print("step 3 ", left_arm_angle)
         elif camID == 1:
-            # print("step 4")
             right_spine_angle = self.angle_of_the_right_spine()
-            # print("step 5", right_spine_angle)
             right_arm_angle = self.angle_of_the_right_arm()
-            # print("step 6", right_arm_angle)
 
-        # if camID == 0:
-        #     print("cam 0 ", left_arm_angle, right_arm_angle, left_spine_angle, right_spine_angle)
-        # elif camID == 1:
-        #     print("cam 1 ", left_arm_angle, right_arm_angle, left_spine_angle, right_spine_angle)
-        
-        print("arm : ", left_arm_angle, right_arm_angle)
-        print("spine : ", left_spine_angle, right_spine_angle)
-        
-        print("step 7")
         avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 ## 팔꿈치 평균 각도(//2는 평균 + 정수값)
-        print("left arm : ", left_arm_angle, "right arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
-        
         avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 ## 척추 평균 각도
-        print("left spine : ", left_spine_angle, "right spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
-
-        global prev     # 전역 변수 사용 위해
+        # print("left arm : ", left_arm_angle, "right arm : ", right_arm_angle, "avg arm : ", avg_arm_angle)
+        # print("left spine : ", left_spine_angle, "right spine : ", right_spine_angle, "avg spine : ", avg_spine_angle)
         
         if sets < 3: ## 임시로 sets 3설정, 추후 5로 변경                             
             if reps < 5: ## 임시로 reps 5설정, 추후 15로 변경
