@@ -1,8 +1,4 @@
-# import mediapipe as mp ## 스켈레톤
-# import pandas as pd ## keypoint간 빠른계산
-# import numpy as np ## 스켈레톤 다차원배열 구현
 from utils import * ## utils 불러오기
-
 
 class KEYPOINT:
     def __init__(self, landmarks):

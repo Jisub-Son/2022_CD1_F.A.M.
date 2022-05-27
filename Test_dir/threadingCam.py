@@ -1,11 +1,16 @@
 import cv2
-# import argparse
 import mediapipe as mp
 import threading
 from utils import *
-# from keypoint import KEYPOINT
 from exercise import EXERCISE
-# from main import REF_TIMER
+
+def initState():
+    reps = 0                        # rep 수 초기화
+    status = 'Up'                   # 운동 상태 초기화    
+    sets = 0                        # set 수 초기화
+    feedback = 'start exercise'     # feedback 초기화 : 운동 시작 전
+    timer = REF_TIMER               # timer 초기화(임시로 5초 설정)
+    return[reps, status, sets, feedback, timer]
 
 class camThread(threading.Thread):
     def __init__(self, previewName, camID, args):
@@ -33,13 +38,23 @@ class camThread(threading.Thread):
         with mp_pose.Pose(min_detection_confidence=0.5, ## 최소감지신뢰값([0.0, 1.0]) 기본값=0.5 설정
                         min_tracking_confidence=0.5) as pose: ## 최소추적신뢰값([0.0, 1.0]) 기본값=0.5 설정
             
-            reps = 0                        # rep 수 초기화
-            status = 'Up'                   # 운동 상태 초기화    
-            sets = 0                        # set 수 초기화
-            feedback = 'start exercise'     # feedback 초기화 : 운동 시작 전
-            timer = REF_TIMER                       # timer 초기화(임시로 5초 설정)
+            reps, status, sets, feedback, timer = initState()
             
             while capture.isOpened():
+                
+                key = cv2.waitKey(1) & 0xFF     # 키보드 입력 받아옴
+                if key == ord('q'):             # q == 종료
+                    break   
+                elif key == ord('s'):           # s == squat
+                    args["exercise"] = "squat"
+                    reps, status, sets, feedback, timer = initState()
+                elif key == ord('p'):           # p == pushup
+                    args["exercise"] = "pushup"
+                    reps, status, sets, feedback, timer = initState()
+                elif key == ord('r'):           # r == reset
+                    status = 'Up'
+                    reps, status, sets, feedback, timer = initState()
+                
                 ret, frame = capture.read() # 카메라로부터 현재 영상을 받아 frame에 저장, 잘 받았다면 ret == True
                 
                 if not ret:                                     # ret == False일 경우(frame을 못받았을 경우)
@@ -88,10 +103,6 @@ class camThread(threading.Thread):
                 elif camID == 1:
                     cv2.imshow(previewName, frame)  # q누르면 종료
                     cv2.moveWindow(previewName, 640, 0)
-                
-                # cv2.imshow(previewName, frame)  # q누르면 종료
-                if cv2.waitKey(10) & 0xFF == ord('q'):
-                    break
                 
             capture.release()       # 캡쳐 객체를 없애줌
             cv2.destroyAllWindows(camID) # 모든 영상 창을 닫아줌

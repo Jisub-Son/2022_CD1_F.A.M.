@@ -2,6 +2,7 @@ import mediapipe as mp ## 스켈레톤 구현
 import pandas as pd ## keypoint간 빠른계산
 import numpy as np ## 스켈레톤 다차원 배열
 import cv2 ## opencv
+import pygame
 
 #상수 설정
 REF_TIMER = 5                   # timer 초기화(임시로 5초 설정)
@@ -9,6 +10,7 @@ REF_VISIBILITY = 0.7            # visibility 기준 초기화
 REF_REPS = 5                    # 기준 reps
 REF_SETS = 3                    # 기준 sets
 
+pygame.init() ## mixer 초기화
 mp_pose = mp.solutions.pose ## 스켈레톤
 
 def calculate_angle(a, b, c): ## 각도계산 로직(라디안 -> 각도)
@@ -40,6 +42,17 @@ def detections(landmarks): ## 좌표값 데이터값 변환
         keypoints.loc[i] = lndmrk, cord[0], cord[1], cord[2]
 
     return keypoints
+
+def voiceFeedback(sound):       # 음성 피드백 재생 함수
+    
+    # 사용법 voiceFeedback('end') 라고 치면 end.wav 재생됨 -> 인자에 파일명(확장자 빼고)쓰면 됨
+    # 재생할 파일들 여기다가 밑으로 추가 -> .wav 파일만
+    pygame.mixer.Sound('rest_time.wav')
+    pygame.mixer.Sound('buzzer.wav')
+    pygame.mixer.Sound('end.wav')
+     
+    if pygame.mixer.get_busy() == False:
+        return pygame.mixer.Sound(sound + '.wav').play()
 
 def table(exercise, reps, status, sets, feedback, timer): ## table 표기내용
     table = cv2.imread("./table.PNG") ## table 위치
