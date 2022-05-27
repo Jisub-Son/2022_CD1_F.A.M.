@@ -1,23 +1,14 @@
-import pygame
-import time
-pygame.init() ## mixer 초기화
-# pygame.mixer.init()
+import numpy as np
 
-# buzzer = pygame.mixer.Sound('buzzer.mp3')
-# end = pygame.mixer.Sound('end.mp3')
 
-def voiceFeedback(sound):       
-    
-    pygame.mixer.Sound('rest_time.wav')
-    pygame.mixer.Sound('buzzer.wav')
-    pygame.mixer.Sound('end.wav')
-     
-    if pygame.mixer.get_busy() == False:
-        print(sound + '.wav')
-        return pygame.mixer.Sound(sound + '.wav').play()
-        
-voiceFeedback('buzzer')
-time.sleep(3)
+
+######################
+
+'''#landmark data 저장(마지막 프레임 데이터만)
+                if camID == 0:                  
+                    data = detections(landmarks=landmarks)
+                    data.to_csv("./data.csv")'''
+
 ##########################
 
 '''if sets < 3:    # 테스트용으로 set = 3 // 추후 5로 변경                            

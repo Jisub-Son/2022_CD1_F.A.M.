@@ -4,12 +4,12 @@
 # Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
 # 
     
-import argparse                 # 실행 인자 추가 
-from utils import *             # utils
+import argparse                 
+from utils import *             
 from threadingCam import camThread
 
 # argparse setting
-ap = argparse.ArgumentParser()  # argparse 설정 python main.py -mode squat 로 실행가능
+ap = argparse.ArgumentParser()  # python main.py -mode squat 로 실행가능
 ap.add_argument("-mode",
                 "--exercise",
                 type=str,
