@@ -1,3 +1,4 @@
+from math import fabs
 import time
 from unittest.mock import DEFAULT
 from keypoint import KEYPOINT   
@@ -24,6 +25,10 @@ left_spine_angle = 180.0    # 푸쉬업 허리 각도
 right_spine_angle = 180.0
 avg_spine_angle = 0.0
 
+left_foot_parallel = 90.0
+right_foot_parallel = 90.0
+avg_foot_parallel = 90.0
+
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
@@ -49,7 +54,7 @@ class EXERCISE(KEYPOINT):
                             
     # squat function
     def squat(self, reps, status, sets, feedback, timer, camID):
-        global prev, left_knee_angle, right_knee_angle, avg_knee_angle, left_leg_angle, right_leg_angle, avg_leg_angle
+        global prev, left_knee_angle, right_knee_angle, avg_knee_angle, left_leg_angle, right_leg_angle, avg_leg_angle, left_foot_parallel, right_foot_parallel, avg_foot_parallel
         
         # reference angles
         REF_KNEE_ANGLE = 130.0
@@ -57,26 +62,30 @@ class EXERCISE(KEYPOINT):
         MORE_LEG_ANGLE = 155.0
         LESS_LEG_ANGLE = 50.0
         DEFAULT_KNEE_ANGLE = 160.0
-        DEFAULT_LEG_ANGLE = 170.0
+        DEFAULT_LEG_ANGLE = 170.0      
+        FOOT_PARALLEL = 90.0 ########################################################
         
         # get angles from eact camID
         if camID == 0: ## 노트북 CAM 왼쪽
             left_leg_angle = self.angle_of_the_right_leg()
             left_knee_angle = self.angle_of_the_left_knee()
+            left_foot_parallel = self.angle_of_left_foot_parallel() ########################################################
         elif camID == 1: ## USB CAM 오른쪽
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
+            right_foot_parallel = self.angle_of_right_foot_parallel() #######################################################
             
         # get average    
         avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
         avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
+        avg_foot_parallel = fabs(left_foot_parallel - right_foot_parallel) ########################################################
         
         # make table for avg_angles
-        table_angle("leg", avg_leg_angle, "knee", avg_knee_angle)
+        table_angle("leg", avg_leg_angle, "knee", avg_knee_angle, "parallel", avg_foot_parallel) ########################################################
                 
         # how to make count
         # 무릎이 발끝보다 뒤에 있고 and 무를을 충분히 굽혔을 때 count
-        if (status == 'Up' and feedback != 'Bend your legs less' and feedback != 'Place your knees behind toes') and LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE and avg_knee_angle > REF_KNEE_ANGLE:    
+        if (status == 'Up' and feedback != 'Bend your legs less' and feedback != 'Place your knees behind toes') and avg_foot_parallel < FOOT_PARALLEL and LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE and avg_knee_angle > REF_KNEE_ANGLE:    
             voiceFeedback('buzzer')
             reps += 1
             status = 'Down'
@@ -93,7 +102,12 @@ class EXERCISE(KEYPOINT):
                 voiceFeedback('kneedown') ## 무릎 집어넣어라
                 status = 'Up'
                 feedback = 'Place your knees behind toes'
-            # 우선순위3 : 너무 내려갔을 때
+            ## 우선순위3 : 발 11자 아닐때
+            elif (feedback != 'Parallel your feet'): ########################################################
+                voiceFeedback('parallel')
+                status = 'Up'
+                feedback = 'Parallel your feet'    
+            # 우선순위4 : 너무 내려갔을 때
             elif (status == 'Down' and feedback != 'Bend your legs less' and feedback != 'Place your knees behind toes') and avg_leg_angle < LESS_LEG_ANGLE and avg_knee_angle > REF_KNEE_ANGLE:
                 voiceFeedback('lessdown') ## 너무 내려갔어 + 무릎이 발끝보다 뒤에
                 reps -= 1

@@ -91,3 +91,24 @@ class KEYPOINT:
             return calculate_length(r_shoulder, l_shoulder)
         else:
             return 0
+        
+################################################################################################################################3              
+    def angle_of_right_foot_parallel(self): ## 스쿼트 오른발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        r_heel = detection(self.landmarks, "RIGHT_ANKLE")
+        l_heel = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        if r_foot_index[2] >= REF_VISIBILITY and r_heel[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+               return calculate_angle(r_foot_index, r_heel, l_heel)
+        else:
+            return 0
+        
+    def angle_of_left_foot_parallel(self): ## 스쿼트 왼발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        l_foot_index = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        l_heel = detection(self.landmarks, "LEFT_ANKLE")
+        if r_foot_index[2] >= REF_VISIBILITY and l_foot_index[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+               return calculate_angle(r_foot_index, l_foot_index, l_heel)
+        else:
+            return 0    
+############################################################################################################################################        
+        

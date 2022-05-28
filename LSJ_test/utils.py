@@ -67,6 +67,7 @@ def voiceFeedback(sound):
     pygame.mixer.Sound('kneedown.wav')
     pygame.mixer.Sound('lessdown.wav')
     pygame.mixer.Sound('end.wav')
+    pygame.mixer.Sound('parallel.wav')
      
     if pygame.mixer.get_busy() == False:
         return pygame.mixer.Sound(sound + '.wav').play()
@@ -91,15 +92,15 @@ def table(exercise, reps, status, sets, feedback, timer):
     
 # make angle table
 #def table_angle(value1, angle1, value2, angle2, value3, length3, value4, length4):
-def table_angle(value1, angle1, value2, angle2):
+def table_angle(value1, angle1, value2, angle2, value3, angle3):
     table_angle = cv2.imread("./table_angle.PNG")
-    cv2.putText(table_angle, "avg " + str(value1) + " : " + str(angle1), (1, 95), ## opencv문자열: table 운동 카운트
+    cv2.putText(table_angle, "avg " + str(value1) + " : " + str(angle1), (1, 150), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table_angle, "avg " + str(value2) + " : " + str(angle2), (1, 155), ## opencv문자열: table 운동 카운트
+    cv2.putText(table_angle, "avg " + str(value2) + " : " + str(angle2), (1, 250), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    '''cv2.putText(table_angle, "avg " + str(value3) + " : " + str(length3), (1, 165), ## opencv문자열: table 운동 카운트
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table_angle, "avg " + str(value4) + " : " + str(length4), (1, 225), ## opencv문자열: table 운동 카운트
+    """cv2.putText(table_angle, "avg " + str(value3) + " : " + str(angle3), (1, 350), ## opencv문자열: table 운동 카운트
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정"""
+    '''cv2.putText(table_angle, "avg " + str(value4) + " : " + str(length4), (1, 225), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정'''
     cv2.imshow("Table_angle", table_angle) ## table 출력
     cv2.moveWindow("Table_angle", 1013, 510) 
