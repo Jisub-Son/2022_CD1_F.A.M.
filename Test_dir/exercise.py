@@ -23,6 +23,9 @@ left_spine_angle = 180.0    # 푸쉬업 허리 각도
 right_spine_angle = 180.0
 avg_spine_angle = 0.0
 
+length_shoudler = 0.0
+length_foot = 0.0
+
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
@@ -35,6 +38,7 @@ class EXERCISE(KEYPOINT):
         timeElapsed = cur - prev        # calculate time difference
         
         if timeElapsed >= 1:            # after 1 second
+            print(time.time())
             timer -= 1                  
             timeElapsed = 0             
             prev += 1                   
@@ -107,63 +111,66 @@ class EXERCISE(KEYPOINT):
 
     # pushup function
     def pushup(self, reps, status, sets, feedback, timer, camID):
-        global prev, left_arm_angle, right_arm_angle, avg_arm_angle, left_spine_angle, right_spine_angle, avg_spine_angle
+        global left_arm_angle, right_arm_angle, avg_arm_angle,\
+                left_spine_angle, right_spine_angle, avg_spine_angle,\
+                length_foot, length_shoudler,\
+                prev   
         
         # reference angles
         REF_ARM_ANGLE = 90.0
         REF_SPINE_ANGLE = 170.0
         
         # get angles from eact camID
-        if camID == 1:
+        if camID == LEFT_CAM:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
-            # length_shoudler = self.length_of_shoulder_to_shoulder()
-            # length_foot = self.length_of_foot_to_foot()
-        elif camID == 0:
+            length_shoudler = self.length_of_shoulder_to_shoulder()
+            length_foot = self.length_of_foot_to_foot()
+        elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
         
-        # get average
-        avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
-        avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
+            # get average
+            avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
+            avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
 
-        # make table for avg_angles
-        # table_angle("arm", avg_arm_angle, "spine", avg_spine_angle, "shoudler", length_shoudler, "foot", length_foot)
-        table_angle("arm", avg_arm_angle, "spine", avg_spine_angle)
+            # make table for calculations
+            table_calculations(avg_arm = avg_arm_angle, avg_spine = avg_spine_angle,
+                                len_shoudler = length_shoudler, len_foot = length_foot)
                 
-        # how to make count
-        # 팔꿈치를 충분히 굽히고 and 허리가 일직선일 때
-        if status == 'Up' and avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     
-            voiceFeedback('buzzer')
-            reps += 1
-            status = 'Down'
-            feedback = 'Success'
-            prev = time.time()
-        else:
-            # 우선순위1 : 팔을 충분히 굽히지 않은 경우
-            if (status != 'Rest' and status != 'All done') and avg_arm_angle > REF_ARM_ANGLE:     
-                status = 'Up'
-                feedback = 'Bend your elbows'
-            # 우선순위2 : 척추가 일자가 아닐 경우
-            elif (status != 'Rest' and status != 'All done') and avg_spine_angle < REF_SPINE_ANGLE:
-                status = 'Up'
-                feedback = 'Straight your spine'
-                
-        # after each set
-        if reps == REF_REPS:
-            if timer == 5 and camID == 0:
-                voiceFeedback('rest_time')
-            status = 'Rest'
-            feedback = 'Take a breathe..'
-            reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)   # run timer function
-        
-        # when exercise is finished
-        if sets == REF_SETS:
-            voiceFeedback('end')
-            reps = 0
-            status = 'All done'
-            sets = 0
-            feedback = "Well done!"
+            # how to make count
+            # 팔꿈치를 충분히 굽히고 and 허리가 일직선일 때
+            if status == 'Up' and avg_arm_angle < REF_ARM_ANGLE and avg_spine_angle > REF_SPINE_ANGLE:     
+                voiceFeedback('buzzer')
+                reps += 1
+                status = 'Down'
+                feedback = 'Success'
+                prev = time.time()
+            else:
+                # 우선순위1 : 팔을 충분히 굽히지 않은 경우
+                if (status != 'Rest' and status != 'All done') and avg_arm_angle > REF_ARM_ANGLE:     
+                    status = 'Up'
+                    feedback = 'Bend your elbows'
+                # 우선순위2 : 척추가 일자가 아닐 경우
+                elif (status != 'Rest' and status != 'All done') and avg_spine_angle < REF_SPINE_ANGLE:
+                    status = 'Up'
+                    feedback = 'Straight your spine'
+                    
+            # after each set
+            if reps == REF_REPS:
+                if timer == 5:
+                    voiceFeedback('rest_time')
+                status = 'Rest'
+                feedback = 'Take a breathe..'
+                reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)   # run timer function
+            
+            # when exercise is finished
+            if sets == REF_SETS:
+                voiceFeedback('end')
+                reps = 0
+                status = 'All done'
+                sets = 0
+                feedback = "Well done!"
         
         return [reps, status, sets, feedback, timer, camID]
   

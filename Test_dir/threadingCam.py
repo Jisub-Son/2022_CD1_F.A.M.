@@ -80,10 +80,10 @@ class camThread(threading.Thread):
                 except:
                     pass
                 
-                #landmark data 저장(마지막 프레임 데이터만)
-                if camID == 0:                  
-                    data = detections(landmarks=landmarks)
-                    data.to_csv("./data.csv")
+                # #landmark data 저장(마지막 프레임 데이터만)
+                # if camID == 0:                  
+                #     data = detections(landmarks=landmarks)
+                #     data.to_csv("./data.csv")
                 
                 # make table
                 if camID == 0:

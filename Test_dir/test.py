@@ -1,7 +1,25 @@
 import numpy as np
+import time
+import pygame
 
+pygame.init()
 
+def voiceFeedback(sound): 
+    pygame.mixer.Sound('rest_time.wav')
+    pygame.mixer.Sound('buzzer.wav')
+    pygame.mixer.Sound('end.wav')
+     
+    if pygame.mixer.get_busy() == False:
+        return pygame.mixer.Sound(sound + '.wav').play()
 
+voiceFeedback('end')
+print(1)
+time.sleep(1)
+print(2)
+pygame.mixer.stop()
+print(3)
+time.sleep(3)
+print(4)
 ######################
 
 '''#landmark data 저장(마지막 프레임 데이터만)
