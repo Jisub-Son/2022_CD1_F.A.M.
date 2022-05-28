@@ -33,6 +33,8 @@ length_foot = 0.0
 length_heel = 0.0
 length_ankle = 0.0
 
+color = [(0, 0, 0), (0, 0, 0)]
+
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
@@ -62,13 +64,13 @@ class EXERCISE(KEYPOINT):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
                 prev
-        global length_foot, length_heel, length_ankle
+        global length_foot, length_heel, length_ankle, color
         
         # reference angles
         REF_KNEE_ANGLE = 140.0
         REF_LEG_ANGLE = 100.0
-        ALLOW_RATE = 0.1       # 허용 오차 비율
-        MEASURE_RATE = 0.5       # 에러 오차 비율  ex) less < 90 < good < 110 < more < 150 < default
+        ALLOW_RATE = 0.1        # 허용 오차 비율
+        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) too much < 100-10 < good < 100+10 < more < 100+50 < default
         
         # get angles from eact camID
         if camID == LEFT_CAM:
@@ -85,37 +87,39 @@ class EXERCISE(KEYPOINT):
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
             
-            # make table for avg_angles
-            table_calculations(avg_leg = avg_leg_angle, avg_knee = avg_knee_angle)
-                            #    heel = length_heel, ankle = length_ankle, foot = length_foot)
-            
+            # get ready state
             if status != 'Rest' and status != 'All done':
                 ready = True
             else:
                 ready = False
-                
+            
+            # count logic
             if ready == True and avg_knee_angle > REF_KNEE_ANGLE:   # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
                 if feedback == 'Success' and avg_leg_angle < REF_LEG_ANGLE*(1-ALLOW_RATE): # 너무 많이 구부렸을 때
                     voiceFeedback('lessdown')
                     reps -= 1
                     status = 'Up'
                     feedback = 'Bend your legs less'
+                    color = [(0, 0, 255), (0, 0, 0)]        
                 elif feedback == 'Bend your legs more' and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    # 적절하게 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
-                    prev = time.time()
+                    color = [(255, 0, 0), (255, 0, 0)]      # leg = blue, knee = blue
                 elif feedback == 'Start' and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  # 너무 적게 구부렸을 때
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your legs more'
+                    color = [(0, 0, 255), (0, 0, 0)]
                 elif REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:   # 구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
+                    color = [(0, 0, 0), (0, 0, 0)]
             elif ready == True and avg_knee_angle < REF_KNEE_ANGLE: # 기존 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
                 status = 'Up'
                 feedback = 'Place your knees behind toes'
+                color = [(0, 0, 0), (0, 0, 255)]
                     
             # after each set
             if reps == REF_REPS and status == 'Up':
@@ -134,6 +138,10 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
+                
+            # make table for avg_angles
+            table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle)
+                            #    heel = length_heel, ankle = length_ankle, foot = length_foot)
             
         return [reps, status, sets, feedback, timer, camID]
 
