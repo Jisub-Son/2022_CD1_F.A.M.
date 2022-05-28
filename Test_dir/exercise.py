@@ -62,7 +62,7 @@ class EXERCISE(KEYPOINT):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
                 prev
-        global length_foot, length_heel, length_ankle, flag
+        global length_foot, length_heel, length_ankle
         
         # reference angles
         REF_KNEE_ANGLE = 140.0
