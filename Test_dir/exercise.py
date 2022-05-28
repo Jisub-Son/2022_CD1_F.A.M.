@@ -39,12 +39,13 @@ class EXERCISE(KEYPOINT):
 
     # timer function
     def Rest_timer(self, reps, status, sets, feedback, timer):
-        global cur, prev, timeElapsed   
+        global cur, prev, timeElapsed, flag
         cur = time.time()               # current time
         
         timeElapsed = cur - prev        # calculate time difference
         
         if timeElapsed >= 1:            # after 1 second
+            # print(timer)
             timer -= 1                  
             timeElapsed = 0             
             prev += 1                   
@@ -61,7 +62,7 @@ class EXERCISE(KEYPOINT):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
                 prev
-        global length_foot, length_heel, length_ankle
+        global length_foot, length_heel, length_ankle, flag
         
         # reference angles
         REF_KNEE_ANGLE = 140.0
@@ -87,30 +88,8 @@ class EXERCISE(KEYPOINT):
             # make table for avg_angles
             table_calculations(avg_leg = avg_leg_angle, avg_knee = avg_knee_angle)
                             #    heel = length_heel, ankle = length_ankle, foot = length_foot)
-                    
-            '''# how to make count
-            # 무릎이 발끝보다 뒤에 있고 and 무를을 충분히 굽혔을 때 count
-            if status == 'Up' and avg_knee_angle > REF_KNEE_ANGLE\
-                and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    
-                voiceFeedback('buzzer')
-                reps += 1
-                status = 'Down'
-                feedback = 'Success'
-                prev = time.time()
-            else:
-                # 우선순위1 : 무릎을 충분히 굽히지 않았을 때 + 무릎이 발끝보다 뒤에
-                if (status != 'Rest' and status != 'All done') and avg_knee_angle > REF_KNEE_ANGLE\
-                    and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  
-                    status = 'Up'
-                    feedback = 'Bend your legs'
-                # 우선순위2 : 무릎이 발끝보다 앞쪽에 있을 때
-                elif (status != 'Rest' and status != 'All done') and avg_knee_angle < REF_KNEE_ANGLE:
-                    status = 'Up'
-                    feedback = 'Place your knees behind toes'
-                # elif (status != 'Rest' and status != 'All done') and avg_knee_angle > REF_KNEE_ANGLE\
-                #     and REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:'''
             
-            if (status != 'Rest' and status != 'All done'):
+            if status != 'Rest' and status != 'All done':
                 ready = True
             else:
                 ready = False
@@ -139,11 +118,13 @@ class EXERCISE(KEYPOINT):
                 feedback = 'Place your knees behind toes'
                     
             # after each set
-            if reps == REF_REPS:
-                if timer == 5:
+            if reps == REF_REPS and status == 'Up':
+                prev = time.time()
+                if feedback == 'Start':
                     voiceFeedback('rest_time')
                 status = 'Rest'
                 feedback = 'Take a breathe..'
+            if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
             
             # when exercise is finished

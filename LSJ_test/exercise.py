@@ -57,7 +57,7 @@ class EXERCISE(KEYPOINT):
         global prev, left_knee_angle, right_knee_angle, avg_knee_angle, left_leg_angle, right_leg_angle, avg_leg_angle, left_foot_parallel, right_foot_parallel, avg_foot_parallel
         
         # reference angles
-        REF_KNEE_ANGLE = 130.0
+        REF_KNEE_ANGLE = 100.0
         REF_LEG_ANGLE = 120.0
         MORE_LEG_ANGLE = 155.0
         LESS_LEG_ANGLE = 50.0

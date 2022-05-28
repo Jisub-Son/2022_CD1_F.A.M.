@@ -13,7 +13,7 @@ RIGHT_CAM = 0
 LEFT_CAM = 1 
 
 pygame.init()               # init mixer
-pygame.mixer.Sound('rest.wav')
+pygame.mixer.Sound('rest_time.wav')
 pygame.mixer.Sound('buzzer.wav')
 pygame.mixer.Sound('end.wav')
 pygame.mixer.Sound('correct.wav')
@@ -77,7 +77,8 @@ def voiceFeedback(sound):
         prev_sound = sound
         pygame.mixer.Sound(sound + '.wav').play()
     else:
-        if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생          
+        if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생       
+            # print("prev", prev_sound, "cur", sound)   
             pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
             pygame.mixer.Sound(sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
         else:
