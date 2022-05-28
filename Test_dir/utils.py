@@ -10,7 +10,7 @@ REF_VISIBILITY = 0.7
 REF_REPS = 5            
 REF_SETS = 3         
 RIGHT_CAM = 0
-LEFT_CAM = 1   
+LEFT_CAM = 1 
 
 pygame.init()               # init mixer
 mp_pose = mp.solutions.pose # landmark

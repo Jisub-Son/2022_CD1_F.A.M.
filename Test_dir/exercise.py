@@ -1,6 +1,7 @@
 import time
 from keypoint import KEYPOINT   
-from utils import *            
+from utils import *  
+from math import fabs          
 
 # 전역 변수 초기화
 cur = 0.0                   # timer 변수
@@ -23,8 +24,14 @@ left_spine_angle = 180.0    # 푸쉬업 허리 각도
 right_spine_angle = 180.0
 avg_spine_angle = 0.0
 
-length_shoudler = 0.0
+left_foot_parallel = 90.0   # 발 11자 각도
+right_foot_parallel = 90.0
+avg_foot_parallel = 90.0
+
+length_shoudler = 0.0   # 어깨, 발 사이 거리
 length_foot = 0.0
+length_heel = 0.0
+length_ankle = 0.0
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -38,7 +45,6 @@ class EXERCISE(KEYPOINT):
         timeElapsed = cur - prev        # calculate time difference
         
         if timeElapsed >= 1:            # after 1 second
-            print(time.time())
             timer -= 1                  
             timeElapsed = 0             
             prev += 1                   
@@ -52,60 +58,73 @@ class EXERCISE(KEYPOINT):
                             
     # squat function
     def squat(self, reps, status, sets, feedback, timer, camID):
-        global prev, left_knee_angle, right_knee_angle, avg_knee_angle, left_leg_angle, right_leg_angle, avg_leg_angle
+        global left_knee_angle, right_knee_angle, avg_knee_angle,\
+                left_leg_angle, right_leg_angle, avg_leg_angle,\
+                prev
+        global length_foot, length_heel, length_ankle
         
         # reference angles
         REF_KNEE_ANGLE = 140.0
-        REF_LEG_ANGLE = 90.0
+        REF_LEG_ANGLE = 100.0
+        ALLOW_RATE = 0.1       # 허용 오차 비율
+        MEASURE_RATE = 0.5       # 에러 오차 비율  ex) less < 90 < good < 110 < more < 150 < default
         
         # get angles from eact camID
-        if camID == 1:
+        if camID == LEFT_CAM:
             left_leg_angle = self.angle_of_the_right_leg()
             left_knee_angle = self.angle_of_the_left_knee()
-        elif camID == 0:
+            '''length_foot = self.length_of_foot_to_foot()      ### 11자로 두면 3개 값이 나름 비슷하게 나오는데 문제는
+            length_ankle = self.length_of_ankle_to_ankle()      ### 한 카메라 안에 양 발 landmark가 다 나와야 해    
+            length_heel = self.length_of_heel_to_heel()'''      
+        elif camID == RIGHT_CAM:
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
             
-        # get average    
-        avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
-        avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
-        
-        # make table for avg_angles
-        table_angle("leg", avg_leg_angle, "knee", avg_knee_angle)
-                
-        # how to make count
-        # 무릎이 발끝보다 뒤에 있고 and 무를을 충분히 굽혔을 때 count
-        if status == 'Up' and avg_leg_angle < REF_LEG_ANGLE and avg_knee_angle > REF_KNEE_ANGLE:    
-            voiceFeedback('buzzer')
-            reps += 1
-            status = 'Down'
-            feedback = 'Success'
-            prev = time.time()
-        else:
-            # 우선순위1 : 무릎을 굽히지 않았을 때
-            if (status != 'Rest' and status != 'All done') and avg_leg_angle > REF_LEG_ANGLE:  
-                status = 'Up'
-                feedback = 'Bend your legs'
-            # 우선순위2 : 무릎이 발끝보다 앞쪽에 있을 때
-            elif (status != 'Rest' and status != 'All done') and avg_knee_angle < REF_KNEE_ANGLE:
-                status = 'Up'
-                feedback = 'Place your knees behind toes'
-                
-        # after each set
-        if reps == REF_REPS:
-            if timer == 5 and camID == 0:
-                voiceFeedback('rest_time')
-            status = 'Rest'
-            feedback = 'Take a breathe..'
-            reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
-        
-        # when exercise is finished
-        if sets == REF_SETS:
-            voiceFeedback('end')
-            reps = 0
-            status = 'All done'
-            sets = 0
-            feedback = "Well done!"
+            # get average    
+            avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
+            avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
+            
+            # make table for avg_angles
+            table_calculations(avg_leg = avg_leg_angle, avg_knee = avg_knee_angle,
+                               heel = length_heel, ankle = length_ankle, foot = length_foot)
+                    
+            # how to make count
+            # 무릎이 발끝보다 뒤에 있고 and 무를을 충분히 굽혔을 때 count
+            if status == 'Up' and avg_knee_angle > REF_KNEE_ANGLE\
+                and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    
+                voiceFeedback('buzzer')
+                reps += 1
+                status = 'Down'
+                feedback = 'Success'
+                prev = time.time()
+            else:
+                # 우선순위1 : 무릎을 충분히 굽히지 않았을 때 + 무릎이 발끝보다 뒤에
+                if (status != 'Rest' and status != 'All done') and avg_knee_angle > REF_KNEE_ANGLE\
+                    and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  
+                    status = 'Up'
+                    feedback = 'Bend your legs'
+                # 우선순위2 : 무릎이 발끝보다 앞쪽에 있을 때
+                elif (status != 'Rest' and status != 'All done') and avg_knee_angle < REF_KNEE_ANGLE:
+                    status = 'Up'
+                    feedback = 'Place your knees behind toes'
+                # elif (status != 'Rest' and status != 'All done') and avg_knee_angle > REF_KNEE_ANGLE\
+                #     and REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:
+                    
+            # after each set
+            if reps == REF_REPS:
+                if timer == 5:
+                    voiceFeedback('rest_time')
+                status = 'Rest'
+                feedback = 'Take a breathe..'
+                reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
+            
+            # when exercise is finished
+            if sets == REF_SETS:
+                voiceFeedback('end')
+                reps = 0
+                status = 'All done'
+                sets = 0
+                feedback = "Well done!"
             
         return [reps, status, sets, feedback, timer, camID]
 
@@ -113,7 +132,6 @@ class EXERCISE(KEYPOINT):
     def pushup(self, reps, status, sets, feedback, timer, camID):
         global left_arm_angle, right_arm_angle, avg_arm_angle,\
                 left_spine_angle, right_spine_angle, avg_spine_angle,\
-                length_foot, length_shoudler,\
                 prev   
         
         # reference angles
@@ -124,8 +142,6 @@ class EXERCISE(KEYPOINT):
         if camID == LEFT_CAM:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
-            length_shoudler = self.length_of_shoulder_to_shoulder()
-            length_foot = self.length_of_foot_to_foot()
         elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
@@ -133,10 +149,9 @@ class EXERCISE(KEYPOINT):
             # get average
             avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
             avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
-
+            
             # make table for calculations
-            table_calculations(avg_arm = avg_arm_angle, avg_spine = avg_spine_angle,
-                                len_shoudler = length_shoudler, len_foot = length_foot)
+            table_calculations(avg_arm = avg_arm_angle, avg_spine = avg_spine_angle)
                 
             # how to make count
             # 팔꿈치를 충분히 굽히고 and 허리가 일직선일 때

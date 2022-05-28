@@ -75,8 +75,26 @@ class KEYPOINT:
             return calculate_angle(r_knee, r_ankle, r_foot_index)
         else:
             return 0
+
+    def length_of_ankle_to_ankle(self):   # 양 발목 사이 거리
+        r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
+        l_ankle = detection(self.landmarks, "LEFT_ANKLE")
+        if r_ankle[2] >= REF_VISIBILITY and l_ankle[2] >= REF_VISIBILITY:
+            return calculate_length(r_ankle, l_ankle)
+        else:
+            return 0
+
+##########################################################################################
+    
+    def length_of_heel_to_heel(self):   # 양 발뒷꿈치 사이 거리
+        r_heel = detection(self.landmarks, "RIGHT_HEEL")
+        l_heel = detection(self.landmarks, "LEFT_HEEL")
+        if r_heel[2] >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+            return calculate_length(r_heel, l_heel)
+        else:
+            return 0
         
-    def length_of_foot_to_foot(self):
+    def length_of_foot_to_foot(self):   # 양 발끝 사이 거리
         r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
         l_foot_index = detection(self.landmarks, "LEFT_FOOT_INDEX")
         if r_foot_index[2] >= REF_VISIBILITY and l_foot_index[2] >= REF_VISIBILITY:
@@ -84,10 +102,30 @@ class KEYPOINT:
         else:
             return 0
         
-    def length_of_shoulder_to_shoulder(self):
+    def length_of_shoulder_to_shoulder(self):   # 양 어깨 사이 거리
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         if r_shoulder[2] >= REF_VISIBILITY and l_shoulder[2] >= REF_VISIBILITY:
             return calculate_length(r_shoulder, l_shoulder)
         else:
+            return 0    
+
+##########################################################################################
+
+    def angle_of_right_foot_parallel(self): ## 스쿼트 오른발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        r_heel = detection(self.landmarks, "RIGHT_HEEL")
+        l_heel = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        if r_foot_index[2] >= REF_VISIBILITY and r_heel[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+            return calculate_angle(r_foot_index, r_heel, l_heel)
+        else:
             return 0
+        
+    def angle_of_left_foot_parallel(self): ## 스쿼트 왼발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        l_foot_index = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        l_heel = detection(self.landmarks, "LEFT_HEEL")
+        if r_foot_index[2] >= REF_VISIBILITY and l_foot_index[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+            return calculate_angle(r_foot_index, l_foot_index, l_heel)
+        else:
+            return 0    
