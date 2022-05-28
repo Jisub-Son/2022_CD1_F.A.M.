@@ -13,6 +13,16 @@ RIGHT_CAM = 0
 LEFT_CAM = 1 
 
 pygame.init()               # init mixer
+pygame.mixer.Sound('rest.wav')
+pygame.mixer.Sound('buzzer.wav')
+pygame.mixer.Sound('end.wav')
+pygame.mixer.Sound('correct.wav')
+pygame.mixer.Sound('kneedown.wav')
+pygame.mixer.Sound('lessdown.wav')
+pygame.mixer.Sound('end.wav')
+pygame.mixer.Sound('parallel.wav')
+prev_sound = ""
+
 mp_pose = mp.solutions.pose # landmark
 
 # calculate length function
@@ -62,12 +72,16 @@ def detections(landmarks):
 # voice feedback function
 # how to use : voiceFeedback('end') 라고 치면 end.wav 재생됨
 def voiceFeedback(sound): 
-    pygame.mixer.Sound('rest_time.wav')
-    pygame.mixer.Sound('buzzer.wav')
-    pygame.mixer.Sound('end.wav')
-     
+    global prev_sound
     if pygame.mixer.get_busy() == False:
-        return pygame.mixer.Sound(sound + '.wav').play()
+        prev_sound = sound
+        pygame.mixer.Sound(sound + '.wav').play()
+    else:
+        if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생          
+            pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
+            pygame.mixer.Sound(sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
+        else:
+            pass
 
 # make table
 def table(exercise, reps, status, sets, feedback, timer): 

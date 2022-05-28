@@ -85,10 +85,10 @@ class EXERCISE(KEYPOINT):
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
             
             # make table for avg_angles
-            table_calculations(avg_leg = avg_leg_angle, avg_knee = avg_knee_angle,
-                               heel = length_heel, ankle = length_ankle, foot = length_foot)
+            table_calculations(avg_leg = avg_leg_angle, avg_knee = avg_knee_angle)
+                            #    heel = length_heel, ankle = length_ankle, foot = length_foot)
                     
-            # how to make count
+            '''# how to make count
             # 무릎이 발끝보다 뒤에 있고 and 무를을 충분히 굽혔을 때 count
             if status == 'Up' and avg_knee_angle > REF_KNEE_ANGLE\
                 and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    
@@ -108,7 +108,35 @@ class EXERCISE(KEYPOINT):
                     status = 'Up'
                     feedback = 'Place your knees behind toes'
                 # elif (status != 'Rest' and status != 'All done') and avg_knee_angle > REF_KNEE_ANGLE\
-                #     and REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:
+                #     and REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:'''
+            
+            if (status != 'Rest' and status != 'All done'):
+                ready = True
+            else:
+                ready = False
+                
+            if ready == True and avg_knee_angle > REF_KNEE_ANGLE:   # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
+                if feedback == 'Success' and avg_leg_angle < REF_LEG_ANGLE*(1-ALLOW_RATE): # 너무 많이 구부렸을 때
+                    voiceFeedback('lessdown')
+                    reps -= 1
+                    status = 'Up'
+                    feedback = 'Bend your legs less'
+                elif feedback == 'Bend your legs more' and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    # 적절하게 구부렸을 때
+                    voiceFeedback('buzzer')
+                    reps += 1
+                    status = 'Down'
+                    feedback = 'Success'
+                    prev = time.time()
+                elif feedback == 'Start' and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  # 너무 적게 구부렸을 때
+                    voiceFeedback('moredown')
+                    status = 'Up'
+                    feedback = 'Bend your legs more'
+                elif REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:   # 구부리지 않았을 때
+                    status = 'Up'
+                    feedback = 'Start'
+            elif ready == True and avg_knee_angle < REF_KNEE_ANGLE: # 기존 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
+                status = 'Up'
+                feedback = 'Place your knees behind toes'
                     
             # after each set
             if reps == REF_REPS:

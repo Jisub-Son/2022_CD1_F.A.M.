@@ -2,24 +2,62 @@ import numpy as np
 import time
 import pygame
 
+
+'''if 무릎이 발끝보다 뒤에 있고 and 발이 11자일 때:
+    if 각도 < 기준1:  --> 너무 내려감
+    elif 기준1 < 각도 < 기준2: --> 횟수 인정
+    elif 기준2 < 각도 < 기준3: --> 더 구부려야 함
+    else: --> 아직 안구부림
+elif 무릎이 발끝보다 앞에 있을 때:
+elif 발이 11자가 아닐 때:'''
+
+
+# less < 50 < good < 120 < more < 155   170 < default
+
 pygame.init()
 
+prev_sound =""
+
 def voiceFeedback(sound): 
+    global prev_sound
     pygame.mixer.Sound('rest_time.wav')
     pygame.mixer.Sound('buzzer.wav')
     pygame.mixer.Sound('end.wav')
-     
+    pygame.mixer.Sound('correct.wav')
+    pygame.mixer.Sound('kneedown.wav')
+    pygame.mixer.Sound('lessdown.wav')
+    pygame.mixer.Sound('end.wav')
+    pygame.mixer.Sound('parallel.wav')
+    print("cur", sound)
     if pygame.mixer.get_busy() == False:
-        return pygame.mixer.Sound(sound + '.wav').play()
+        prev_sound = sound
+        print("prev", prev_sound)
+        pygame.mixer.Sound(sound + '.wav').play()
+    else:
+        if prev_sound != sound:
+            print("like interrupt")
+            pygame.mixer.stop()
+            pygame.mixer.Sound(sound + '.wav').play()
+        else:
+            print("same sound")
+            
 
-voiceFeedback('end')
+voiceFeedback('rest_time')
+time.sleep(3)
 print(1)
-time.sleep(1)
+voiceFeedback('rest_time')
 print(2)
-pygame.mixer.stop()
+time.sleep(1)
+voiceFeedback('rest_time')
 print(3)
 time.sleep(3)
-print(4)
+voiceFeedback('rest_time')
+print(1)
+time.sleep(0.5)
+voiceFeedback('end')
+time.sleep(3)
+
+
 ######################
 
 '''#landmark data 저장(마지막 프레임 데이터만)
