@@ -24,6 +24,14 @@ left_spine_angle = 180.0    # 푸쉬업 허리 각도
 right_spine_angle = 180.0
 avg_spine_angle = 0.0
 
+left_elbow_angle = 90.0    #푸쉬업 내려가면서 팔꿈치 각도
+right_elbow_angle = 90.0
+avg_elbow_angle = 0.0
+
+left_wrist_angle = 90.0
+right_wrist_angle = 90.0
+avg_wrist_angle = 0.0
+
 left_foot_parallel = 90.0   # 발 11자 각도
 right_foot_parallel = 90.0
 avg_foot_parallel = 90.0
@@ -33,7 +41,7 @@ length_foot = 0.0
 length_heel = 0.0
 length_ankle = 0.0
 
-color = [(0, 0, 0), (0, 0, 0)]
+color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -112,7 +120,8 @@ class EXERCISE(KEYPOINT):
                     status = 'Up'
                     feedback = 'Start'
                     color = [(0, 0, 0), (0, 0, 0)]
-            elif ready == True and avg_knee_angle < REF_KNEE_ANGLE: # 기본 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
+            elif ready == True and feedback != 'Place your knees behind toes' and avg_knee_angle < REF_KNEE_ANGLE: # 기본 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
+                voiceFeedback('kneedown')
                 status = 'Up'
                 feedback = 'Place your knees behind toes'
                 color = [(0, 0, 0), (0, 0, 255)]
@@ -145,26 +154,36 @@ class EXERCISE(KEYPOINT):
     def pushup(self, reps, status, sets, feedback, timer, camID):
         global left_arm_angle, right_arm_angle, avg_arm_angle,\
                 left_spine_angle, right_spine_angle, avg_spine_angle,\
+                left_elbow_angle, right_elbow_angle, avg_elbow_angle ,\
+                left_wrist_angle, right_wrist_angle, avg_wrist_angle,\
                 prev, color   
         
         # reference angles
-        REF_ARM_ANGLE = 30.0
+        REF_ARM_ANGLE = 40.0
         REF_SPINE_ANGLE = 170.0
+        REF_ELBOW_ANGLE = 70.0
+        REF_WRIST_ANGLE = 30.0
         ALLOW_RATE = 0.1        # 허용 오차 비율
-        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) good < 30+3 < more < 30+15 < default
+        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) good < 40+4 < more < 40+20 < default
         
         # get angles from eact camID
         if camID == LEFT_CAM:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
+            left_elbow_angle = self.angle_of_the_left_elbow()
+            left_wrist_angle = self.angle_of_the_left_wrist()
         elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
+            right_elbow_angle = self.angle_of_the_right_elbow()
+            right_wrist_angle = self.angle_of_the_right_wrist()
         
             # get average
             avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
             avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
-            
+            avg_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2
+            avg_wrist_angle = (left_wrist_angle + right_wrist_angle) // 2
+            print(avg_elbow_angle, avg_wrist_angle)
             # get ready state
             if status != 'Rest' and status != 'All done':
                 ready = True
@@ -178,20 +197,21 @@ class EXERCISE(KEYPOINT):
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
-                    color = [(255, 0, 0), (255, 0, 0)]
+                    color = [(255, 0, 0), (255, 0, 0), (0, 0, 0), (0, 0, 0)]
                 elif feedback == 'Start' and REF_ARM_ANGLE*(1+ALLOW_RATE) < avg_arm_angle < REF_ARM_ANGLE*(1+MEASURE_RATE): # 너무 적게 구부렸을 때
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your arms more'
-                    color = [(0, 0, 255), (0, 0, 0)]
+                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
                 elif REF_ARM_ANGLE*(1+MEASURE_RATE) < avg_arm_angle:    #구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0)]
-            elif ready == True and avg_spine_angle < REF_SPINE_ANGLE:   # 기본 자세 충족 안됨 -> 허리가 일직선이 아닐 때
+                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+            elif ready == True and feedback != 'Straight your spine' and avg_spine_angle < REF_SPINE_ANGLE:   # 기본 자세 충족 안됨 -> 허리가 일직선이 아닐 때
+                voiceFeedback('spine')
                 status = 'Up'
                 feedback = 'Straight your spine'
-                color = [(0, 0, 0), (0, 0, 255)]
+                color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)]
                     
             # after each set
             if reps == REF_REPS and status == 'Up':
@@ -212,7 +232,7 @@ class EXERCISE(KEYPOINT):
                 feedback = "Well done!"
                  
             # make table for calculations
-            table_calculations(color, avg_arm = avg_arm_angle, avg_spine = avg_spine_angle)
+            table_calculations(color, avg_arm = avg_arm_angle, avg_spine = avg_spine_angle, avg_elbow = avg_elbow_angle, avg_wrist = avg_wrist_angle)
         
         return [reps, status, sets, feedback, timer, camID]
   
