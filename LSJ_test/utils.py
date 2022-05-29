@@ -5,12 +5,24 @@ import cv2
 import pygame
 
 # set constants for reference
-REF_TIMER = 5           
+REF_TIMER = 10           
 REF_VISIBILITY = 0.7    
-REF_REPS = 5            
-REF_SETS = 3            
+REF_REPS = 3            
+REF_SETS = 3         
+RIGHT_CAM = 0
+LEFT_CAM = 1 
 
 pygame.init()               # init mixer
+pygame.mixer.Sound('rest_time.wav')
+pygame.mixer.Sound('buzzer.wav')
+pygame.mixer.Sound('end.wav')
+pygame.mixer.Sound('correct.wav')
+pygame.mixer.Sound('kneedown.wav')
+pygame.mixer.Sound('lessdown.wav')
+pygame.mixer.Sound('end.wav')
+pygame.mixer.Sound('parallel.wav')
+prev_sound = ""
+
 mp_pose = mp.solutions.pose # landmark
 
 # calculate length function
@@ -46,7 +58,7 @@ def detection(landmarks, keypoint_name):
         landmarks[mp_pose.PoseLandmark[keypoint_name].value].visibility
     ]
 
-# get keypoints data
+# get keypoints data(사용 안함)
 def detections(landmarks):
     keypoints = pd.DataFrame(columns=["keypoint", "x", "y","visibility"])
 
@@ -60,17 +72,17 @@ def detections(landmarks):
 # voice feedback function
 # how to use : voiceFeedback('end') 라고 치면 end.wav 재생됨
 def voiceFeedback(sound): 
-    pygame.mixer.Sound('rest.wav')
-    pygame.mixer.Sound('buzzer.wav')
-    pygame.mixer.Sound('end.wav')
-    pygame.mixer.Sound('correct.wav')
-    pygame.mixer.Sound('kneedown.wav')
-    pygame.mixer.Sound('lessdown.wav')
-    pygame.mixer.Sound('end.wav')
-    pygame.mixer.Sound('parallel.wav')
-     
+    global prev_sound
     if pygame.mixer.get_busy() == False:
-        return pygame.mixer.Sound(sound + '.wav').play()
+        prev_sound = sound
+        pygame.mixer.Sound(sound + '.wav').play()
+    else:
+        if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생       
+            # print("prev", prev_sound, "cur", sound)   
+            pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
+            pygame.mixer.Sound(sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
+        else:
+            pass
 
 # make table
 def table(exercise, reps, status, sets, feedback, timer): 
@@ -90,17 +102,21 @@ def table(exercise, reps, status, sets, feedback, timer):
     cv2.imshow("Table", table) ## table 출력
     cv2.moveWindow("Table", 0, 510)
     
-# make angle table
-#def table_angle(value1, angle1, value2, angle2, value3, length3, value4, length4):
-def table_angle(value1, angle1, value2, angle2, value3, angle3):
+# make angle table(사용 안함)
+def table_angle(value1, angle1, value2, angle2):
     table_angle = cv2.imread("./table_angle.PNG")
-    cv2.putText(table_angle, "avg " + str(value1) + " : " + str(angle1), (1, 150), ## opencv문자열: table 운동 카운트
+    cv2.putText(table_angle, "avg " + str(value1) + " : " + str(angle1), (1, 45), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table_angle, "avg " + str(value2) + " : " + str(angle2), (1, 250), ## opencv문자열: table 운동 카운트
+    cv2.putText(table_angle, "avg " + str(value2) + " : " + str(angle2), (1, 105), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    """cv2.putText(table_angle, "avg " + str(value3) + " : " + str(angle3), (1, 350), ## opencv문자열: table 운동 카운트
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정"""
-    '''cv2.putText(table_angle, "avg " + str(value4) + " : " + str(length4), (1, 225), ## opencv문자열: table 운동 카운트
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정'''
     cv2.imshow("Table_angle", table_angle) ## table 출력
     cv2.moveWindow("Table_angle", 1013, 510) 
+
+# make calculations table    
+def table_calculations(*args, **kwargs):
+    table_calculations = cv2.imread("./table_angle.PNG")
+    for i, key in enumerate(kwargs):
+        cv2.putText(table_calculations,"{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
+    cv2.imshow("Table_calculations", table_calculations)
+    cv2.moveWindow("Table_calculations", 1013, 510) 

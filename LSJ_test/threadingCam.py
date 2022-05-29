@@ -31,7 +31,7 @@ class camThread(threading.Thread):
         
         # video setting
         capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
-        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480) ## 내 노트북 화면 작아서 
+        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         
         # mediapipe setting
@@ -80,10 +80,10 @@ class camThread(threading.Thread):
                 except:
                     pass
                 
-                #landmark data 저장(마지막 프레임 데이터만)
-                if camID == 0:                  
-                    data = detections(landmarks=landmarks)
-                    data.to_csv("./data.csv")
+                # #landmark data 저장(마지막 프레임 데이터만)
+                # if camID == 0:                  
+                #     data = detections(landmarks=landmarks)
+                #     data.to_csv("./data.csv")
                 
                 # make table
                 if camID == 0:
