@@ -206,7 +206,7 @@ class EXERCISE(KEYPOINT):
           
                     
             # after each set
-            if reps == REF_REPS and (status == 'Up') :
+            if reps == REF_REPS  :
                 if timer == 5:
                     voiceFeedback('rest_time')
                 status = 'Rest'
