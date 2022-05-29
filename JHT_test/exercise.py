@@ -184,6 +184,7 @@ class EXERCISE(KEYPOINT):
             elif status == 'Down' and status != 'All done'  :
                 if  avg_arm_angle > REF_ARM_ANGLE2 :
                     status = 'Up'
+                    feedback = 'start'
                 if status == 'Down'  and feedback == 'Success' and avg_elbow_angle > REF_ELBOW_ANGLE: #팔꿈치는 다운할때만 벌어지므로 다운에 추가
                     reps -= 1
                     pygame.mixer.Sound('elbow' + '.wav').play() #부저음과 겹치는것을 막기 위해 직접선언
@@ -206,12 +207,14 @@ class EXERCISE(KEYPOINT):
           
                     
             # after each set
-            if reps == REF_REPS  :
-                if timer == 5:
+            if reps == REF_REPS and status == 'Up':
+                prev = time.time()
+                if feedback == 'Start':
                     voiceFeedback('rest_time')
                 status = 'Rest'
                 feedback = 'Take a breathe..'
-                reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)   # run timer function
+            if status == 'Rest':
+                reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
             
             # when exercise is finished
             if sets == REF_SETS:
