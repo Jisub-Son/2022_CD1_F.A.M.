@@ -146,7 +146,7 @@ class EXERCISE(KEYPOINT):
         
         # reference angles
         REF_ARM_ANGLE = 70.0
-        REF_ARM_ANGLE2 = 110.0
+        REF_ARM_ANGLE2 = 100.0
         REF_SPINE_ANGLE = 160.0
         REF_ELBOW_ANGLE = 70.0
         REF_WRIST_ANGLE = 30.0
