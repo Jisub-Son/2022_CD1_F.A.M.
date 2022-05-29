@@ -162,7 +162,7 @@ class EXERCISE(KEYPOINT):
         REF_ARM_ANGLE = 40.0
         REF_SPINE_ANGLE = 170.0
         REF_ELBOW_ANGLE = 70.0
-        REF_WRIST_ANGLE = 30.0
+        REF_WRIST_ANGLE = 15.0
         ALLOW_RATE = 0.1        # 허용 오차 비율
         MEASURE_RATE = 0.5      # 에러 오차 비율  ex) good < 40+4 < more < 40+20 < default
         
@@ -183,7 +183,7 @@ class EXERCISE(KEYPOINT):
             avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
             avg_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2
             avg_wrist_angle = (left_wrist_angle + right_wrist_angle) // 2
-            print(avg_elbow_angle, avg_wrist_angle)
+
             # get ready state
             if status != 'Rest' and status != 'All done':
                 ready = True
@@ -191,7 +191,7 @@ class EXERCISE(KEYPOINT):
                 ready = False
 
             # count logic
-            if ready == True and avg_spine_angle > REF_SPINE_ANGLE:     # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
+            if ready == True and avg_spine_angle > REF_SPINE_ANGLE and avg_wrist_angle < REF_WRIST_ANGLE:     # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
                 if feedback == 'Bend your arms more' and avg_arm_angle < REF_ARM_ANGLE*(1+ALLOW_RATE):  # 적절하게 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
@@ -212,6 +212,11 @@ class EXERCISE(KEYPOINT):
                 status = 'Up'
                 feedback = 'Straight your spine'
                 color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)]
+            elif ready == True and feedback != 'Put your hands together' and avg_wrist_angle > REF_WRIST_ANGLE: # 기본 자세 충족 안됨 -> 손을 너무 크게 벌렸을 때
+                voiceFeedback('hand')
+                status = 'Up'
+                feedback = 'Put your hands together'
+                color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 255)]
                     
             # after each set
             if reps == REF_REPS and status == 'Up':
