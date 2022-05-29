@@ -83,8 +83,6 @@ class KEYPOINT:
             return calculate_length(r_ankle, l_ankle)
         else:
             return 0
-
-##########################################################################################
     
     def length_of_heel_to_heel(self):   # 양 발뒷꿈치 사이 거리
         r_heel = detection(self.landmarks, "RIGHT_HEEL")
