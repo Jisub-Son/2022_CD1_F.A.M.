@@ -1,5 +1,9 @@
 from utils import *
 
+
+
+
+
 class KEYPOINT:
     def __init__(self, landmarks):
         self.landmarks = landmarks
@@ -37,42 +41,6 @@ class KEYPOINT:
         r_knee = detection(self.landmarks, "RIGHT_KNEE")
         if r_shoulder[2] >= REF_VISIBILITY and r_hip[2] >= REF_VISIBILITY and r_knee[2] >= REF_VISIBILITY:
             return calculate_angle(r_shoulder, r_hip, r_knee)
-        else:
-            return 0
-
-    def angle_of_the_left_elbow(self): # 푸쉬업 (왼쪽 팔꿈지 벌어진 각도 (팔꿈치, 어깨, 허리) 각도)
-        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
-        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        l_hip = detection(self.landmarks, "LEFT_HIP")
-        if l_elbow[2] >= REF_VISIBILITY and l_shoulder[2] >= REF_VISIBILITY and l_hip[2] >= REF_VISIBILITY:
-            return calculate_angle(l_elbow, l_shoulder, l_hip)
-        else:
-            return 0
-
-    def angle_of_the_right_elbow(self): # 푸쉬업 (오른쪽 팔꿈지 벌어진 각도 (팔꿈치, 어깨, 허리) 각도)
-        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
-        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
-        r_hip = detection(self.landmarks, "RIGHT_HIP")
-        if r_elbow[2] >= REF_VISIBILITY and r_shoulder[2] >= REF_VISIBILITY and r_hip[2] >= REF_VISIBILITY:
-            return calculate_angle(r_elbow, r_shoulder,r_hip)
-        else:
-            return 0
-
-    def angle_of_the_left_wrist(self): # 푸쉬업 (왼쪽 손목, 왼쪽어깨, 오른쪽 손목 각도)
-        l_wrist = detection(self.landmarks, "LEFT_WRIST")
-        l_ankle = detection(self.landmarks, "LEFT_ANKLE")
-        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
-        if l_wrist[2] >= REF_VISIBILITY and l_ankle[2] >= REF_VISIBILITY and r_wrist[2] >= REF_VISIBILITY:
-            return calculate_angle(l_wrist, l_ankle, r_wrist)
-        else:
-            return 0
-
-    def angle_of_the_right_wrist(self): # 푸쉬업 (오른손목, 오른쪽 어깨, 왼손록 각도)
-        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
-        r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
-        l_wrist = detection(self.landmarks, "LEFT_WRIST")
-        if r_wrist[2] >= REF_VISIBILITY and r_ankle[2] >= REF_VISIBILITY and l_wrist[2] >= REF_VISIBILITY:
-            return calculate_angle(r_wrist, r_ankle, l_wrist)
         else:
             return 0
 
@@ -119,8 +87,6 @@ class KEYPOINT:
             return calculate_length(r_ankle, l_ankle)
         else:
             return 0
-
-##########################################################################################
     
     def length_of_heel_to_heel(self):   # 양 발뒷꿈치 사이 거리
         r_heel = detection(self.landmarks, "RIGHT_HEEL")
@@ -146,3 +112,77 @@ class KEYPOINT:
         else:
             return 0    
 
+
+    def length_of_wrist_to_wrist(self):   # 양 손목 사이 거리
+        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
+        l_wrist = detection(self.landmarks, "LEFT_WRIST")
+        if r_wrist[2] >= REF_VISIBILITY and l_wrist[2] >= REF_VISIBILITY:
+            return calculate_length(r_wrist, l_wrist)
+        else:
+            return 0
+
+    def length_of_elbow_to_elbow(self):   # 양 팔꿈치 사이 거리
+        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
+        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
+        if r_elbow[2] >= REF_VISIBILITY and l_elbow[2] >= REF_VISIBILITY:
+            return calculate_length(r_elbow, l_elbow)
+        else:
+            return 0
+
+
+
+##########################################################################################
+
+    def angle_of_right_foot_parallel(self): ## 스쿼트 오른발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        r_heel = detection(self.landmarks, "RIGHT_HEEL")
+        l_heel = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        if r_foot_index[2] >= REF_VISIBILITY and r_heel[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+            return calculate_angle(r_foot_index, r_heel, l_heel)
+        else:
+            return 0
+        
+    def angle_of_left_foot_parallel(self): ## 스쿼트 왼발 11자
+        r_foot_index = detection(self.landmarks, "RIGHT_FOOT_INDEX")
+        l_foot_index = detection(self.landmarks, "LEFT_FOOT_INDEX")
+        l_heel = detection(self.landmarks, "LEFT_HEEL")
+        if r_foot_index[2] >= REF_VISIBILITY and l_foot_index[2]  >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+            return calculate_angle(r_foot_index, l_foot_index, l_heel)
+        else:
+            return 0    
+        
+    def angle_of_the_left_elbow(self): # 푸쉬업 (왼쪽 팔꿈지 벌어진 각도 (팔꿈치, 어깨, 허리) 각도)
+        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        l_hip = detection(self.landmarks, "LEFT_HIP")
+        if l_elbow[2] >= REF_VISIBILITY and l_shoulder[2] >= REF_VISIBILITY and l_hip[2] >= REF_VISIBILITY:
+            return calculate_angle(l_elbow, l_shoulder, l_hip)
+        else:
+            return 0
+
+    def angle_of_the_right_elbow(self): # 푸쉬업 (오른쪽 팔꿈지 벌어진 각도 (팔꿈치, 어깨, 허리) 각도)
+        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        r_hip = detection(self.landmarks, "RIGHT_HIP")
+        if r_elbow[2] >= REF_VISIBILITY and r_shoulder[2] >= REF_VISIBILITY and r_hip[2] >= REF_VISIBILITY:
+            return calculate_angle(r_elbow, r_shoulder,r_hip)
+        else:
+            return 0
+
+    def angle_of_the_left_wrist(self): # 푸쉬업 (왼쪽 손목, 왼쪽어깨, 오른쪽 손목 각도)
+        l_wrist = detection(self.landmarks, "LEFT_WRIST")
+        l_ankle = detection(self.landmarks, "LEFT_ANKLE")
+        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
+        if l_wrist[2] >= REF_VISIBILITY and l_ankle[2] >= REF_VISIBILITY and r_wrist[2] >= REF_VISIBILITY:
+            return calculate_angle(l_wrist, l_ankle, r_wrist)
+        else:
+            return 0
+
+    def angle_of_the_right_wrist(self): # 푸쉬업 (오른손목, 오른쪽 어깨, 왼손록 각도)
+        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
+        r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
+        l_wrist = detection(self.landmarks, "LEFT_WRIST")
+        if r_wrist[2] >= REF_VISIBILITY and r_ankle[2] >= REF_VISIBILITY and l_wrist[2] >= REF_VISIBILITY:
+            return calculate_angle(r_wrist, r_ankle, l_wrist)
+        else:
+            return 0
