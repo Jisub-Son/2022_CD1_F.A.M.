@@ -3,6 +3,7 @@ import mediapipe as mp
 import threading
 from utils import *
 from exercise import EXERCISE
+import time
 
 # initialize variables
 def initState():        
@@ -31,8 +32,8 @@ class camThread(threading.Thread):
         
         # video setting
         capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
-        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+        # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         
         # mediapipe setting
         mp_drawing = mp.solutions.drawing_utils
@@ -65,6 +66,21 @@ class camThread(threading.Thread):
                 if not ret:                                     # frame을 못받았을 경우
                     print("Ignoring empty camera frame\r\n")
                     continue
+                
+                # calculate fps
+                fps = capture.get(cv2.CAP_PROP_FPS)
+                # print('fps',fps)
+                if fps == 0.0:
+                    fps = 30.0
+                time_per_frame_video = 1/fps
+                last_time = time.perf_counter()
+                time_per_frame = time.perf_counter() - last_time
+                time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
+                time.sleep(time_sleep_frame)
+                real_fps = 1/(time.perf_counter()-last_time)
+                last_time = time.perf_counter()
+                str = "camera {} ".format(camID) + "FPS : %0.2f" % real_fps
+                cv2.putText(frame, str, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
                 
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                 frame.flags.writeable = False

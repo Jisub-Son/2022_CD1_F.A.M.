@@ -7,7 +7,7 @@ import pygame
 # set constants for reference
 REF_TIMER = 5           
 REF_VISIBILITY = 0.7    
-REF_REPS = 5            
+REF_REPS = 3        
 REF_SETS = 3         
 RIGHT_CAM = 0
 LEFT_CAM = 1 
@@ -102,7 +102,7 @@ def table(exercise, reps, status, sets, feedback, timer):
     cv2.putText(table, "Timer               " + str(timer), (5, 390), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table", table) ## table 출력
-    cv2.moveWindow("Table", 0, 510)
+    # cv2.moveWindow("Table", 0, 510)
     
 # make angle table(사용 안함)
 def table_angle(value1, angle1, value2, angle2):
@@ -118,7 +118,7 @@ def table_angle(value1, angle1, value2, angle2):
 def table_calculations(*args, **kwargs):
     table_calculations = cv2.imread("./table_angle.PNG")
     for i, key in enumerate(kwargs):
-        cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 45 + i*60), ## opencv문자열: table 운동 카운트
+        cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
                     cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table_calculations", table_calculations)
-    cv2.moveWindow("Table_calculations", 1013, 510) 
+    # cv2.moveWindow("Table_calculations", 1013, 510) 

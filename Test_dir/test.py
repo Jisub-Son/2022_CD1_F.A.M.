@@ -2,6 +2,34 @@ import numpy as np
 import time
 import pygame
 
+# count logic
+if ready == True and avg_knee_angle > REF_KNEE_ANGLE:   # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
+    if feedback == 'Success' and avg_leg_angle < REF_LEG_ANGLE*(1-ALLOW_RATE): # 너무 많이 구부렸을 때
+        voiceFeedback('lessdown')
+        reps -= 1
+        status = 'Up'
+        feedback = 'Bend your legs less'
+        color = [(0, 0, 255), (0, 0, 0)]        
+    elif feedback == 'Bend your legs more' and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    # 적절하게 구부렸을 때
+        voiceFeedback('buzzer')
+        reps += 1
+        status = 'Down'
+        feedback = 'Success'
+        color = [(255, 0, 0), (255, 0, 0)]
+    elif feedback == 'Start' and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  # 너무 적게 구부렸을 때
+        voiceFeedback('moredown')
+        status = 'Up'
+        feedback = 'Bend your legs more'
+        color = [(0, 0, 255), (0, 0, 0)]
+    elif REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:   # 구부리지 않았을 때
+        status = 'Up'
+        feedback = 'Start'
+        color = [(0, 0, 0), (0, 0, 0)]
+elif ready == True and feedback != 'Place your knees behind toes' and avg_knee_angle < REF_KNEE_ANGLE: # 기본 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
+    voiceFeedback('kneedown')
+    status = 'Up'
+    feedback = 'Place your knees behind toes'
+    color = [(0, 0, 0), (0, 0, 255)]
 
 '''if 무릎이 발끝보다 뒤에 있고 and 발이 11자일 때:
     if 각도 < 기준1:  --> 너무 내려감
