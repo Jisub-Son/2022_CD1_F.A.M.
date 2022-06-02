@@ -2,6 +2,36 @@ import numpy as np
 import time
 import pygame
 
+
+# count logic
+if ready == True and avg_spine_angle > REF_SPINE_ANGLE and avg_wrist_angle < REF_WRIST_ANGLE:     # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
+    if feedback == 'Bend your arms more' and avg_arm_angle < REF_ARM_ANGLE*(1+ALLOW_RATE):  # 적절하게 구부렸을 때
+        voiceFeedback('buzzer')
+        reps += 1
+        status = 'Down'
+        feedback = 'Success'
+        color = [(255, 0, 0), (255, 0, 0), (255, 0, 0), (0, 0, 0)]
+    elif feedback == 'Start' and REF_ARM_ANGLE*(1+ALLOW_RATE) < avg_arm_angle < REF_ARM_ANGLE*(1+MEASURE_RATE): # 너무 적게 구부렸을 때
+        voiceFeedback('moredown')
+        status = 'Up'
+        feedback = 'Bend your arms more'
+        color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+    elif REF_ARM_ANGLE*(1+MEASURE_RATE) < avg_arm_angle:    #구부리지 않았을 때
+        status = 'Up'
+        feedback = 'Start'
+        color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+
+elif ready == True and feedback != 'Put your hands together' and feedback != 'Straight your spine' and avg_wrist_angle > REF_WRIST_ANGLE: # 기본 자세 충족 안됨 -> 손을 너무 크게 벌렸을 때
+    voiceFeedback('hand')
+    status = 'Up'
+    feedback = 'Put your hands together'
+    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)]
+elif ready == True and feedback != 'Straight your spine' and feedback != 'Put your hands together' and avg_spine_angle < REF_SPINE_ANGLE:   # 기본 자세 충족 안됨 -> 허리가 일직선이 아닐 때
+    voiceFeedback('spine')
+    status = 'Up'
+    feedback = 'Straight your spine'
+    color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)]
+
 # count logic
 if ready == True and avg_knee_angle > REF_KNEE_ANGLE:   # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
     if feedback == 'Success' and avg_leg_angle < REF_LEG_ANGLE*(1-ALLOW_RATE): # 너무 많이 구부렸을 때

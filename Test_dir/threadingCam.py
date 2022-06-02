@@ -67,21 +67,6 @@ class camThread(threading.Thread):
                     print("Ignoring empty camera frame\r\n")
                     continue
                 
-                # calculate fps
-                fps = capture.get(cv2.CAP_PROP_FPS)
-                # print('fps',fps)
-                if fps == 0.0:
-                    fps = 30.0
-                time_per_frame_video = 1/fps
-                last_time = time.perf_counter()
-                time_per_frame = time.perf_counter() - last_time
-                time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
-                time.sleep(time_sleep_frame)
-                real_fps = 1/(time.perf_counter()-last_time)
-                last_time = time.perf_counter()
-                str = "camera {} ".format(camID) + "FPS : %0.2f" % real_fps
-                cv2.putText(frame, str, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
-                
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                 frame.flags.writeable = False
                 results = pose.process(frame)                   # landmark 구현
@@ -120,6 +105,21 @@ class camThread(threading.Thread):
                 
                 # 카메라 좌우반전(운동 자세보기 편하게)
                 frame = cv2.flip(frame, 1)
+                
+                # calculate fps
+                fps = capture.get(cv2.CAP_PROP_FPS)
+                # print('fps',fps)
+                if fps == 0.0:
+                    fps = 30.0
+                time_per_frame_video = 1/fps
+                last_time = time.perf_counter()
+                time_per_frame = time.perf_counter() - last_time
+                time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
+                time.sleep(time_sleep_frame)
+                real_fps = 1/(time.perf_counter()-last_time)
+                last_time = time.perf_counter()
+                str = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
+                cv2.putText(frame, str, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
                 
                 # put window
                 if camID == 0:
