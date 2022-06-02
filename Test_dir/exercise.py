@@ -1,4 +1,5 @@
 import time
+from unittest.mock import DEFAULT
 from keypoint import KEYPOINT   
 from utils import *  
 from math import fabs          
@@ -82,17 +83,17 @@ class EXERCISE(KEYPOINT):
         LESS_PARALLEL_ANGLE = 0.0
         MORE_PARALLEL_ANGLE = 60.0 
         
-        AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')
-        AFTER_ALL_SET_CONDITION = (sets == REF_SETS)
+        # conditions
+        AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
+        AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
+        KNEEDOWN_CONDITION = (status != 'Rest' and feedback != 'Place your knees behind toes' and feedback != 'Parallel your feet') # 무릎이 발끝 앞으로 나갔을 경우
+        PARALLEL_CONDITION = (status != 'Rest' and feedback != 'Parallel your feet' and feedback != 'Place your knees behind toes') # 발 11자를 못했을 경우
+        DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
+        MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
+        COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your legs more')  # 적절한 경우
+        LESSDOWN_CONDITION = (status != 'Rest' and feedback == 'Success')   # 덜 구부려야 하는 경우
         
-        KNEEDOWN_CONDITION = (status != 'Rest' and feedback != 'Place your knees behind toes' and feedback != 'Parallel your feet')
-        PARALLEL_CONDITION = (status != 'Rest' and feedback != 'Parallel your feet' and feedback != 'Place your knees behind toes')
-        DEFAULT_CONDITION = (status != 'Rest')
-        MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start')
-        COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your legs more')
-        LESSDOWN_CONDITION = (status != 'Rest' and feedback == 'Success')
-        
-        # 만족하는 각도
+        # angles in conditions -> '만족하는' 각도
         KNEEDOWN_ANGLE = (avg_knee_angle > REF_KNEE_ANGLE)
         PARALLEL_ANGLE = (LESS_PARALLEL_ANGLE < avg_foot_parallel < MORE_PARALLEL_ANGLE)
         DEFAULT_ANGLE = (avg_leg_angle > MORE_LEG_ANGLE)
@@ -116,41 +117,41 @@ class EXERCISE(KEYPOINT):
             avg_foot_parallel = fabs(left_foot_parallel - right_foot_parallel) 
                 
             # count logic
-            if KNEEDOWN_ANGLE and PARALLEL_ANGLE:
-                if LESSDOWN_CONDITION and LESSDOWN_ANGLE:
-                    print("condition 1")
+            if KNEEDOWN_ANGLE and PARALLEL_ANGLE:       # 기본 자세가 만족되고..
+                if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
                     voiceFeedback('lessdown')
                     reps -= 1
                     status = 'Up'
                     feedback = 'Bend your legs less'
                     color = [(0, 0, 255), (0, 0, 0), (0, 0, 0)]
-                elif COUNT_CONDITION and COUNT_ANGLE:
-                    print("condition 2")
+                elif COUNT_CONDITION and COUNT_ANGLE:       # 적절히 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
                     prev = time.time()
                     color = [(255, 0, 0), (255, 0, 0), (255, 0, 0)]
-                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE:
-                    print("condition 3")
+                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE: # 덜 구부렸을 때
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your legs more'
                     color = [(0, 0, 255), (0, 0, 0), (0, 0, 0)]
-                elif DEFAULT_CONDITION and DEFAULT_ANGLE:
-                    print("condition 4")
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE:   # 구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
                     color = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
             else:
-                if KNEEDOWN_CONDITION and not KNEEDOWN_ANGLE:
-                    print("condition 5")
+                if feedback == 'Success' and (not KNEEDOWN_ANGLE or not PARALLEL_ANGLE):    # 카운트가 된 직후 잘못 자세를 잡았을 때
+                    reps -= 1
+                    status = 'Up'
+                    feedback = 'Keep your position to the end'
+                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255)]
+                if KNEEDOWN_CONDITION and not KNEEDOWN_ANGLE:   # 무릎이 발끝 앞으로 나갔을 때
                     voiceFeedback('kneedown')
                     status = 'Up'
                     feedback = 'Place your knees behind toes'
                     color = [(0, 0, 0), (0, 0, 255), (0, 0, 0)] 
-                elif PARALLEL_CONDITION and not PARALLEL_ANGLE:
+                elif PARALLEL_CONDITION and not PARALLEL_ANGLE: # 발이 11자가 아닐 때
                     print("condition 6")
                     voiceFeedback('parallel')
                     status = 'Up'
@@ -184,17 +185,30 @@ class EXERCISE(KEYPOINT):
     def pushup(self, reps, status, sets, feedback, timer, camID):
         global left_arm_angle, right_arm_angle, avg_arm_angle,\
                 left_spine_angle, right_spine_angle, avg_spine_angle,\
-                left_elbow_angle, right_elbow_angle, avg_elbow_angle ,\
                 left_wrist_angle, right_wrist_angle, avg_wrist_angle,\
                 prev, color   
         
         # reference angles
-        REF_ARM_ANGLE = 75.0
+        REF_ARM_ANGLE = 80.0
         REF_SPINE_ANGLE = 130.0
-        REF_ELBOW_ANGLE = 70.0
-        REF_WRIST_ANGLE = 27.0
-        ALLOW_RATE = 0.1        # 허용 오차 비율
-        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) good < 40+4 < more < 40+20 < default
+        MORE_ARM_ANGLE = 100.0
+        MORE_WRIST_ANGLE = 27.0
+        LESS_WRIST_ANGLE = 20.0
+        
+        # conditions
+        AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
+        AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
+        SPINE_CONDITION = (status != 'Rest' and feedback != 'Straight your spine' and feedback != 'Put your hands together')
+        WRIST_CONDITION = (status != 'Rest' and feedback != 'Put your hands together' and feedback != 'Straight your spine')
+        DEFAULT_CONDITION = (status != 'Rest')
+        MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Bend your arms more')
+        COUNT_CONDITION = (status != 'Rest' and feedback == 'Success')
+        
+        # angles in conditions -> '만족하는' 각도
+        SPINE_ANGLE = (avg_spine_angle > REF_SPINE_ANGLE)
+        WRIST_ANGLE = (LESS_WRIST_ANGLE < avg_wrist_angle < MORE_WRIST_ANGLE)
+        DEFAULT_ANGLE = (avg_arm_angle > MORE_ARM_ANGLE)
+        COUNT_ANGLE = (avg_arm_angle < MORE_ARM_ANGLE)
         
         # get angles from eact camID
         if camID == LEFT_CAM:
