@@ -82,13 +82,14 @@ class EXERCISE(KEYPOINT):
                 prev, color
         
         # reference angles
-        REF_KNEE_ANGLE = 135.0
+        REF_KNEE_ANGLE = 110.0
         REF_LEG_ANGLE = 140.0
         MORE_LEG_ANGLE = 160.0
         LESS_LEG_ANGLE = 60.0
         LESS_PARALLEL_ANGLE = 0.0
         MORE_PARALLEL_ANGLE = 60.0
-        REF_HEEL_FOOT_RATIO = 2.0 
+        LESS_HEEL_FOOT_RATIO = 0.8
+        MORE_HEEL_FOOT_RATIO = 1.2 
         
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
@@ -103,7 +104,7 @@ class EXERCISE(KEYPOINT):
         # angles in conditions -> '만족하는' 각도
         KNEEDOWN_ANGLE = (avg_knee_angle > REF_KNEE_ANGLE)
         PARALLEL_ANGLE = (LESS_PARALLEL_ANGLE < avg_foot_parallel < MORE_PARALLEL_ANGLE)
-        PARALLEL_RATIO = (heel_foot_ratio < REF_HEEL_FOOT_RATIO)
+        PARALLEL_RATIO = (LESS_HEEL_FOOT_RATIO < heel_foot_ratio < MORE_HEEL_FOOT_RATIO)
         DEFAULT_ANGLE = (avg_leg_angle > MORE_LEG_ANGLE)
         MOREDOWN_ANGLE = (REF_LEG_ANGLE < avg_leg_angle < MORE_LEG_ANGLE)
         COUNT_ANGLE = (LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE)
@@ -217,8 +218,8 @@ class EXERCISE(KEYPOINT):
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
         AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
-        SPINE_CONDITION = (status != 'Rest' and feedback != 'Straight your spine' and feedback != 'Put your hands together')    # 허리 구부렸을 때
-        WRIST_CONDITION = (status != 'Rest' and feedback != 'Put your hands together' and feedback != 'Straight your spine')    # 팔 넓이
+        SPINE_CONDITION = (status != 'Rest' and (feedback != 'Straight your spine' or feedback != 'Put your hands together'))    # 허리 구부렸을 때
+        WRIST_CONDITION = (status != 'Rest' and (feedback != 'Put your hands together' or feedback != 'Straight your spine'))    # 팔 넓이
         DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
         MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
         COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your arms more')  # 적절한 경우
@@ -288,7 +289,6 @@ class EXERCISE(KEYPOINT):
                     status = 'Up'
                     feedback = 'Put your hands together'
                     color = [(0, 0, 0), (0, 0, 0), (0, 0, 255)]
-
                     
             # after each set
             if AFTER_SET_CONDITION:
