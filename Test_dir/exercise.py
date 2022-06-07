@@ -114,12 +114,12 @@ class EXERCISE(KEYPOINT):
             left_leg_angle = self.angle_of_the_right_leg()
             left_knee_angle = self.angle_of_the_left_knee() 
             left_foot_parallel = self.angle_of_left_foot_parallel()  
-            heel_length = self.length_of_heel_to_heel()
-            foot_length = self.length_of_foot_to_foot()
         elif camID == RIGHT_CAM:
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
             right_foot_parallel = self.angle_of_right_foot_parallel()
+            heel_length = self.length_of_heel_to_heel()
+            foot_length = self.length_of_foot_to_foot()
             
             # get average    
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
@@ -166,7 +166,7 @@ class EXERCISE(KEYPOINT):
                     status = 'Up'
                     feedback = 'Place your knees behind toes'
                     color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)] 
-                elif PARALLEL_CONDITION and not PARALLEL_ANGLE: # 발이 11자가 아닐 때
+                elif PARALLEL_CONDITION and not PARALLEL_RATIO: # 발이 11자가 아닐 때
                     print("condition 6")
                     voiceFeedback('parallel')
                     status = 'Up'
@@ -192,7 +192,7 @@ class EXERCISE(KEYPOINT):
                 feedback = "Well done!"
                 
             # make table for avg_angles
-            table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle, avg_parallel = avg_foot_parallel, foot_ratio = heel_foot_ratio)
+            table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle, foot_ratio = heel_foot_ratio, avg_parallel = avg_foot_parallel,)
             
         return [reps, status, sets, feedback, timer, camID]
 
@@ -211,7 +211,7 @@ class EXERCISE(KEYPOINT):
         MORE_ARM_ANGLE = 100.0
         MORE_WRIST_ANGLE = 27.0
         # LESS_WRIST_ANGLE = 20.0
-        REF_WRIST_SHOULDER_RATIO = 2.65
+        REF_WRIST_SHOULDER_RATIO = 1.6
         # REF_ELBOW_SHOULDER_RATIO = 2.2
         
         # conditions
