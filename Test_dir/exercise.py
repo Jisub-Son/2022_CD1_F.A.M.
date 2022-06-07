@@ -237,13 +237,13 @@ class EXERCISE(KEYPOINT):
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
             left_wrist_angle = self.angle_of_the_left_wrist()
-            wrist_length = self.length_of_wrist_to_wrist()
-            shoulder_length = self.length_of_shoulder_to_shoulder()
             # elbow_length = self.length_of_elbow_to_elbow()
         elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
             right_wrist_angle = self.angle_of_the_right_wrist()
+            wrist_length = self.length_of_wrist_to_wrist()
+            shoulder_length = self.length_of_shoulder_to_shoulder()
         
             # get average
             avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 

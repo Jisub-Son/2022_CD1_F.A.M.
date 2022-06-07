@@ -7,6 +7,7 @@ import pygame
 # set constants for reference
 REF_TIMER = 5           
 REF_VISIBILITY = 0.7    
+REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 3        
 REF_SETS = 3         
 RIGHT_CAM = 0
