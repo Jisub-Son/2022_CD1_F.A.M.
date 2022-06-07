@@ -88,8 +88,8 @@ class EXERCISE(KEYPOINT):
         LESS_LEG_ANGLE = 60.0
         LESS_PARALLEL_ANGLE = 0.0
         MORE_PARALLEL_ANGLE = 60.0
-        LESS_HEEL_FOOT_RATIO = 0.8
-        MORE_HEEL_FOOT_RATIO = 1.2 
+        LESS_HEEL_FOOT_RATIO = 0.7
+        MORE_HEEL_FOOT_RATIO = 1.1 
         
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
@@ -133,7 +133,7 @@ class EXERCISE(KEYPOINT):
             # heel_foot_ratio = fabs(heel_length - foot_length)
                 
             # count logic
-            if KNEEDOWN_ANGLE and PARALLEL_ANGLE:       # 기본 자세가 만족되고..
+            if KNEEDOWN_ANGLE and PARALLEL_RATIO:       # 기본 자세가 만족되고..
                 if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
                     voiceFeedback('lessdown')
                     reps -= 1
@@ -218,8 +218,8 @@ class EXERCISE(KEYPOINT):
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
         AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
-        SPINE_CONDITION = (status != 'Rest' and (feedback != 'Straight your spine' or feedback != 'Put your hands together'))    # 허리 구부렸을 때
-        WRIST_CONDITION = (status != 'Rest' and (feedback != 'Put your hands together' or feedback != 'Straight your spine'))    # 팔 넓이
+        SPINE_CONDITION = (status != 'Rest' and feedback != 'Straight your spine' and feedback != 'Put your hands together')    # 허리 구부렸을 때
+        WRIST_CONDITION = (status != 'Rest' and feedback != 'Put your hands together' and feedback != 'Straight your spine')    # 팔 넓이
         DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
         MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
         COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your arms more')  # 적절한 경우
