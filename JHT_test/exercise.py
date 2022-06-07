@@ -1,4 +1,5 @@
 import time
+from unittest.mock import DEFAULT
 from keypoint import KEYPOINT   
 from utils import *  
 from math import fabs          
@@ -28,13 +29,6 @@ left_elbow_angle = 90.0    #푸쉬업 내려가면서 팔꿈치 각도
 right_elbow_angle = 90.0
 avg_elbow_angle = 0.0
 
-left_wrist_length = 10.0
-left_shoulder_length = 0.0
-wrist_shoulder_ratio = 2.0
-
-left_elbow_length = 0.0
-elbow_shoulder_ratio = 0.0
-
 left_wrist_angle = 90.0
 right_wrist_angle = 90.0
 avg_wrist_angle = 0.0
@@ -43,10 +37,15 @@ left_foot_parallel = 90.0   # 발 11자 각도
 right_foot_parallel = 90.0
 avg_foot_parallel = 90.0
 
-length_shoudler = 0.0   # 어깨, 발 사이 거리
-length_foot = 0.0
-length_heel = 0.0
-length_ankle = 0.0
+shoulder_length = 0.0   # 어깨, 발 사이 거리
+wrist_length = 0.0
+elbow_length = 0.0
+heel_length = 0.0
+foot_length = 0.0
+
+elbow_shoulder_ratio = 0.0
+wrist_shoulder_ratio = 0.0
+heel_foot_ratio = 0.0
 
 color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
 
@@ -78,63 +77,104 @@ class EXERCISE(KEYPOINT):
     def squat(self, reps, status, sets, feedback, timer, camID):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
+                left_foot_parallel, right_foot_parallel, avg_foot_parallel,\
+                heel_length, foot_length, heel_foot_ratio,\
                 prev, color
         
         # reference angles
-        REF_KNEE_ANGLE = 140.0
-        REF_LEG_ANGLE = 100.0
-        ALLOW_RATE = 0.1        # 허용 오차 비율
-        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) too much < 100-10 < good < 100+10 < more < 100+50 < default
+        REF_KNEE_ANGLE = 135.0
+        REF_LEG_ANGLE = 140.0
+        MORE_LEG_ANGLE = 160.0
+        LESS_LEG_ANGLE = 60.0
+        LESS_PARALLEL_ANGLE = 0.0
+        MORE_PARALLEL_ANGLE = 60.0
+        REF_HEEL_FOOT_RATIO = 2.0 
+        
+        # conditions
+        AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
+        AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
+        KNEEDOWN_CONDITION = (status != 'Rest' and feedback != 'Place your knees behind toes' and feedback != 'Parallel your feet') # 무릎이 발끝 앞으로 나갔을 경우
+        PARALLEL_CONDITION = (status != 'Rest' and feedback != 'Parallel your feet' and feedback != 'Place your knees behind toes') # 발 11자를 못했을 경우
+        DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
+        MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
+        COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your legs more')  # 적절한 경우
+        LESSDOWN_CONDITION = (status != 'Rest' and feedback == 'Success')   # 덜 구부려야 하는 경우
+        
+        # angles in conditions -> '만족하는' 각도
+        KNEEDOWN_ANGLE = (avg_knee_angle > REF_KNEE_ANGLE)
+        PARALLEL_ANGLE = (LESS_PARALLEL_ANGLE < avg_foot_parallel < MORE_PARALLEL_ANGLE)
+        PARALLEL_RATIO = (heel_foot_ratio < REF_HEEL_FOOT_RATIO)
+        DEFAULT_ANGLE = (avg_leg_angle > MORE_LEG_ANGLE)
+        MOREDOWN_ANGLE = (REF_LEG_ANGLE < avg_leg_angle < MORE_LEG_ANGLE)
+        COUNT_ANGLE = (LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE)
+        LESSDOWN_ANGLE = (avg_leg_angle < LESS_LEG_ANGLE)
         
         # get angles from eact camID
         if camID == LEFT_CAM:
             left_leg_angle = self.angle_of_the_right_leg()
-            left_knee_angle = self.angle_of_the_left_knee()   
+            left_knee_angle = self.angle_of_the_left_knee() 
+            left_foot_parallel = self.angle_of_left_foot_parallel()  
+            heel_length = self.length_of_heel_to_heel()
+            foot_length = self.length_of_foot_to_foot()
         elif camID == RIGHT_CAM:
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
+            right_foot_parallel = self.angle_of_right_foot_parallel()
             
             # get average    
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
-            avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
+            avg_knee_angle = (left_knee_angle + right_knee_angle) // 2 
+            avg_foot_parallel = fabs(left_foot_parallel - right_foot_parallel) 
             
-            # get ready state
-            if status != 'Rest' and status != 'All done':
-                ready = True
-            else:
-                ready = False
-            
+            #get ratio
+            foot_length = round(foot_length, 4)
+            heel_foot_ratio = heel_length / foot_length
+            # heel_foot_ratio = fabs(heel_length - foot_length)
+                
             # count logic
-            if ready == True and avg_knee_angle > REF_KNEE_ANGLE:   # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
-                if feedback == 'Success' and avg_leg_angle < REF_LEG_ANGLE*(1-ALLOW_RATE): # 너무 많이 구부렸을 때
+            if KNEEDOWN_ANGLE and PARALLEL_ANGLE:       # 기본 자세가 만족되고..
+                if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
                     voiceFeedback('lessdown')
                     reps -= 1
                     status = 'Up'
                     feedback = 'Bend your legs less'
-                    color = [(0, 0, 255), (0, 0, 0)]        
-                elif feedback == 'Bend your legs more' and REF_LEG_ANGLE*(1-ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+ALLOW_RATE):    # 적절하게 구부렸을 때
+                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+                elif COUNT_CONDITION and COUNT_ANGLE:       # 적절히 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
-                    color = [(255, 0, 0), (255, 0, 0)]
-                elif feedback == 'Start' and REF_LEG_ANGLE*(1+ALLOW_RATE) < avg_leg_angle < REF_LEG_ANGLE*(1+MEASURE_RATE):  # 너무 적게 구부렸을 때
+                    prev = time.time()
+                    color = [(255, 0, 0), (255, 0, 0), (255, 0, 0), (0, 0, 0)]
+                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE: # 덜 구부렸을 때
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your legs more'
-                    color = [(0, 0, 255), (0, 0, 0)]
-                elif REF_LEG_ANGLE*(1+MEASURE_RATE) < avg_leg_angle:   # 구부리지 않았을 때
+                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE:   # 구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0)]
-            elif ready == True and feedback != 'Place your knees behind toes' and avg_knee_angle < REF_KNEE_ANGLE: # 기본 자세 충족 안됨 -> 무릎이 발끝보다 앞에 있을 때
-                voiceFeedback('kneedown')
-                status = 'Up'
-                feedback = 'Place your knees behind toes'
-                color = [(0, 0, 0), (0, 0, 255)]
+                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+            else:
+                if feedback == 'Success' and (not KNEEDOWN_ANGLE or not PARALLEL_ANGLE):    # 카운트가 된 직후 잘못 자세를 잡았을 때
+                    reps -= 1
+                    status = 'Up'
+                    feedback = 'Keep your position to the end'
+                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255), (0, 0, 0)]
+                elif KNEEDOWN_CONDITION and not KNEEDOWN_ANGLE:   # 무릎이 발끝 앞으로 나갔을 때
+                    voiceFeedback('kneedown')
+                    status = 'Up'
+                    feedback = 'Place your knees behind toes'
+                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)] 
+                elif PARALLEL_CONDITION and not PARALLEL_ANGLE: # 발이 11자가 아닐 때
+                    print("condition 6")
+                    voiceFeedback('parallel')
+                    status = 'Up'
+                    feedback = 'Parallel your feet'
+                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)]
                     
             # after each set
-            if reps == REF_REPS and status == 'Up':
+            if AFTER_SET_CONDITION:
                 prev = time.time()
                 if feedback == 'Start':
                     voiceFeedback('rest_time')
@@ -144,7 +184,7 @@ class EXERCISE(KEYPOINT):
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
             
             # when exercise is finished
-            if sets == REF_SETS:
+            if AFTER_ALL_SET_CONDITION:
                 voiceFeedback('end')
                 reps = 0
                 status = 'All done'
@@ -152,8 +192,7 @@ class EXERCISE(KEYPOINT):
                 feedback = "Well done!"
                 
             # make table for avg_angles
-            table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle)
-                            #    heel = length_heel, ankle = length_ankle, foot = length_foot)
+            table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle, avg_parallel = avg_foot_parallel, foot_ratio = heel_foot_ratio)
             
         return [reps, status, sets, feedback, timer, camID]
 
@@ -161,101 +200,101 @@ class EXERCISE(KEYPOINT):
     def pushup(self, reps, status, sets, feedback, timer, camID):
         global left_arm_angle, right_arm_angle, avg_arm_angle,\
                 left_spine_angle, right_spine_angle, avg_spine_angle,\
-                left_elbow_angle, right_elbow_angle, avg_elbow_angle ,\
                 left_wrist_angle, right_wrist_angle, avg_wrist_angle,\
-                left_wrist_length, right_wrist_length,  avg_wrist_length,\
-                left_shoulder_length,\
-                wrist_shoulder_ratio,\
-                left_elbow_length,\
-                elbow_shoulder_ratio,\
+                shoulder_length, wrist_length, elbow_length,\
+                elbow_shoulder_ratio, wrist_shoulder_ratio,\
                 prev, color   
         
         # reference angles
-        REF_ARM_ANGLE = 40.0
-        REF_SPINE_ANGLE = 170.0
-        REF_ELBOW_ANGLE = 70.0
-        REF_WRIST_ANGLE = 15.0
-        REF_ELBOW_SHOULDER_RATIO = 2.2
-        REF_WRIST_SHOULDER_RATIO = 2.65
-
-
-        ALLOW_RATE = 0.1        # 허용 오차 비율
-        MEASURE_RATE = 0.5      # 에러 오차 비율  ex) good < 40+4 < more < 40+20 < default
+        REF_ARM_ANGLE = 80.0
+        REF_SPINE_ANGLE = 165.0
+        MORE_ARM_ANGLE = 100.0
+        MORE_WRIST_ANGLE = 27.0
+        # LESS_WRIST_ANGLE = 20.0
+        REF_WRIST_SHOULDER_RATIO = 2.7
+        # REF_ELBOW_SHOULDER_RATIO = 2.2
+        
+        # conditions
+        AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
+        AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
+        SPINE_CONDITION = (status != 'Rest'  )    # 허리 구부렸을 때
+        WRIST_CONDITION = (status != 'Rest'  )    # 팔 넓이
+        DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
+        MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
+        COUNT_CONDITION = (status != 'Rest' and feedback == 'Bend your arms more')  # 적절한 경우
+        
+        # angles in conditions -> '만족하는' 각도
+        SPINE_ANGLE = (avg_spine_angle > REF_SPINE_ANGLE)
+        # WRIST_ANGLE = (LESS_WRIST_ANGLE < avg_wrist_angle < MORE_WRIST_ANGLE)
+        WRIST_ANGLE = (avg_wrist_angle < MORE_WRIST_ANGLE)
+        WRIST_RATIO = (wrist_shoulder_ratio < REF_WRIST_SHOULDER_RATIO)
+        DEFAULT_ANGLE = (avg_arm_angle > MORE_ARM_ANGLE)
+        MOREDOWN_ANGLE = (REF_ARM_ANGLE < avg_arm_angle < MORE_ARM_ANGLE)
+        COUNT_ANGLE = (avg_arm_angle < REF_ARM_ANGLE)
         
         # get angles from eact camID
         if camID == LEFT_CAM:
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
-            #left_elbow_angle = self.angle_of_the_left_elbow()
-            #left_wrist_angle = self.angle_of_the_left_wrist()
-            left_wrist_length = self.length_of_wrist_to_wrist()
-            left_shoulder_length = self.length_of_shoulder_to_shoulder()
-            left_elbow_length = self.length_of_elbow_to_elbow()
+            left_wrist_angle = self.angle_of_the_left_wrist()
+            wrist_length = self.length_of_wrist_to_wrist()
+            shoulder_length = self.length_of_shoulder_to_shoulder()
+            # elbow_length = self.length_of_elbow_to_elbow()
         elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
-            #right_elbow_angle = self.angle_of_the_right_elbow()
-            #right_wrist_angle = self.angle_of_the_right_wrist()
-            #right_wrist_length = self.length_of_wrist_to_wrist()
+            right_wrist_angle = self.angle_of_the_right_wrist()
         
             # get average
             avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
             avg_spine_angle = (left_spine_angle + right_spine_angle) // 2 
-            avg_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2
             avg_wrist_angle = (left_wrist_angle + right_wrist_angle) // 2
-            #avg_wrist_length = (left_wrist_length + right_wrist_length ) // 2
-
-            #양팔꿈치 사이거리, 양 손목 사이 거리
-            left_shoulder_length2 =  round(left_shoulder_length , 4) # 분모의 소수점이 너무 길면 계산이 안되므로 반올림
-            wrist_shoulder_ratio = left_wrist_length / left_shoulder_length2
-            elbow_shoulder_ratio = left_elbow_length / left_shoulder_length2
-
-
-            # get ready state
-            if status != 'Rest' and status != 'All done':
-                ready = True
-            else:
-                ready = False
-
-            # count logic      avg_wrist_angle < REF_WRIST_ANGLE
-            if ready == True and avg_spine_angle > REF_SPINE_ANGLE and wrist_shoulder_ratio < REF_WRIST_SHOULDER_RATIO:     # 기본 자세가 충족된 상태에서 무릎을 구부릴 때
-                
-                
-                if feedback == 'Bend your arms more' and avg_arm_angle < REF_ARM_ANGLE*(1+ALLOW_RATE):  # 적절하게 구부렸을 때
+            
+            # get ratio
+            shoulder_length = round(shoulder_length, 4)
+            wrist_shoulder_ratio = wrist_length / shoulder_length
+            # elbow_shoulder_ratio = elbow_length / shoulder_length
+            
+            # count logic
+            if SPINE_ANGLE and WRIST_RATIO:         # 기본 자세가 만족되고
+                if COUNT_CONDITION and COUNT_ANGLE: # 적절하게 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
-                    color = [(255, 0, 0), (255, 0, 0), (0, 0, 0), (0, 0, 0)]
-                elif feedback == 'Success' and elbow_shoulder_ratio > REF_ELBOW_SHOULDER_RATIO: 
-                    voiceFeedback('elbow')
-                    reps -= 1
-                    #status = 'Down'
-                    feedback = 'Bring your elbows together a little more'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)]
-                elif feedback == 'Start' and REF_ARM_ANGLE*(1+ALLOW_RATE) < avg_arm_angle < REF_ARM_ANGLE*(1+MEASURE_RATE): # 너무 적게 구부렸을 때
+                    color = [(255, 0, 0), (255, 0, 0), (255, 0, 0)]
+                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE:     # 너무 적게 구부렸을 때
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your arms more'
-                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
-                elif REF_ARM_ANGLE*(1+MEASURE_RATE) < avg_arm_angle:    #구부리지 않았을 때
+                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0)]
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE:       #구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
-            elif ready == True and feedback != 'Straight your spine' and avg_spine_angle < REF_SPINE_ANGLE:   # 기본 자세 충족 안됨 -> 허리가 일직선이 아닐 때
-                voiceFeedback('spine')
-                status = 'Up'
-                feedback = 'Straight your spine'
-                color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)]
-            elif ready == True and feedback != 'Put your hands together' and wrist_shoulder_ratio > REF_WRIST_SHOULDER_RATIO: # 기본 자세 충족 안됨 -> 손을 너무 크게 벌렸을 때
-                voiceFeedback('hand')
-                status = 'Up'
-                feedback = 'Put your hands together'
-                color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 255)]
-            
+                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
+            else:
+                if feedback == 'Success' and (not SPINE_ANGLE or not WRIST_RATIO):  # 카운트가 된 직후 잘못 자세를 잡았을 때
+                    reps -= 1
+                    status = 'Up'
+                    feedback = 'Keep your position to the end'
+                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255)]
+                elif SPINE_CONDITION and not SPINE_ANGLE:   # 허리를 구부렸을 때
+                    if feedback != 'Straight your spine' :
+                        voiceFeedback('spine')
+                    status = 'Up'
+                    feedback = 'Straight your spine'
+                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 0)]
+                elif WRIST_CONDITION and not WRIST_RATIO:
+                    if feedback != 'Put your hands together' :
+                        voiceFeedback('hand')
+                    status = 'Up'
+                    feedback = 'Put your hands together'
+                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255)]
+                
+
                     
             # after each set
-            if reps == REF_REPS and status == 'Up':
+            if AFTER_SET_CONDITION:
                 prev = time.time()
                 if feedback == 'Start':
                     voiceFeedback('rest_time')
@@ -265,15 +304,15 @@ class EXERCISE(KEYPOINT):
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
                 
             # when exercise is finished
-            if sets == REF_SETS:
+            if AFTER_ALL_SET_CONDITION:
                 voiceFeedback('end')
                 reps = 0
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
                  
-            # make table for calculations   avg_spine = avg_spine_angle  avg_wrist = avg_wrist_angle,   avg_elbow = avg_elbow_angle
-            table_calculations(color, avg_arm = avg_arm_angle, avg_spine = avg_spine_angle, e_s_ratio = elbow_shoulder_ratio, w_s_ratio = wrist_shoulder_ratio)
+            # make table for calculations
+            table_calculations(color, avg_arm = avg_arm_angle, avg_spine = avg_spine_angle, wrist_ratio = wrist_shoulder_ratio)
         
         return [reps, status, sets, feedback, timer, camID]
   
