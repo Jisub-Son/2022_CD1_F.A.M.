@@ -139,7 +139,7 @@ class KEYPOINT:
     def length_of_shoulder_to_shoulder(self):   # 양 어깨 사이 거리
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        if r_shoulder[2] >= REF_VISIBILITY and l_shoulder[2] >= REF_VISIBILITY:
+        if r_shoulder[2] >= REF_ROUGH_VISIBILITY and l_shoulder[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_shoulder, l_shoulder)
         else:
             return 0    
@@ -147,7 +147,7 @@ class KEYPOINT:
     def length_of_wrist_to_wrist(self):   # 양 손목 사이 거리
         r_wrist = detection(self.landmarks, "RIGHT_WRIST")
         l_wrist = detection(self.landmarks, "LEFT_WRIST")
-        if r_wrist[2] >= REF_VISIBILITY and l_wrist[2] >= REF_VISIBILITY:
+        if r_wrist[2] >= REF_ROUGH_VISIBILITY and l_wrist[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_wrist, l_wrist)
         else:
             return 0
@@ -155,7 +155,7 @@ class KEYPOINT:
     def length_of_elbow_to_elbow(self):   # 양 팔꿈치 사이 거리
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
-        if r_elbow[2] >= REF_VISIBILITY and l_elbow[2] >= REF_VISIBILITY:
+        if r_elbow[2] >= REF_ROUGH_VISIBILITY and l_elbow[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_elbow, l_elbow)
         else:
             return 0
@@ -165,7 +165,7 @@ class KEYPOINT:
     def length_of_ankle_to_ankle(self):   # 양 발목 사이 거리
         r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
         l_ankle = detection(self.landmarks, "LEFT_ANKLE")
-        if r_ankle[2] >= REF_VISIBILITY and l_ankle[2] >= REF_VISIBILITY:
+        if r_ankle[2] >= REF_ROUGH_VISIBILITY and l_ankle[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_ankle, l_ankle)
         else:
             return 0
@@ -173,7 +173,7 @@ class KEYPOINT:
     def length_of_heel_to_heel(self):   # 양 발뒷꿈치 사이 거리
         r_heel = detection(self.landmarks, "RIGHT_HEEL")
         l_heel = detection(self.landmarks, "LEFT_HEEL")
-        if r_heel[2] >= REF_VISIBILITY and l_heel[2] >= REF_VISIBILITY:
+        if r_heel[2] >= REF_ROUGH_VISIBILITY and l_heel[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_heel, l_heel)
         else:
             return 0

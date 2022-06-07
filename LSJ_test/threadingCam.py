@@ -3,6 +3,7 @@ import mediapipe as mp
 import threading
 from utils import *
 from exercise import EXERCISE
+import time
 
 # initialize variables
 def initState():        
@@ -31,8 +32,8 @@ class camThread(threading.Thread):
         
         # video setting
         capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
-        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+        # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         
         # mediapipe setting
         mp_drawing = mp.solutions.drawing_utils
@@ -104,6 +105,21 @@ class camThread(threading.Thread):
                 
                 # 카메라 좌우반전(운동 자세보기 편하게)
                 frame = cv2.flip(frame, 1)
+                
+                # calculate fps
+                fps = capture.get(cv2.CAP_PROP_FPS)
+                # print('fps',fps)
+                if fps == 0.0:
+                    fps = 30.0
+                time_per_frame_video = 1/fps
+                last_time = time.perf_counter()
+                time_per_frame = time.perf_counter() - last_time
+                time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
+                time.sleep(time_sleep_frame)
+                real_fps = 1/(time.perf_counter()-last_time)
+                last_time = time.perf_counter()
+                str = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
+                cv2.putText(frame, str, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
                 
                 # put window
                 if camID == 0:
