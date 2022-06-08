@@ -80,12 +80,12 @@ class EXERCISE(KEYPOINT):
                 prev, color
         
         # reference angles
-        REF_KNEE_ANGLE = 120.0
-        REF_LEG_ANGLE = 140.0
-        MORE_LEG_ANGLE = 160.0
-        LESS_LEG_ANGLE = 70.0
-        LESS_HEEL_FOOT_RATIO = 0.6
-        MORE_HEEL_FOOT_RATIO = 1.4 
+        REF_KNEE_ANGLE = 130.0 ## 무픞 나온거
+        REF_LEG_ANGLE = 140.0 ## 140 이하일 때 정답
+        MORE_LEG_ANGLE = 160.0 ## 160부터 더 내려가
+        LESS_LEG_ANGLE = 70.0 ## 너무 내려갔고
+        LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 1.4 ## 발 11자 조건
         
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
@@ -244,7 +244,8 @@ class EXERCISE(KEYPOINT):
             
             # get ratio
             shoulder_length = round(shoulder_length, 4)
-            wrist_shoulder_ratio = wrist_length / shoulder_length
+            if avg_arm_angle > 160:
+               wrist_shoulder_ratio = wrist_length / shoulder_length
             
             # count logic
             if SPINE_ANGLE and WRIST_RATIO:         # 기본 자세가 만족되고

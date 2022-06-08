@@ -28,7 +28,7 @@ class KEYPOINT:
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_hip = detection(self.landmarks, "LEFT_HIP")
         l_knee = detection(self.landmarks, "LEFT_KNEE")
-        if l_shoulder[2] >= REF_VISIBILITY and l_hip[2] >= REF_VISIBILITY and l_knee[2] >= REF_VISIBILITY:
+        if l_shoulder[2] >= REF_ROUGH_VISIBILITY and l_hip[2] >= REF_ROUGH_VISIBILITY and l_knee[2] >= REF_ROUGH_VISIBILITY:
             return calculate_angle(l_shoulder, l_hip, l_knee)
         else:
             return 0
@@ -37,7 +37,7 @@ class KEYPOINT:
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_hip = detection(self.landmarks, "RIGHT_HIP")
         r_knee = detection(self.landmarks, "RIGHT_KNEE")
-        if r_shoulder[2] >= REF_VISIBILITY and r_hip[2] >= REF_VISIBILITY and r_knee[2] >= REF_VISIBILITY:
+        if r_shoulder[2] >= REF_ROUGH_VISIBILITY and r_hip[2] >= REF_ROUGH_VISIBILITY and r_knee[2] >= REF_ROUGH_VISIBILITY:
             return calculate_angle(r_shoulder, r_hip, r_knee)
         else:
             return 0
