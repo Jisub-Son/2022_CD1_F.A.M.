@@ -46,6 +46,14 @@ elbow_shoulder_ratio = 0.0
 wrist_shoulder_ratio = 0.0
 heel_foot_ratio = 0.0
 
+easter_left_elbow_angle = 0.0 ## 이스터 초기화
+easter_left_shoulder_angle = 0.0
+easter_left_knee_angle = 0.0
+easter_right_elbow_angle = 0.0
+easter_right_shoulder_angle = 0.0
+easter_right_knee_angle = 0.0
+easter_right_wrist_angle = 0.0
+
 color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
 
 class EXERCISE(KEYPOINT):
@@ -77,15 +85,17 @@ class EXERCISE(KEYPOINT):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
                 heel_length, foot_length, heel_foot_ratio,\
+                easter_left_elbow_angle, easter_left_shoulder_angle, easter_left_knee_angle,\
+                easter_right_elbow_angle, easter_right_shoulder_angle, easter_right_knee_angle, easter_right_wrist_angle,\
                 prev, color
         
         # reference angles
-        REF_KNEE_ANGLE = 130.0 ## 무픞 나온거
+        REF_KNEE_ANGLE = 130.0 ## 무릎 나온거
         REF_LEG_ANGLE = 140.0 ## 140 이하일 때 정답
         MORE_LEG_ANGLE = 160.0 ## 160부터 더 내려가
         LESS_LEG_ANGLE = 70.0 ## 너무 내려갔고
         LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
-        MORE_HEEL_FOOT_RATIO = 1.4 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 1.4 ## 발 11자 조건       
         
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
@@ -108,17 +118,36 @@ class EXERCISE(KEYPOINT):
         COUNT_ANGLE = (LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE)
         LESSDOWN_ANGLE = (avg_leg_angle < LESS_LEG_ANGLE)
         
+        ## easter egg
+        EASTER_RIGHT_ELBOW_ANGLE = ( 30.0 < easter_right_elbow_angle < 50.0) ## 이스터 기준 각도
+        EASTER_RIGHT_SHOULDER_ANGLE = (155.0 < easter_right_shoulder_angle)
+        EASTER_RIGHT_KNEE_ANGLE = (170.0 < easter_right_knee_angle)
+        EASTER_RIHGHT_WRIST_ANGLE = (130.0 < easter_right_wrist_angle < 160.0)      
+        EASTER_LEFT_ELBOW_ANGLE = (170.0 < easter_left_elbow_angle)
+        EASTER_LEFT_SHOULDER_ANGLE = (easter_left_shoulder_angle < 100.0)
+        EASTER_LEFT_KNEE_ANGLE = (170.0 < easter_left_knee_angle)   
+        EASTER_CONDITION = (status == 'Up' and feedback == 'Start') ## 이스터
+        EASTER_ANGLE = (EASTER_RIHGHT_WRIST_ANGLE and EASTER_RIGHT_ELBOW_ANGLE and EASTER_RIGHT_SHOULDER_ANGLE and EASTER_RIGHT_KNEE_ANGLE and EASTER_LEFT_ELBOW_ANGLE and EASTER_LEFT_SHOULDER_ANGLE and EASTER_LEFT_KNEE_ANGLE)
+        
         # get angles from eact camID
         if camID == LEFT_CAM:
             left_leg_angle = self.angle_of_the_right_leg()
             left_knee_angle = self.angle_of_the_left_knee() 
             left_foot_parallel = self.angle_of_left_foot_parallel()  
+             
+            easter_left_elbow_angle = self.easter_angle_of_the_left_elbow() ## 이스터
+            easter_left_knee_angle = self.easter_angle_of_the_left_knee()
         elif camID == RIGHT_CAM:
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
             right_foot_parallel = self.angle_of_right_foot_parallel()
             heel_length = self.length_of_heel_to_heel()
             foot_length = self.length_of_foot_to_foot()
+            
+            easter_right_elbow_angle = self.easter_angle_of_the_right_elbow() ## 이스터
+            easter_right_shoulder_angle = self.easter_angle_of_the_right_shoulder()
+            easter_right_knee_angle = self.easter_angle_of_the_right_shoulder()
+            easter_right_wrist_angle = self.easter_angle_of_the_right_wrist()
             
             # get average    
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
@@ -127,9 +156,15 @@ class EXERCISE(KEYPOINT):
             
             #get ratio
             foot_length = round(foot_length, 4)
-            heel_foot_ratio = heel_length / foot_length
+            heel_foot_ratio = heel_length / foot_length             
+            
+            if EASTER_ANGLE and EASTER_CONDITION: ## 이스터
+                voiceFeedback('easter')
+                status = 'Congratulations'
+                feedback = 'Congratulations'
+                ##color = [(0, 255, 0), (0, 255, 0), (0, 255, 0)]
                 
-            # count logic
+            # count logic    
             if KNEEDOWN_ANGLE and PARALLEL_RATIO:       # 기본 자세가 만족되고..
                 if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
                     voiceFeedback('lessdown')
@@ -149,7 +184,7 @@ class EXERCISE(KEYPOINT):
                     status = 'Up'
                     feedback = 'Bend your legs more'
                     color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
-                elif DEFAULT_CONDITION and DEFAULT_ANGLE:   # 구부리지 않았을 때
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE and not EASTER_ANGLE and not EASTER_CONDITION :   # 구부리지 않았을 때
                     status = 'Up'
                     feedback = 'Start'
                     color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
@@ -181,6 +216,7 @@ class EXERCISE(KEYPOINT):
                 feedback = 'Take a breathe..'
             if AFTER_REST_CONDITION: ## 쉬는 시간이 종료될 경우
                 voiceFeedback('start_exercise') ## 다시 운동할 시간
+                feedback = 'Start exercise again'
             if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
             
@@ -194,6 +230,7 @@ class EXERCISE(KEYPOINT):
                 
             # make table for avg_angles
             table_calculations(color, avg_leg = avg_leg_angle, avg_knee = avg_knee_angle, foot_ratio = heel_foot_ratio, avg_parallel = avg_foot_parallel)
+            ##table_calculations(color, easter_elbow = easter_right_elbow_angle, easter_shoulder = easter_right_shoulder_angle, easter_wrist = easter_right_wrist_angle) ## 이스터 확인용
             
         return [reps, status, sets, feedback, timer, camID]
 
@@ -295,7 +332,8 @@ class EXERCISE(KEYPOINT):
                 status = 'Rest'
                 feedback = 'Take a breathe..'
             if AFTER_REST_CONDITION: ## 쉬는시간이 종료될 경우
-                voiceFeedback('start_exercise') ## 다시 운동 시작     
+                voiceFeedback('start_exercise') ## 다시 운동 시작    
+                feedback = 'Start exercise again' 
             if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
                 

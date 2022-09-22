@@ -17,14 +17,14 @@ pygame.init()               # init mixer
 pygame.mixer.Sound('rest_time.wav')     # 쉬는 시간입니다
 pygame.mixer.Sound('buzzer.wav')        # 버저음
 pygame.mixer.Sound('end.wav')           # 운동이 종료되었습니다
-pygame.mixer.Sound('correct.wav')       # 좋은 자세입니다
 pygame.mixer.Sound('kneedown.wav')      # 무릎을 넎으세요
 pygame.mixer.Sound('lessdown.wav')      # 너무 내려갔습니다
 pygame.mixer.Sound('moredown.wav')      # 더 내리세요
 pygame.mixer.Sound('parallel.wav')      # 발을 11자로 해주세요
 pygame.mixer.Sound('spine.wav')         # 허리를 더 펴주세요
 pygame.mixer.Sound('hand.wav')          # 손을 더 모아주세요
-pygame.mixer.Sound('start_exercise.wav')
+pygame.mixer.Sound('start_exercise.wav') ## 쉬는 시간 종료
+pygame.mixer.Sound('easter.wav') ## 이스터
 prev_sound = ""
 
 mp_pose = mp.solutions.pose # landmark
