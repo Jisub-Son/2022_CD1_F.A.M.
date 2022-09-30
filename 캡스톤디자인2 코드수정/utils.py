@@ -14,17 +14,17 @@ RIGHT_CAM = 0
 LEFT_CAM = 1 
 
 pygame.init()               # init mixer
-pygame.mixer.Sound('rest_time.wav')     # 쉬는 시간입니다
-pygame.mixer.Sound('buzzer.wav')        # 버저음
-pygame.mixer.Sound('end.wav')           # 운동이 종료되었습니다
-pygame.mixer.Sound('kneedown.wav')      # 무릎을 넎으세요
-pygame.mixer.Sound('lessdown.wav')      # 너무 내려갔습니다
-pygame.mixer.Sound('moredown.wav')      # 더 내리세요
-pygame.mixer.Sound('parallel.wav')      # 발을 11자로 해주세요
-pygame.mixer.Sound('spine.wav')         # 허리를 더 펴주세요
-pygame.mixer.Sound('hand.wav')          # 손을 더 모아주세요
-pygame.mixer.Sound('start_exercise.wav') ## 쉬는 시간 종료
-pygame.mixer.Sound('easter.wav') ## 이스터
+pygame.mixer.Sound("sound\./rest_time.wav")     # 쉬는 시간입니다
+pygame.mixer.Sound("sound\./buzzer.wav")        # 버저음
+pygame.mixer.Sound("sound\./end.wav")           # 운동이 종료되었습니다 
+pygame.mixer.Sound("sound\./kneedown.wav")      # 무릎을 넎으세요
+pygame.mixer.Sound("sound\./lessdown.wav")      # 너무 내려갔습니다
+pygame.mixer.Sound("sound\./moredown.wav")      # 더 내리세요
+pygame.mixer.Sound("sound\./parallel.wav")      # 발을 11자로 해주세요
+pygame.mixer.Sound("sound\./spine.wav")         # 허리를 더 펴주세요
+pygame.mixer.Sound("sound\./hand.wav")          # 손을 더 모아주세요
+pygame.mixer.Sound("sound\./start_exercise.wav") ## 쉬는 시간 종료
+pygame.mixer.Sound("sound\./easter.wav") ## 이스터
 prev_sound = ""
 
 mp_pose = mp.solutions.pose # landmark
@@ -79,18 +79,18 @@ def voiceFeedback(sound):
     global prev_sound
     if pygame.mixer.get_busy() == False:
         prev_sound = sound
-        pygame.mixer.Sound(sound + '.wav').play()
+        pygame.mixer.Sound('sound\./' +  sound + '.wav').play()
     else:
         if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생       
             # print("prev", prev_sound, "cur", sound)   
             pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
-            pygame.mixer.Sound(sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
+            pygame.mixer.Sound('sound\./' + sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
         else:
             pass
 
 # make table
 def table(exercise, reps, status, sets, feedback, timer): 
-    table = cv2.imread("./table.PNG") # table 이미지 위치
+    table = cv2.imread("table\./table.PNG") # table 이미지 위치
     cv2.putText(table, "Exercise            " + exercise.replace("-", " "), ## opencv문자열: table 운동타입(입력한 운동타입)
                 (1, 95), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Reps                " + str(reps), (1, 155), ## opencv문자열: table 운동 카운트
@@ -108,7 +108,7 @@ def table(exercise, reps, status, sets, feedback, timer):
 
 # make calculations table    
 def table_calculations(*args, **kwargs):
-    table_calculations = cv2.imread("./table_angle.PNG")
+    table_calculations = cv2.imread("table\./table_angle.PNG")
     for i, key in enumerate(kwargs):
         cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
                     cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정

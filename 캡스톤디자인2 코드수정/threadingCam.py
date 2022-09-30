@@ -4,6 +4,10 @@ import threading
 from utils import *
 from exercise import EXERCISE
 import time
+import numpy as np
+
+r = 10 ## 200, 10 지점
+c = 239
 
 # initialize variables
 def initState():        
@@ -43,10 +47,13 @@ class camThread(threading.Thread):
                         min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5
             
             # init variables
-            reps, status, sets, feedback, timer = initState()
-            
+            reps, status, sets, feedback, timer = initState()        
+              
+            squat_down = 84 ## 초기화
+            squat_up = 221
+               
             # open opencv window
-            while capture.isOpened():
+            while capture.isOpened():              
                 
                 # key input for exit, mode, reset
                 key = cv2.waitKey(1) & 0xFF     # 키보드 입력
@@ -118,8 +125,47 @@ class camThread(threading.Thread):
                 time.sleep(time_sleep_frame)
                 real_fps = 1/(time.perf_counter()-last_time)
                 last_time = time.perf_counter()
-                str = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
-                cv2.putText(frame, str, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+                str_fps = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
+                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+                
+                # display shadow partner
+                if (args["exercise"] == "squat" and status == 'Up' and feedback == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
+                    logo = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
+                    ##cv2.imshow('logo', logo)
+                    if logo is None:
+                        print('image load failed!')
+                    squat_down += 1 ## i 증가     
+                    if squat_down == 220: ## 범위 넘어가면
+                        squat_down = 84  ## 초기화
+                    # logo with frame    
+                    rows, cols, channels = logo.shape ## 로고 픽셀값
+                    roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
+                    gray = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+                    ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+                    mask_inv = cv2.bitwise_not(mask) ## mask 반전
+                    background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
+                    shadowpartner = cv2.bitwise_and(logo, logo, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+                    final = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
+                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성
+                
+                elif (args["exercise"] == "squat" and status == 'Down' and feedback == 'Success'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
+                    logo = cv2.imread('squat\squat_' + str(squat_up) +'.png') ## 1번부터 읽기
+                    ##cv2.imshow('logo', logo)
+                    if logo is None:
+                        print('image load failed!')
+                    squat_up += 1 ## i 증가     
+                    if squat_up == 300: ## 범위 넘어가면
+                        squat_up = 221  ## 초기화
+                    # logo with frame    
+                    rows, cols, channels = logo.shape ## 로고 픽셀값
+                    roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
+                    gray = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+                    ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+                    mask_inv = cv2.bitwise_not(mask) ## mask 반전
+                    background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
+                    shadowpartner = cv2.bitwise_and(logo, logo, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+                    final = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
+                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성
                 
                 # put window
                 if camID == 0:
