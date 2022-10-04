@@ -23,6 +23,9 @@ pygame.mixer.Sound("sound\./moredown.wav")      # 더 내리세요
 pygame.mixer.Sound("sound\./parallel.wav")      # 발을 11자로 해주세요
 pygame.mixer.Sound("sound\./spine.wav")         # 허리를 더 펴주세요
 pygame.mixer.Sound("sound\./hand.wav")          # 손을 더 모아주세요
+pygame.mixer.Sound("sound\./lessraise.wav")     # 팔을 조금만 벌리세요
+pygame.mixer.Sound("sound\./moreraise.wav")     # 팔을 더 벌리세요
+pygame.mixer.Sound("sound\./lessbend.wav")      # 팔꿈치를 조금만 구부리세요
 pygame.mixer.Sound("sound\./start_exercise.wav") ## 쉬는 시간 종료
 pygame.mixer.Sound("sound\./easter.wav") ## 이스터
 prev_sound = ""

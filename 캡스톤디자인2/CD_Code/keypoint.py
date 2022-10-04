@@ -1,5 +1,6 @@
 from utils import *
 
+## 같은 로직 사용하면 하나로 묶기
 class KEYPOINT:
     def __init__(self, landmarks):
         self.landmarks = landmarks
@@ -186,9 +187,47 @@ class KEYPOINT:
         else:
             return 0
         
+    ###--------------------------- side lateral raise ---------------------------###    
+    
+    def angle_of_the_left_shoulder(self): # 왼쪽 어깨 각도
+        l_hip = detection(self.landmarks, "LEFT_HIP")
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
+        if l_hip[2] >= REF_VISIBILITY and l_shoulder[2]  >= REF_VISIBILITY and l_elbow[2] >= REF_VISIBILITY:
+            return calculate_angle(l_hip, l_shoulder, l_elbow)
+        else:
+            return 0
+        
+    def angle_of_the_right_shoulder(self): # 오른쪽 어깨 각도
+        r_hip = detection(self.landmarks, "RIGHT_HIP")
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
+        if r_hip[2] >= REF_VISIBILITY and r_shoulder[2]  >= REF_VISIBILITY and r_elbow[2] >= REF_VISIBILITY:
+            return calculate_angle(r_hip, r_shoulder, r_elbow)
+        else:
+            return 0
+    
+    def angle_of_the_left_elbow(self): # 왼쪽 팔꿈치 각도
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
+        l_wrist = detection(self.landmarks, "LEFT_WRIST")
+        if l_shoulder[2] >= REF_VISIBILITY and l_elbow[2]  >= REF_VISIBILITY and l_wrist[2] >= REF_VISIBILITY:
+            return calculate_angle(l_shoulder, l_elbow, l_wrist)
+        else:
+            return 0
+        
+    def angle_of_the_right_elbow(self): # 오른쪽 팔꿈치 각도
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
+        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
+        if r_shoulder[2] >= REF_VISIBILITY and r_elbow[2]  >= REF_VISIBILITY and r_wrist[2] >= REF_VISIBILITY:
+            return calculate_angle(r_shoulder, r_elbow, r_wrist)
+        else:
+            return 0         
+        
     ###------------------------------- easter egg -------------------------------###
     
-    def easter_angle_of_the_right_elbow(self): ## 경례할 때 오른쪽 팔꿈치 각도
+    def angle_of_the_right_elbow(self): ## 경례할 때 오른쪽 팔꿈치 각도
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
         r_wrist = detection(self.landmarks, "RIGHT_WRIST")
@@ -197,7 +236,7 @@ class KEYPOINT:
         else:
             return 0
      
-    def easter_angle_of_the_right_shoulder(self): ## 경례할 때 오른쪽 어깨 각도
+    def angle_of_the_right_shoulder(self): ## 경례할 때 오른쪽 어깨 각도
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
@@ -206,7 +245,7 @@ class KEYPOINT:
         else:
             return 0
         
-    def easter_angle_of_the_right_wrist(self): ## 경례할 때 손목 각도
+    def angle_of_the_right_wrist(self): ## 경례할 때 손목 각도
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
         r_wrist = detection(self.landmarks, "RIGHT_WRIST")
         r_pinky = detection(self.landmarks, "RIGHT_THUMB")
@@ -215,7 +254,7 @@ class KEYPOINT:
         else:
             return 0    
         
-    def easter_angle_of_the_left_elbow(self): ## 경례할 때 왼쪽 팔꿈치 각도
+    def angle_of_the_left_elbow(self): ## 경례할 때 왼쪽 팔꿈치 각도
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
         l_wrist = detection(self.landmarks, "LEFT_WRIST")
@@ -224,7 +263,7 @@ class KEYPOINT:
         else:
             return 0
         
-    def easter_angle_of_the_left_shoulder(self): ## 경례할 때 오른쪽 어깨 각도
+    def angle_of_the_left_shoulder(self): ## 경례할 때 오른쪽 어깨 각도
         r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")
@@ -233,7 +272,7 @@ class KEYPOINT:
         else:
             return 0    
     
-    def easter_angle_of_the_left_knee(self): # 왼쪽 무릎은 11자
+    def angle_of_the_left_knee(self): # 왼쪽 무릎은 11자
         l_hip = detection(self.landmarks, "LEFT_HIP")
         l_knee = detection(self.landmarks, "LEFT_KNEE")
         l_ankle = detection(self.landmarks, "LEFT_ANKLE")
@@ -242,7 +281,7 @@ class KEYPOINT:
         else:
             return 0
 
-    def easter_angle_of_the_right_knee(self): # 오른쪽 무릎은 11자
+    def angle_of_the_right_knee(self): # 오른쪽 무릎은 11자
         r_hip = detection(self.landmarks, "RIGHT_HIP")
         r_knee = detection(self.landmarks, "RIGHT_KNEE")
         r_ankle = detection(self.landmarks, "RIGHT_ANKLE")

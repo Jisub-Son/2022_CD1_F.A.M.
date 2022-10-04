@@ -65,6 +65,9 @@ class camThread(threading.Thread):
                 elif key == ord('p'):           # pushup mode
                     args["exercise"] = "pushup"
                     reps, status, sets, feedback, timer = initState()
+                elif key == ord('l'):           # sidelateralraise mode
+                    args["exercise"] = "sidelateralraise"
+                    reps, status, sets, feedback, timer = initState()    
                 elif key == ord('r'):           # reset
                     status = 'Up'
                     reps, status, sets, feedback, timer = initState()
