@@ -116,6 +116,7 @@ class camThread(threading.Thread):
                 # 카메라 좌우반전(운동 자세보기 편하게)
                 frame = cv2.flip(frame, 1)
                 
+                
                 # calculate fps
                 fps = capture.get(cv2.CAP_PROP_FPS)
                 # print('fps',fps)
@@ -129,47 +130,48 @@ class camThread(threading.Thread):
                 real_fps = 1/(time.perf_counter()-last_time)
                 last_time = time.perf_counter()
                 str_fps = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
-                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)
                 
                 # display shadow partner
                 if (args["exercise"] == "squat" and status == 'Up' and feedback == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
-                    logo = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
-                    ##cv2.imshow('logo', logo)
-                    if logo is None:
+                    file = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
+                    file_inv = cv2.flip(file, 1) ## 좌우반전
+                    ##cv2.imshow('file', file) ## gif 형식처럼 출력
+                    if file is None:
                         print('image load failed!')
                     squat_down += 1 ## i 증가     
                     if squat_down == 220: ## 범위 넘어가면
                         squat_down = 84  ## 초기화
                     # logo with frame    
-                    rows, cols, channels = logo.shape ## 로고 픽셀값
+                    rows, cols, channels = file.shape ## 로고 픽셀값
                     roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
-                    gray = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+                    gray = cv2.cvtColor(file, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
                     ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
                     mask_inv = cv2.bitwise_not(mask) ## mask 반전
                     background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
-                    shadowpartner = cv2.bitwise_and(logo, logo, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+                    shadowpartner = cv2.bitwise_and(file, file, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
                     final = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
-                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성
-                
+                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성    
+                        
                 elif (args["exercise"] == "squat" and status == 'Down' and feedback == 'Success'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
-                    logo = cv2.imread('squat\squat_' + str(squat_up) +'.png') ## 1번부터 읽기
-                    ##cv2.imshow('logo', logo)
-                    if logo is None:
+                    file = cv2.imread('squat\squat_' + str(squat_up) +'.png') ## 1번부터 읽기
+                    ##cv2.imshow('file', file) ## gif 형식처럼 출력
+                    if file is None:
                         print('image load failed!')
                     squat_up += 1 ## i 증가     
                     if squat_up == 300: ## 범위 넘어가면
                         squat_up = 221  ## 초기화
                     # logo with frame    
-                    rows, cols, channels = logo.shape ## 로고 픽셀값
+                    rows, cols, channels = file.shape ## 로고 픽셀값
                     roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
-                    gray = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+                    gray = cv2.cvtColor(file, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
                     ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
                     mask_inv = cv2.bitwise_not(mask) ## mask 반전
                     background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
-                    shadowpartner = cv2.bitwise_and(logo, logo, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+                    shadowpartner = cv2.bitwise_and(file, file, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
                     final = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
-                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성
-                
+                    frame[r:rows + r, c:cols + c] = final ## 캠화면에 실시간으로 출력하기 위해 합성      
+
                 # put window
                 if camID == 0:
                     cv2.imshow(previewName, frame)

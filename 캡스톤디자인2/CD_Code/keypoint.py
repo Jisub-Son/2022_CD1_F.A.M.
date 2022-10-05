@@ -190,20 +190,20 @@ class KEYPOINT:
     ###--------------------------- side lateral raise ---------------------------###    
     
     def angle_of_the_left_shoulder(self): # 왼쪽 어깨 각도
-        l_hip = detection(self.landmarks, "LEFT_HIP")
-        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        l_elbow = detection(self.landmarks, "LEFT_ELBOW")
-        if l_hip[2] >= REF_VISIBILITY and l_shoulder[2]  >= REF_VISIBILITY and l_elbow[2] >= REF_VISIBILITY:
-            return calculate_angle(l_hip, l_shoulder, l_elbow)
+        l_elbow = detection(self.landmarks, "RIGHT_ELBOW")
+        l_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        l_hip = detection(self.landmarks, "RIGHT_HIP")
+        if l_elbow[2] >= REF_VISIBILITY and l_shoulder[2]  >= REF_VISIBILITY and l_hip[2] >= REF_VISIBILITY:
+            return calculate_angle(l_elbow, l_shoulder, l_hip)
         else:
             return 0
         
     def angle_of_the_right_shoulder(self): # 오른쪽 어깨 각도
-        r_hip = detection(self.landmarks, "RIGHT_HIP")
-        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
         r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
-        if r_hip[2] >= REF_VISIBILITY and r_shoulder[2]  >= REF_VISIBILITY and r_elbow[2] >= REF_VISIBILITY:
-            return calculate_angle(r_hip, r_shoulder, r_elbow)
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        r_hip = detection(self.landmarks, "RIGHT_HIP")
+        if r_elbow[2] >= REF_VISIBILITY and r_shoulder[2]  >= REF_VISIBILITY and r_hip[2] >= REF_VISIBILITY:
+            return calculate_angle(r_elbow, r_shoulder, r_hip)
         else:
             return 0
     
