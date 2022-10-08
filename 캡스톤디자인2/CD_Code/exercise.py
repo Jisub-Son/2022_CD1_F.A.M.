@@ -1,5 +1,5 @@
 import time
-from keypoint import KEYPOINT   
+from keypoint import *
 from utils import *  
 from math import fabs          
 
@@ -136,13 +136,13 @@ class EXERCISE(KEYPOINT):
         EASTER_ANGLE = (RIHGHT_WRIST_ANGLE and RIGHT_ELBOW_ANGLE and RIGHT_SHOULDER_ANGLE and RIGHT_KNEE_ANGLE and LEFT_ELBOW_ANGLE and LEFT_SHOULDER_ANGLE and LEFT_KNEE_ANGLE)
         
         # get angles from eact camID
-        if camID == LEFT_CAM:
+        if camID == LEFT_CAM: ## cam1
             left_leg_angle = self.angle_of_the_right_leg()
             left_knee_angle = self.angle_of_the_left_knee() 
             left_foot_parallel = self.angle_of_left_foot_parallel()  
             left_elbow_angle = self.angle_of_the_left_elbow() ## 이스터
             left_knee_angle = self.angle_of_the_left_knee()
-        elif camID == RIGHT_CAM:
+        elif camID == RIGHT_CAM: ## cam0
             right_leg_angle = self.angle_of_the_left_leg()
             right_knee_angle = self.angle_of_the_right_knee()
             right_foot_parallel = self.angle_of_right_foot_parallel()
@@ -152,7 +152,7 @@ class EXERCISE(KEYPOINT):
             right_shoulder_angle = self.angle_of_the_right_shoulder()
             right_knee_angle = self.angle_of_the_right_shoulder()
             right_wrist_angle = self.angle_of_the_right_wrist()
-            
+        if camID == 0 or camID == 1: ## status, feedback 등 cam0, cam1 모두 바꾸기 위해(쉐도우 파트너에서 사용) 
             # get average    
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2 
@@ -277,7 +277,7 @@ class EXERCISE(KEYPOINT):
             left_spine_angle = self.angle_of_the_left_spine()
             left_arm_angle = self.angle_of_the_left_arm()
             # elbow_length = self.length_of_elbow_to_elbow()
-        elif camID == RIGHT_CAM:
+        if camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
             right_arm_angle = self.angle_of_the_right_arm()
             wrist_length = self.length_of_wrist_to_wrist()

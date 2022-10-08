@@ -1,6 +1,6 @@
 import argparse                 
 from utils import *             
-from threadingCam import camThread
+from threadingCam import *
 
 # argparse setting
 ap = argparse.ArgumentParser()  # python main.py -mode squat 로 실행가능
