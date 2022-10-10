@@ -17,6 +17,7 @@ def camPreview(previewName, camID):
         rval, frame = cam.read()
     else:
         rval = False
+        print("fail " + previewName)
 
     while rval:
         cv2.imshow(previewName, frame)
