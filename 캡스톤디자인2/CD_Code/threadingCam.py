@@ -7,9 +7,6 @@ from exercise import *
 import time
 import numpy as np
 
-r = 10 ## 200, 10 지점
-c = 239
-
 # initialize variables
 def initState():        
     reps = 0                        
@@ -20,7 +17,7 @@ def initState():
     return [reps, status, sets, feedback, timer]           
  
  # display shadow partner
-def shadow(file, frame, camID):
+def shadow(file, frame, camID, r, c): 
     file_inv = cv2.flip(file, 1) ## 좌우반전
     if file is None:
         print('image load failed!')
@@ -28,7 +25,7 @@ def shadow(file, frame, camID):
     rows, cols, channels = file.shape ## 로고 픽셀값
     roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
     gray = cv2.cvtColor(file, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
-    ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+    ret, mask = cv2.threshold(gray, 97, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
     mask_inv = cv2.bitwise_not(mask) ## mask 반전
     background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
     shadowpartner = cv2.bitwise_and(file, file, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
@@ -37,7 +34,7 @@ def shadow(file, frame, camID):
     rows, cols, channels = file_inv.shape ## 로고 픽셀값
     roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
     gray = cv2.cvtColor(file_inv, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
-    ret, mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+    ret, mask = cv2.threshold(gray, 97, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
     mask_inv = cv2.bitwise_not(mask) ## mask 반전
     background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
     shadowpartner = cv2.bitwise_and(file_inv, file_inv, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
@@ -45,9 +42,9 @@ def shadow(file, frame, camID):
     # display shadowpartner
     if camID == 0: 
         frame[r:rows + r, c:cols + c] = final0 ## 캠화면에 실시간으로 출력하기 위해 합성 
-    elif camID == 1: ## cam1 에는 flip된 영상 출력           
-        frame[r:rows + r, c:cols + c] = final1
-                   
+    elif camID == 1: ## cam1 에는 flip된 영상 출력         
+        frame[r:rows + r, c:cols + c] = final1   
+                              
 # class for thread
 class camThread(threading.Thread):
     def __init__(self, previewName, camID, args):
@@ -79,9 +76,13 @@ class camThread(threading.Thread):
             # init variables
             reps, status, sets, feedback, timer = initState()       
             
-            squat_down = 84 ## 초기화
-            squat_up = 221
-               
+            squat_down = 1 ## 초기화
+            squat_up = 51
+            pushup_down = 1
+            pushup_up = 60
+            sidelateralraise_up = 1
+            sidelateralraise_down = 35
+ 
             # open opencv window
             while capture.isOpened():              
                 
@@ -129,7 +130,7 @@ class camThread(threading.Thread):
                 # make table
                 if camID == 0:
                     table(args["exercise"], reps, status, sets, feedback, timer)
-                    
+                  
                 # landmark detection and output
                 mp_drawing.draw_landmarks(
                     frame,
@@ -162,23 +163,66 @@ class camThread(threading.Thread):
                 cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)
                 
                 # display shadow partner
+                # squat
                 if (args["exercise"] == "squat" and status == 'Up' and feedback == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
-                    file = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
+                    down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
+                    file = cv2.resize(down, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
                     squat_down += 1 ## 증가     
-                    if squat_down == 220: ## 범위 넘어가면
-                        squat_down = 84  ## 초기화        
-                    shadow(file, frame, camID)
+                    if squat_down == 50: ## 범위 넘어가면
+                        squat_down = 1  ## 초기화        
+                    shadow(file, frame, camID, 20, 240) ## 가이드 불러오기
                 else:
-                    squat_down = 84  ## 초기화    
+                    squat_down = 1  ## 초기화    
                 if (args["exercise"] == "squat" and status == 'Down' and feedback == 'Success'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
-                    file = cv2.imread('squat\squat_' + str(squat_up) +'.png') ## 1번부터 읽기
+                    up = cv2.imread('squat\squat_' + str(squat_up) +'.jpg') ## 1번부터 읽기
+                    file = cv2.resize(up, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
                     squat_up += 1 ## 증가     
-                    if squat_up == 300: ## 범위 넘어가면
-                        squat_up = 221  ## 초기화      
-                    shadow(file, frame, camID)
-                else:       
-                    squat_up = 221  ## 초기화   
-
+                    if squat_up == 65: ## 범위 넘어가면
+                        squat_up = 51  ## 초기화      
+                    shadow(file, frame, camID, 20, 240) ## 가이드 불러오기
+                else:                          
+                    squat_up = 51  ## 초기화 
+                # pushup    
+                if (args["exercise"] == "pushup" and status == 'Up' and feedback == 'Start'): ## 푸쉬업에서 올라가있을때(내려가야함) -> 내려가는거까지만 출력
+                    down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.jpg') ## 1번부터 읽기
+                    down_flip = cv2.flip(down, 1) ## 좌우반전(실수로 반대로 찍음)
+                    file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
+                    pushup_down += 1 ## 증가    
+                    if pushup_down == 59: ## 범위 넘어가면
+                        pushup_down = 1 ## 초기화     
+                    shadow(file, frame, camID, 150, 100) ## 가이드 불러오기
+                else:
+                    pushup_down = 1  ## 초기화
+                if (args["exercise"] == "pushup" and status == 'Down' and feedback == 'Success'):  ## 푸쉬업에서 내려가있을때(올라가야함) -> 올라가는거까지만 출력
+                    up = cv2.imread('pushup\pushup_' + str(pushup_up) +'.jpg')
+                    up_flip = cv2.flip(up, 1) ## 좌우반전(실수로 반대로 찍음)
+                    file = cv2.resize(up_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
+                    pushup_up += 1 ## 증가     
+                    if pushup_up == 69: ## 범위 넘어가면
+                        pushup_up = 60  ## 초기화        
+                    shadow(file, frame, camID, 150, 100)
+                else:
+                    pushup_up = 60  ## 초기화         
+                # side lateral raise
+                if (args["exercise"] == "sidelateralraise" and status == 'Down' and feedback == 'Start'): ## 사레레에서 내려가있을때(팔올려야함) -> 올라가는거까지만 출력
+                    down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.jpg') ## 1번부터 읽기
+                    file = cv2.resize(down, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
+                    sidelateralraise_up += 1 ## 증가     
+                    if sidelateralraise_up == 35: ## 범위 넘어가면
+                        sidelateralraise_up = 1  ## 초기화        
+                    shadow(file, frame, camID, 20, 150)
+                else:
+                    sidelateralraise_up = 1  ## 초기화    
+                if (args["exercise"] == "sidelateralraise" and status == 'Up' and feedback == 'Success'): ## 사레레에서 올라가있을때(팔내려야함) -> 내려가는거까지만 출력
+                    up = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_down) +'.jpg') ## 1번부터 읽기
+                    file = cv2.resize(up, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
+                    sidelateralraise_down += 1 ## 증가     
+                    if sidelateralraise_down == 63: ## 범위 넘어가면
+                        sidelateralraise_down = 35  ## 초기화      
+                    shadow(file, frame, camID, 20, 150)
+                else:                          
+                    sidelateralraise_down = 35  ## 초기화    
+                
                 # put window
                 if camID == 0:
                     cv2.imshow(previewName, frame)
