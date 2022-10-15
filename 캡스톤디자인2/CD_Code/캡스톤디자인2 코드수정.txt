@@ -73,3 +73,7 @@
 
 2. 스쿼트, 푸쉬업의 코드 수정
 - average 방식에서 and 연산(left and right)으로 수정하여 동시에 동작해야 카운트함(count logic)
+
+3. exercise.py에 if (camID == 0 or camID == 1):  없어야함
+- 있으면 두 frame 모두 가이드가 추가되지만 음성피드백이 밀림(다른 방식으로 해야함)
+- 원인은 알지만 현재 해결 못함 
