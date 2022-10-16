@@ -153,7 +153,6 @@ class EXERCISE(KEYPOINT):
             right_knee_angle = self.angle_of_the_right_shoulder()
             right_wrist_angle = self.angle_of_the_right_wrist()
         
-         ##if camID == 0 or camID == 1: ## status, feedback 등 cam0, cam1 모두 바꾸기 위해(쉐도우 파트너에서 사용) 
             # get average    
             ##avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2 
@@ -283,7 +282,6 @@ class EXERCISE(KEYPOINT):
             wrist_length = self.length_of_wrist_to_wrist()
             shoulder_length = self.length_of_shoulder_to_shoulder()
             
-         ##if camID == 0 or camID == 1: ## status, feedback 등 cam0, cam1 모두 바꾸기 위해(쉐도우 파트너에서 사용) 
             # get average
             """avg_arm_angle = (left_arm_angle + right_arm_angle) // 2 
             avg_spine_angle = (left_spine_angle + right_spine_angle) // 2"""
@@ -399,12 +397,10 @@ class EXERCISE(KEYPOINT):
         elif camID == RIGHT_CAM:
             right_shoulder_angle = self.angle_of_the_right_shoulder()
             right_elbow_angle = self.angle_of_the_right_elbow()
-        
-         ##if camID == 0 or camID == 1: ## status, feedback 등 cam0, cam1 모두 바꾸기 위해(쉐도우 파트너에서 사용) 
                  
             # get average 없애는게 좋을듯?    
-            ##average_shoulder_angle = (left_shoulder_angle + right_shoulder_angle) // 2
-            ##average_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2 
+            """average_shoulder_angle = (left_shoulder_angle + right_shoulder_angle) // 2
+            average_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2""" 
             
             # get ratio
             foot_length = round(foot_length, 4)

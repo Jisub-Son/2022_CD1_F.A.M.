@@ -6,7 +6,7 @@ from utils import *
 from exercise import *
 import time
 import numpy as np
-
+        
 # initialize variables
 def initState():        
     reps = 0                        
@@ -15,8 +15,8 @@ def initState():
     feedback = 'start exercise'     
     timer = REF_TIMER               
     return [reps, status, sets, feedback, timer]           
- 
- # display shadow partner
+     
+# display shadow partner
 def shadow(file, frame, camID, r, c): 
     file_inv = cv2.flip(file, 1) ## 좌우반전
     if file is None:
@@ -59,12 +59,15 @@ class camThread(threading.Thread):
             
     # camPreview makes opencv windows with mediapipe    
     def camPreview(self, previewName, camID, args):
-        cv2.namedWindow(previewName)
-        
+        cv2.namedWindow(previewName)                 
         # video setting
         capture = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
         # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
         # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        
+        global exercise_type ## 가이드 전용 global 변수
+        global status_type
+        global feedback_type
         
         # mediapipe setting
         mp_drawing = mp.solutions.drawing_utils
@@ -130,7 +133,10 @@ class camThread(threading.Thread):
                 # make table
                 if camID == 0:
                     table(args["exercise"], reps, status, sets, feedback, timer)
-                  
+                    exercise_type = args["exercise"]
+                    status_type = status
+                    feedback_type = feedback
+      
                 # landmark detection and output
                 mp_drawing.draw_landmarks(
                     frame,
@@ -160,11 +166,11 @@ class camThread(threading.Thread):
                 real_fps = 1/(time.perf_counter()-last_time)
                 last_time = time.perf_counter()
                 str_fps = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
-                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)
-                
+                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)       
+                    
                 # display shadow partner
                 # squat
-                if (args["exercise"] == "squat" and status == 'Up' and feedback == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
+                if (exercise_type == "squat" and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
                     down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
                     file = cv2.resize(down, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
                     squat_down += 1 ## 증가     
@@ -173,7 +179,7 @@ class camThread(threading.Thread):
                     shadow(file, frame, camID, 20, 240) ## 가이드 불러오기
                 else:
                     squat_down = 1  ## 초기화    
-                if (args["exercise"] == "squat" and status == 'Down' and feedback == 'Success'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
+                if (exercise_type == "squat" and status_type == 'Down' and feedback_type == 'Success'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
                     up = cv2.imread('squat\squat_' + str(squat_up) +'.jpg') ## 1번부터 읽기
                     file = cv2.resize(up, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
                     squat_up += 1 ## 증가     
@@ -183,7 +189,7 @@ class camThread(threading.Thread):
                 else:                          
                     squat_up = 51  ## 초기화 
                 # pushup    
-                if (args["exercise"] == "pushup" and status == 'Up' and feedback == 'Start'): ## 푸쉬업에서 올라가있을때(내려가야함) -> 내려가는거까지만 출력
+                if (exercise_type == "pushup" and status_type == 'Up' and feedback_type == 'Start'): ## 푸쉬업에서 올라가있을때(내려가야함) -> 내려가는거까지만 출력
                     down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.jpg') ## 1번부터 읽기
                     down_flip = cv2.flip(down, 1) ## 좌우반전(실수로 반대로 찍음)
                     file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
@@ -193,7 +199,7 @@ class camThread(threading.Thread):
                     shadow(file, frame, camID, 150, 100) ## 가이드 불러오기
                 else:
                     pushup_down = 1  ## 초기화
-                if (args["exercise"] == "pushup" and status == 'Down' and feedback == 'Success'):  ## 푸쉬업에서 내려가있을때(올라가야함) -> 올라가는거까지만 출력
+                if (exercise_type == "pushup" and status_type == 'Down' and feedback_type == 'Success'):  ## 푸쉬업에서 내려가있을때(올라가야함) -> 올라가는거까지만 출력
                     up = cv2.imread('pushup\pushup_' + str(pushup_up) +'.jpg')
                     up_flip = cv2.flip(up, 1) ## 좌우반전(실수로 반대로 찍음)
                     file = cv2.resize(up_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
@@ -204,7 +210,7 @@ class camThread(threading.Thread):
                 else:
                     pushup_up = 60  ## 초기화         
                 # side lateral raise
-                if (args["exercise"] == "sidelateralraise" and status == 'Down' and feedback == 'Start'): ## 사레레에서 내려가있을때(팔올려야함) -> 올라가는거까지만 출력
+                if (exercise_type == "sidelateralraise" and status_type == 'Down' and feedback_type == 'Start'): ## 사레레에서 내려가있을때(팔올려야함) -> 올라가는거까지만 출력
                     down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.jpg') ## 1번부터 읽기
                     file = cv2.resize(down, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
                     sidelateralraise_up += 1 ## 증가     
@@ -213,7 +219,7 @@ class camThread(threading.Thread):
                     shadow(file, frame, camID, 20, 150)
                 else:
                     sidelateralraise_up = 1  ## 초기화    
-                if (args["exercise"] == "sidelateralraise" and status == 'Up' and feedback == 'Success'): ## 사레레에서 올라가있을때(팔내려야함) -> 내려가는거까지만 출력
+                if (exercise_type == "sidelateralraise" and status_type == 'Up' and feedback_type == 'Success'): ## 사레레에서 올라가있을때(팔내려야함) -> 내려가는거까지만 출력
                     up = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_down) +'.jpg') ## 1번부터 읽기
                     file = cv2.resize(up, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
                     sidelateralraise_down += 1 ## 증가     
