@@ -23,7 +23,6 @@ class CountsPerSec:
 
     def countsPerSec(self):
         elapsed_time = (datetime.now() - self._start_time).total_seconds()
-        print("elapsed time : ", elapsed_time)
         if elapsed_time == 0:
             return 0
         else:
@@ -57,7 +56,7 @@ def noThreading(src1=0, src2=1):
         cv2.imshow("Video1", frame2)
         cps.increment()
         
-# noThreading()
+
 
 class VideoGet:
     """
@@ -96,8 +95,6 @@ def threadVideoGet(src1=0, src2=1):
 
     video_getter = VideoGet(src1, src2).start()
     cps = CountsPerSec().start()
-    
-    print("Active Threads", activeCount())
 
     while True:
         if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
@@ -112,7 +109,7 @@ def threadVideoGet(src1=0, src2=1):
         cv2.imshow("Video1", frame2)
         cps.increment()
 
-# threadVideoGet()
+
 
 class VideoShow:
     """
@@ -164,7 +161,7 @@ def threadVideoShow(src1=0, src2=1):
         video_shower.frame2 = frame2
         cps.increment()
         
-# threadVideoShow()
+
         
 def threadBoth(src1=0, src2=1):
     """
@@ -191,5 +188,10 @@ def threadBoth(src1=0, src2=1):
         video_shower.frame1 = frame1
         video_shower.frame2 = frame2
         cps.increment()
-  
+
+
+# 이 중에서 하나만 주석 해제해서 돌려볼 것
+# noThreading()
+# threadVideoGet()
+# threadVideoShow()
 threadBoth()
