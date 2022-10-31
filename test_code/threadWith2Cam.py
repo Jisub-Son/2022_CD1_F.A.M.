@@ -15,6 +15,7 @@ class CountsPerSec:
 
     def start(self):
         self._start_time = datetime.now()
+        print("cps start")
         return self
 
     def increment(self):
@@ -22,7 +23,11 @@ class CountsPerSec:
 
     def countsPerSec(self):
         elapsed_time = (datetime.now() - self._start_time).total_seconds()
-        return self._num_occurrences / elapsed_time
+        print("elapsed time : ", elapsed_time)
+        if elapsed_time == 0:
+            return 0
+        else:
+            return self._num_occurrences / elapsed_time
 
 def putIterationsPerSec(frame, iterations_per_sec):
     """
@@ -126,7 +131,7 @@ class VideoShow:
     def show(self):
         while not self.stopped:
             cv2.imshow("Video0", self.frame1)
-            cv2.imshow("Video2", self.frame2)
+            cv2.imshow("Video1", self.frame2)
             if cv2.waitKey(1) == ord("q"):
                 self.stopped = True
 

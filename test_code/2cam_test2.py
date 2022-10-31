@@ -2,12 +2,12 @@ import cv2
 import time
 
 cap_0 = cv2.VideoCapture(0)
-cap_0.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-cap_0.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+# cap_0.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+# cap_0.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 cap_1 = cv2.VideoCapture(1)
-cap_1.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-cap_1.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+# cap_1.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+# cap_1.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 while True:
     # Capture frame-by-frame
