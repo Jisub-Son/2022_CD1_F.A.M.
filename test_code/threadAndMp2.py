@@ -1,4 +1,3 @@
-from ast import Add
 from datetime import datetime
 from threading import Thread
 import cv2
