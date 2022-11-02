@@ -220,10 +220,8 @@ def threadAddMediapipe(src1=0, src2=1):     # mpThread만 실행했을 경우 ->
         cps.increment()
 
 def threadAll(src1=0, src2=1):              # 3개 쓰레드를 모두 실행시켰을 경우
-    # 3개 쓰레드 모두 실행
     video_getter = VideoGet(src1, src2).start()
     video_adder = AddMediapipe(frame1 = video_getter.frame1, frame2=video_getter.frame2).start()
-    # video_shower = VideoShow(frame1=video_adder.frameBuf1, frame2=video_adder.frameBuf2).start()
     cps = CountsPerSec().start()
 
     while True:
