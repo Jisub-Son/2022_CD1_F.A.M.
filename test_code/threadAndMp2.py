@@ -229,15 +229,13 @@ def threadAll(src1=0, src2=1):              # 3개 쓰레드를 모두 실행시
             video_adder.stop()
             video_getter.stop()
             break
-
+        
         frame1 = video_getter.frame1
         frame2 = video_getter.frame2            # getThread에서 frame 받아오기
         video_adder.frame1 = frame1
         video_adder.frame2 = frame2             # 읽은 frame을 mpThread에 보내기
-        frameBuf1 = video_adder.frameBuf1
-        frameBuf2 = video_adder.frameBuf2       # 스켈레톤이 연산되어 추가된 frameBuf 받아오기
-        frame1 = putIterationsPerSec(frameBuf1, cps.countsPerSec())
-        frame2 = putIterationsPerSec(frameBuf2, cps.countsPerSec())     # 스켈레톤 붙은 frame에 텍스트 넣기
+        frame1 = putIterationsPerSec(video_adder.frameBuf1, cps.countsPerSec())
+        frame2 = putIterationsPerSec(video_adder.frameBuf2, cps.countsPerSec())     # 스켈레톤 붙은 frame에 텍스트 넣기
         video_shower.frame1 = frame1
         video_shower.frame2 = frame2            # 최종 frame를 showThread에 보내기
         cps.increment()
