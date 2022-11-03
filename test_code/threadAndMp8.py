@@ -11,7 +11,6 @@ class CountsPerSec:
 
     def start(self):
         self._start_time = datetime.now()
-        print("cps start")
         return self
 
     def increment(self):
