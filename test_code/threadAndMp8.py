@@ -3,6 +3,7 @@ from threading import Thread
 import cv2
 import mediapipe as mp
 import time
+from threading import activeCount
 
 class CountsPerSec:
     def __init__(self):
@@ -177,6 +178,8 @@ def threadBoth(src1=0, src2=1):
     video_shower = VideoShow(frame1=video_getter0.frame1, frame2=video_getter1.frame1).start()
     cps = CountsPerSec().start()
 
+    print("total thread : ", activeCount())
+    
     while True:
         if video_getter0.stopped or video_getter1.stopped or video_shower.stopped:
             video_shower.stop()
