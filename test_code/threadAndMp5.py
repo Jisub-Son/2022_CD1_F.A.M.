@@ -2,6 +2,7 @@ from datetime import datetime
 from threading import Thread
 import cv2
 import mediapipe as mp
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -89,15 +90,16 @@ class VideoGet:
                         # 카메라 좌우반전(운동 자세보기 편하게)
                         self.frameBuf1 = cv2.flip(self.frame1, 1)
                         self.frameBuf2 = cv2.flip(self.frame2, 1)
-
+                    
     def stop(self):
         self.stopped = True
         
 class VideoShow:
-    def __init__(self, frame1=None, frame2=None):
+    def __init__(self, frame1=None, frame2=None, fps=0.0):
         self.frame1 = frame1
         self.frame2 = frame2
         self.stopped = False
+        self.fps = fps
         
     def start(self):
         Thread(target=self.show, args=()).start()
@@ -105,6 +107,22 @@ class VideoShow:
 
     def show(self):
         while not self.stopped:
+            
+            # calculate fps
+            if self.fps == 0.0:
+                self.fps = 30.0
+            time_per_frame_video = 1/self.fps
+            last_time = time.perf_counter()
+            time_per_frame = time.perf_counter() - last_time
+            time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
+            time.sleep(time_sleep_frame)
+            real_fps = 1/(time.perf_counter()-last_time)
+            last_time = time.perf_counter()
+            str = "FPS : %0.2f" % real_fps
+            
+            cv2.putText(self.frame1, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            cv2.putText(self.frame2, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            
             cv2.imshow("Video0", self.frame1)
             cv2.imshow("Video1", self.frame2)
             if cv2.waitKey(1) == ord("q"):
@@ -133,3 +151,5 @@ def threadBoth(src1=0, src2=1):
         cps.increment()
 
 threadBoth()
+
+# fps 추가
