@@ -2,6 +2,7 @@ from datetime import datetime
 from threading import Thread
 import cv2
 import mediapipe as mp
+import time
 
 class CountsPerSec:
     def __init__(self):
@@ -52,6 +53,7 @@ class VideoGet:
         (self.grabbed1, self.frame1) = self.stream1.read()
         self.frameBuf1 = self.frame1
         self.stopped = False
+        self.fps = 0.0
         
     def start(self):
         Thread(target=self.get, args=()).start()
@@ -69,6 +71,8 @@ class VideoGet:
                     self.stop()
                 else:
                     (self.grabbed1, self.frame1) = self.stream1.read()
+                    
+                    self.fps = self.stream1.get(cv2.CAP_PROP_FPS)
                     
                     self.frame1 = cv2.cvtColor(self.frame1, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame1.flags.writeable = False
@@ -113,10 +117,11 @@ def threadVideoGet(src1=0, src2=1):
         cps.increment()
 
 class VideoShow:
-    def __init__(self, frame1=None, frame2=None):
+    def __init__(self, frame1=None, frame2=None, fps=0.0):
         self.frame1 = frame1
         self.frame2 = frame2
         self.stopped = False
+        self.fps = fps
         
     def start(self):
         Thread(target=self.show, args=()).start()
@@ -124,6 +129,20 @@ class VideoShow:
 
     def show(self):
         while not self.stopped:
+            
+            # calculate fps
+            if self.fps == 0.0:
+                self.fps = 30.0
+            time_per_frame_video = 1/self.fps
+            last_time = time.perf_counter()
+            time_per_frame = time.perf_counter() - last_time
+            time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
+            time.sleep(time_sleep_frame)
+            real_fps = 1/(time.perf_counter()-last_time)
+            last_time = time.perf_counter()
+            str = "FPS : %0.2f" % real_fps
+            cv2.putText(self.frame1, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            
             cv2.imshow("Video0", self.frame1)
             cv2.imshow("Video1", self.frame2)
             if cv2.waitKey(1) == ord("q"):
