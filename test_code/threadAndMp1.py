@@ -37,56 +37,58 @@ def noThreading(src1=0, src2=1):
     mp_pose = mp.solutions.pose
     
     with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
-                    min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+                    min_tracking_confidence=0.5) as pose1:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+                min_tracking_confidence=0.5) as pose2:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5
         
-        while True:
-            (grabbed1, frame1) = cap1.read()
-            (grabbed2, frame2) = cap2.read()
-            if not (grabbed1 or grabbed2) or cv2.waitKey(1) == ord("q"):
-                break
-            
-            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
-            # frame.flags.writeable = False
-            results1 = pose.process(frame1)                   # landmark 구현
-            results2 = pose.process(frame2)
-            # frame.flags.writeable = True
-            # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
-            
-            # landmark detection and output
-            mp_drawing.draw_landmarks(
-                frame1,
-                results1.pose_landmarks,                     # landmark 좌표
-                mp_pose.POSE_CONNECTIONS,                   # landmark 구현
-                mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
-                                    thickness=2, 
-                                    circle_radius=2),
-                mp_drawing.DrawingSpec(color=(0, 255, 0),   # keypoint 원 -> 초록색
-                                    thickness=5,
-                                    circle_radius=5),
-            )
-            
-            # landmark detection and output
-            mp_drawing.draw_landmarks(
-                frame2,
-                results2.pose_landmarks,                     # landmark 좌표
-                mp_pose.POSE_CONNECTIONS,                   # landmark 구현
-                mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
-                                    thickness=2, 
-                                    circle_radius=2),
-                mp_drawing.DrawingSpec(color=(0, 255, 0),   # keypoint 원 -> 초록색
-                                    thickness=5,
-                                    circle_radius=5),
-            )
-            
-            # 카메라 좌우반전(운동 자세보기 편하게)
-            frame1 = cv2.flip(frame1, 1)
-            frame2 = cv2.flip(frame2, 1)
-            
-            frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
-            frame2 = putIterationsPerSec(frame2, cps.countsPerSec())
-            cv2.imshow("Video0", frame1)
-            cv2.imshow("Video1", frame2)
-            cps.increment()
+            while True:
+                (grabbed1, frame1) = cap1.read()
+                (grabbed2, frame2) = cap2.read()
+                if not (grabbed1 or grabbed2) or cv2.waitKey(1) == ord("q"):
+                    break
+                
+                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
+                # frame.flags.writeable = False
+                results1 = pose1.process(frame1)                   # landmark 구현
+                results2 = pose2.process(frame2)
+                # frame.flags.writeable = True
+                # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                
+                # landmark detection and output
+                mp_drawing.draw_landmarks(
+                    frame1,
+                    results1.pose_landmarks,                     # landmark 좌표
+                    mp_pose.POSE_CONNECTIONS,                   # landmark 구현
+                    mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
+                                        thickness=2, 
+                                        circle_radius=2),
+                    mp_drawing.DrawingSpec(color=(0, 255, 0),   # keypoint 원 -> 초록색
+                                        thickness=5,
+                                        circle_radius=5),
+                )
+                
+                # landmark detection and output
+                mp_drawing.draw_landmarks(
+                    frame2,
+                    results2.pose_landmarks,                     # landmark 좌표
+                    mp_pose.POSE_CONNECTIONS,                   # landmark 구현
+                    mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
+                                        thickness=2, 
+                                        circle_radius=2),
+                    mp_drawing.DrawingSpec(color=(0, 255, 0),   # keypoint 원 -> 초록색
+                                        thickness=5,
+                                        circle_radius=5),
+                )
+                
+                # 카메라 좌우반전(운동 자세보기 편하게)
+                frame1 = cv2.flip(frame1, 1)
+                frame2 = cv2.flip(frame2, 1)
+                
+                frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
+                frame2 = putIterationsPerSec(frame2, cps.countsPerSec())
+                cv2.imshow("Video0", frame1)
+                cv2.imshow("Video1", frame2)
+                cps.increment()
 
 class VideoGet:
     def __init__(self, src1=0, src2=1):
