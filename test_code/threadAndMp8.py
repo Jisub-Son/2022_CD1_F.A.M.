@@ -48,10 +48,10 @@ def noThreading(src1=0, src2=1):
         cps.increment()
 
 class VideoGet:
-    def __init__(self, src1=0):
-        self.stream1 = cv2.VideoCapture(src1)
-        (self.grabbed1, self.frame1) = self.stream1.read()
-        self.frameBuf1 = self.frame1
+    def __init__(self, src=0):
+        self.stream = cv2.VideoCapture(src)
+        (self.grabbed, self.frame) = self.stream.read()
+        self.frameBuf = self.frame
         self.stopped = False
         self.fps = 0.0
         
@@ -67,23 +67,23 @@ class VideoGet:
                     min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5     
                
             while not self.stopped:
-                if not (self.grabbed1 or self.grabbed2):
+                if not self.grabbed:
                     self.stop()
                 else:
-                    (self.grabbed1, self.frame1) = self.stream1.read()
+                    (self.grabbed, self.frame) = self.stream.read()
                     
-                    self.fps = self.stream1.get(cv2.CAP_PROP_FPS)
+                    self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
-                    self.frame1 = cv2.cvtColor(self.frame1, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
-                    self.frame1.flags.writeable = False
-                    results1 = pose.process(self.frame1)                   # landmark 구현
-                    self.frame1.flags.writeable = True
-                    self.frame1 = cv2.cvtColor(self.frame1, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
+                    self.frame.flags.writeable = False
+                    results = pose.process(self.frame)                   # landmark 구현
+                    self.frame.flags.writeable = True
+                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
                     
                     # landmark detection and output -> 두번 쓰는거 말고 깔끔한 방향이 있을까?
                     mp_drawing.draw_landmarks(
-                        self.frame1,
-                        results1.pose_landmarks,                     # landmark 좌표
+                        self.frame,
+                        results.pose_landmarks,                     # landmark 좌표
                         mp_pose.POSE_CONNECTIONS,                   # landmark 구현
                         mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
                                             thickness=2, 
@@ -94,7 +94,7 @@ class VideoGet:
                     )
 
                     # 카메라 좌우반전(운동 자세보기 편하게)
-                    self.frameBuf1 = cv2.flip(self.frame1, 1)
+                    self.frameBuf = cv2.flip(self.frame, 1)
 
     def stop(self):
         self.stopped = True
@@ -173,8 +173,8 @@ def threadVideoShow(src1=0, src2=1):
         cps.increment()
    
 def threadBoth(src1=0, src2=1):
-    video_getter0 = VideoGet(src1=0).start()
-    video_getter1 = VideoGet(src1=1).start()
+    video_getter0 = VideoGet(src=src1).start()
+    video_getter1 = VideoGet(src=src2).start()
     video_shower = VideoShow(frame1=video_getter0.frame1, frame2=video_getter1.frame1).start()
     cps = CountsPerSec().start()
 
