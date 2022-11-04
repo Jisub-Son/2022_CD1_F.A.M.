@@ -69,7 +69,6 @@ class EXERCISE(KEYPOINT):
     def Rest_timer(self, reps, status, sets, feedback, timer):
         global cur, prev, timeElapsed, flag
         cur = time.time()               # current time
-        
         timeElapsed = cur - prev        # calculate time difference
         
         if timeElapsed >= 1:            # after 1 second
@@ -104,9 +103,7 @@ class EXERCISE(KEYPOINT):
         # conditions
         AFTER_SET_CONDITION = (reps == REF_REPS and status == 'Up')     # 한 세트 이후 조건
         AFTER_ALL_SET_CONDITION = (sets == REF_SETS)                    # 전체 세트 이후 조건
-        # KNEEDOWN_CONDITION = (status != 'Rest' and feedback != 'Place your knees behind toes' and feedback != 'Parallel your feet') # 무릎이 발끝 앞으로 나갔을 경우
         KNEEDOWN_CONDITION = (status != 'Rest') # 무릎이 발끝 앞으로 나갔을 경우
-        # PARALLEL_CONDITION = (status != 'Rest' and feedback != 'Parallel your feet' and feedback != 'Place your knees behind toes') # 발 11자를 못했을 경우
         PARALLEL_CONDITION = (status != 'Rest') # 발 11자를 못했을 경우
         DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우
         MOREDOWN_CONDITION = (status != 'Rest' and feedback == 'Start') # 더 구부려야 하는 경우
@@ -163,7 +160,7 @@ class EXERCISE(KEYPOINT):
                 voiceFeedback('easter')
                 status = 'Congratulations'
                 feedback = 'Congratulations'
-                ##color = [(0, 255, 0), (0, 255, 0), (0, 255, 0)]
+                ##color = [(0, 255, 0), (0, 255, 0), (0, 255, 0)] # 이스터 확인할 때만 사용
                 
             # count logic    
             if KNEEDOWN_ANGLE and PARALLEL_RATIO:       # 기본 자세가 만족되고..
@@ -227,10 +224,6 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
-                
-            # make table for avg_angles
-            #table_calculations(color, right_leg = right_leg_angle, avg_knee = avg_knee_angle, foot_ratio = heel_foot_ratio, avg_parallel = avg_foot_parallel)
-            ##table_calculations(color, easter_elbow = right_elbow_angle, easter_shoulder = right_shoulder_angle, easter_wrist = right_wrist_angle) ## 이스터 확인용
             
         return [reps, status, sets, feedback, timer, camID]
 
@@ -336,9 +329,6 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
-            
-            # make table for calculations
-            #table_calculations(color, right_arm = right_arm_angle, right_spine = right_spine_angle, wrist_ratio = wrist_shoulder_ratio)
         
         return [reps, status, sets, feedback, timer, camID]
     
@@ -453,9 +443,6 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
-            
-            # make table for calculations
-            table_calculations(color, right_shoulder = right_shoulder_angle, right_elbow = right_elbow_angle, parellel_ratio = heel_foot_ratio)
         
         return [reps, status, sets, feedback, timer, camID]
 

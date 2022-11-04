@@ -91,7 +91,7 @@ def voiceFeedback(sound):
             pass
         
 # display guide
-def shadow(file, frame, src, r, c): 
+def shadow(file, frame, camID, r, c): 
     file_inv = cv2.flip(file, 1) ## 좌우반전
     if file is None:
         print('image load failed!')
@@ -114,9 +114,9 @@ def shadow(file, frame, src, r, c):
     shadowpartner = cv2.bitwise_and(file_inv, file_inv, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
     final1 = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
     # display shadowpartner
-    if src == RIGHT_CAM: 
+    if camID == RIGHT_CAM: 
         frame[r:rows + r, c:cols + c] = final0 ## 캠화면에 실시간으로 출력하기 위해 합성 
-    elif src == LEFT_CAM: ## cam1 에는 flip된 영상 출력         
+    elif camID == LEFT_CAM: ## cam1 에는 flip된 영상 출력         
         frame[r:rows + r, c:cols + c] = final1       
 
 # make table
