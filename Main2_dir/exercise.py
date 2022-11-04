@@ -278,11 +278,11 @@ class EXERCISE(KEYPOINT):
         # get angles from eact camID
         if camID == LEFT_CAM:
             left_spine_angle = self.angle_of_the_left_spine()
-            left_arm_angle = self.angle_of_the_left_arm()
+            left_arm_angle = self.angle_of_the_left_elbow()
             # elbow_length = self.length_of_elbow_to_elbow()
         elif camID == RIGHT_CAM:
             right_spine_angle = self.angle_of_the_right_spine()
-            right_arm_angle = self.angle_of_the_right_arm()
+            right_arm_angle = self.angle_of_the_right_elbow()
             wrist_length = self.length_of_wrist_to_wrist()
             shoulder_length = self.length_of_shoulder_to_shoulder()
             
