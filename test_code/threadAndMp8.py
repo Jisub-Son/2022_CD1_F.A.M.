@@ -204,3 +204,5 @@ threadBoth()
 # getVideoThread 에 mp 내용을 삽입
 # getVideoThread(mp까지 처리) -> showVideoThread 구조
 # getVideoThread를 2개 실행시킴
+
+# 수정
