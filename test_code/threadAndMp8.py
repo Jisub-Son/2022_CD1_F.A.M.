@@ -206,3 +206,4 @@ threadBoth()
 # getVideoThread를 2개 실행시킴
 
 # 수정
+# 한번더
