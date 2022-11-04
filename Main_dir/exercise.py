@@ -290,20 +290,24 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
-                 
+
             # make table for calculations
             table_calculations(color, avg_arm = avg_arm_angle, avg_spine = avg_spine_angle, wrist_ratio = wrist_shoulder_ratio)
         
         return [reps, status, sets, feedback, timer, camID]
-  
+
     # select mode
-    def calculate_exercise(self, exercise, reps, status, sets, feedback, timer, camID): 
-        if exercise == "pushup":
+    def calculate_exercise(self, mode, reps, status, sets, feedback, timer, camID): 
+        if mode == "pushup":
+            # print("pushup selected")
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
                 reps, status, sets, feedback, timer, camID)
-        elif exercise == "squat":
+        elif mode == "squat":
+            # print("squat selected")
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).squat(
                 reps, status, sets, feedback, timer, camID)
+        else:
+            # print("nothing selected")
+            pass
         
-        return [reps, status, sets, feedback, timer, camID]
-    
+        return [mode, reps, status, sets, feedback, timer, camID]

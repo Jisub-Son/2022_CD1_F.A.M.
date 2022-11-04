@@ -175,7 +175,7 @@ def threadVideoShow(src1=0, src2=1):
 def threadBoth(src1=0, src2=1):
     video_getter0 = VideoGet(src=src1).start()
     video_getter1 = VideoGet(src=src2).start()
-    video_shower = VideoShow(frame1=video_getter0.frame1, frame2=video_getter1.frame1).start()
+    video_shower = VideoShow(frame1=video_getter0.frame, frame2=video_getter1.frame).start()
     cps = CountsPerSec().start()
 
     print("total thread : ", activeCount())
@@ -187,8 +187,8 @@ def threadBoth(src1=0, src2=1):
             video_getter0.stop()
             break
 
-        frame1 = video_getter0.frameBuf1
-        frame2 = video_getter1.frameBuf1                                # getThread에서 frame 받아오기
+        frame1 = video_getter0.frameBuf
+        frame2 = video_getter1.frameBuf                                # getThread에서 frame 받아오기
         frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
         frame2 = putIterationsPerSec(frame2, cps.countsPerSec())    # 스켈레톤 붙은 frame에 iterate 텍스트 넣기
         video_shower.frame1 = frame1
