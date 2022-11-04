@@ -5,7 +5,7 @@ from threading import Thread
 from threading import active_count
 from datetime import datetime
 from utils import *
-from exercise import EXERCISE
+from exercise import * # exercise.py의 전부 불러옴
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -13,12 +13,11 @@ mp_pose = mp.solutions.pose
 exercise_type = 'default'
 status_type = 'default'
 feedback_type = 'default'
-
+                
 # initialize variables
 class stateInfo:
-    def __init__(self):
-        print("init")
-        self.mode = 'Choose'    
+    def __init__(self):        
+        self.mode = 'Choose'
         self.reps = 0                        
         self.status = 'Up'                   
         self.sets = 0                        
@@ -27,12 +26,27 @@ class stateInfo:
 
 state_info = stateInfo()
 
+# drawing skeleton        
+def draw(frame, results):
+    mp_drawing.draw_landmarks(
+        frame,
+        results.pose_landmarks,                     # landmark 좌표
+        mp_pose.POSE_CONNECTIONS,                   # landmark 구현
+        mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2), # keypoint 연결선 -> 빨간색
+        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=5, circle_radius=5), # keypoint 원 -> 초록색 
+    )
+
 # iteration
+def putIterationsPerSec(frame, iterations_per_sec):
+    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
+        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+    return frame
+    
 class CountsPerSec:
     def __init__(self):
         self._start_time = None
         self._num_occurrences = 0
-
+    
     def start(self):
         self._start_time = datetime.now()
         return self
@@ -46,11 +60,6 @@ class CountsPerSec:
             return 0
         else:
             return self._num_occurrences / elapsed_time
-
-def putIterationsPerSec(frame, iterations_per_sec):
-    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
-        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
-    return frame
 
 class VideoGet:
     def __init__(self, src=0):
@@ -67,10 +76,10 @@ class VideoGet:
         Thread(target=self.get, args=()).start()
         return self
 
-    def get(self):
+    def get(self): 
         global state_info
         global exercise_type, status_type, feedback_type    # 가이드 전용 global 변수
-        
+
         squat_down = 1 ## 초기화
         squat_up = 51
         pushup_down = 1
@@ -78,9 +87,9 @@ class VideoGet:
         sidelateralraise_up = 1
         sidelateralraise_down = 35
         
-        with mp_pose.Pose(min_detection_confidence=0.5,
-                    min_tracking_confidence=0.5) as pose:  
-        
+        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+                    min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
+            
             while not self.stopped:
                 if not self.grabbed:
                     self.stop()
@@ -88,36 +97,25 @@ class VideoGet:
                     (self.grabbed, self.frame) = self.stream.read()
                     self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
-                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame.flags.writeable = False
-                    results = pose.process(self.frame) 
+                    results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
-                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
-                    
-                    # measure exervise with landmarks
+                    self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    # measure exercise with landmarks 
                     try:    
                         landmarks = results.pose_landmarks.landmark
                         state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID = EXERCISE(landmarks).calculate_exercise(
                             state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
                     except:
                         pass
-                    
-                    # landmark detection and output 
-                    mp_drawing.draw_landmarks(
-                        self.frame,
-                        results.pose_landmarks,                     # landmark 좌표
-                        mp_pose.POSE_CONNECTIONS,                   # landmark 구현
-                        mp_drawing.DrawingSpec(color=(0, 0, 255),   # keypoint 연결선 -> 빨간색
-                                            thickness=2, 
-                                            circle_radius=2),
-                        mp_drawing.DrawingSpec(color=(0, 255, 0),   # keypoint 원 -> 초록색
-                                            thickness=5,
-                                            circle_radius=5),
-                    )
+                            
+                    # draw 함수화
+                    draw(self.frame, results)
 
                     # 카메라 좌우반전(운동 자세보기 편하게)
                     self.frameBuf = cv2.flip(self.frame, 1)
-                                        
+                    
                     # display shadow partner
                     # squat
                     if (exercise_type == "squat" and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
@@ -196,7 +194,7 @@ class VideoShow:
     def show(self):
         global state_info
         global exercise_type, status_type, feedback_type    # 가이드 전용 global 변수
-        
+            
         while not self.stopped:
             
             # key input for exit, mode, reset
@@ -231,7 +229,8 @@ class VideoShow:
             cv2.putText(self.frame2, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))'''
             
             # make table
-            table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
+            tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
+            cv2.imshow("table", tableMat)
             exercise_type = state_info.mode ## shadow에서 사용할 변수
             status_type = state_info.status
             feedback_type = state_info.feedback
@@ -245,12 +244,14 @@ class VideoShow:
             elif state_info.mode == "sidelateralraise":    
                 table_calculations(color, right_shoulder = right_shoulder_angle, right_elbow = right_elbow_angle, parellel_ratio = heel_foot_ratio)'''
             
-            cv2.imshow("Video0", self.frame1)
+            # cv2.imshow("Video0", self.frame1)
             # cv2.moveWindow("Video0", 0, 0) # 좌표 설정
-            cv2.imshow("Video1", self.frame2)
+            # cv2.imshow("Video1", self.frame2)
             # cv2.moveWindow("Video1", 640, 0) # 좌표 설정
-            total = cv2.hconcat([self.frame1, self.frame2])
-            cv2.imshow("total", total)
+            totalFrame = cv2.hconcat([self.frame1, self.frame2])
+            totalShow = cv2.vconcat([totalFrame, tableMat])
+            cv2.imshow("totalShow", totalShow)
             
+
     def stop(self):
         self.stopped = True
