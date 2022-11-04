@@ -1,5 +1,5 @@
 # 
-# 2022-1 CD1 Team-1
+# 2022 CD1, CD2 Team-1
 # Project Name  : F.A.M.(Fitness Assistant Module)
 # Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
 # 

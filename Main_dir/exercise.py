@@ -298,16 +298,16 @@ class EXERCISE(KEYPOINT):
 
     # select mode
     def calculate_exercise(self, mode, reps, status, sets, feedback, timer, camID): 
-        if mode == "pushup":
-            # print("pushup selected")
-            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
-                reps, status, sets, feedback, timer, camID)
-        elif mode == "squat":
-            # print("squat selected")
+        if mode == "squat":
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).squat(
                 reps, status, sets, feedback, timer, camID)
+        elif mode == "pushup":
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
+                reps, status, sets, feedback, timer, camID)    
+        elif mode == "sidelateralraise":
+            reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).sidelateralraise(
+                reps, status, sets, feedback, timer, camID)    
         else:
-            # print("nothing selected")
             pass
         
         return [mode, reps, status, sets, feedback, timer, camID]

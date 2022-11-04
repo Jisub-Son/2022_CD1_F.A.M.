@@ -10,20 +10,24 @@ REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 7        
 REF_SETS = 3         
-RIGHT_CAM = 1
-LEFT_CAM = 2
+RIGHT_CAM = 0
+LEFT_CAM = 1
 
 pygame.init()               # init mixer
-pygame.mixer.Sound('rest_time.wav')     # 쉬는 시간입니다
-pygame.mixer.Sound('buzzer.wav')        # 버저음
-pygame.mixer.Sound('end.wav')           # 운동이 종료되었습니다
-pygame.mixer.Sound('correct.wav')       # 좋은 자세입니다
-pygame.mixer.Sound('kneedown.wav')      # 무릎을 넎으세요
-pygame.mixer.Sound('lessdown.wav')      # 너무 내려갔습니다
-pygame.mixer.Sound('moredown.wav')      # 더 내리세요
-pygame.mixer.Sound('parallel.wav')      # 발을 11자로 해주세요
-pygame.mixer.Sound('spine.wav')         # 허리를 더 펴주세요
-pygame.mixer.Sound('hand.wav')          # 손을 더 모아주세요
+pygame.mixer.Sound("sound/rest_time.wav")     # 쉬는 시간입니다
+pygame.mixer.Sound("sound/buzzer.wav")        # 버저음
+pygame.mixer.Sound("sound/end.wav")           # 운동이 종료되었습니다 
+pygame.mixer.Sound("sound/kneedown.wav")      # 무릎을 넎으세요
+pygame.mixer.Sound("sound/lessdown.wav")      # 너무 내려갔습니다
+pygame.mixer.Sound("sound/moredown.wav")      # 더 내리세요
+pygame.mixer.Sound("sound/parallel.wav")      # 발을 11자로 해주세요
+pygame.mixer.Sound("sound/spine.wav")         # 허리를 더 펴주세요
+pygame.mixer.Sound("sound/hand.wav")          # 손을 더 모아주세요
+pygame.mixer.Sound("sound/lessraise.wav")     # 팔을 조금만 벌리세요
+pygame.mixer.Sound("sound/moreraise.wav")     # 팔을 더 벌리세요
+pygame.mixer.Sound("sound/lessbend.wav")      # 팔꿈치를 조금만 구부리세요
+pygame.mixer.Sound("sound/start_exercise.wav") ## 쉬는 시간 종료
+pygame.mixer.Sound("sound/easter.wav") ## 이스터
 prev_sound = ""
 
 mp_pose = mp.solutions.pose # landmark
@@ -78,18 +82,47 @@ def voiceFeedback(sound):
     global prev_sound
     if pygame.mixer.get_busy() == False:
         prev_sound = sound
-        pygame.mixer.Sound(sound + '.wav').play()
+        pygame.mixer.Sound('sound/' + sound + '.wav').play()
     else:
         if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생       
             # print("prev", prev_sound, "cur", sound)   
             pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
-            pygame.mixer.Sound(sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
+            pygame.mixer.Sound('sound/' + sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
         else:
             pass
 
+# display guide
+def shadow(file, frame, camID, r, c): 
+    file_inv = cv2.flip(file, 1) ## 좌우반전
+    if file is None:
+        print('image load failed!')
+    # logo with frame0   
+    rows, cols, channels = file.shape ## 로고 픽셀값
+    roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
+    gray = cv2.cvtColor(file, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+    ret, mask = cv2.threshold(gray, 97, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+    mask_inv = cv2.bitwise_not(mask) ## mask 반전
+    background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
+    shadowpartner = cv2.bitwise_and(file, file, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+    final0 = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
+    # logo with frame1
+    rows, cols, channels = file_inv.shape ## 로고 픽셀값
+    roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
+    gray = cv2.cvtColor(file_inv, cv2.COLOR_BGR2GRAY) ## 로고를 gray로 변환
+    ret, mask = cv2.threshold(gray, 97, 255, cv2.THRESH_BINARY) ## 이진영상으로 변환 (흰색배경, 검정로고)
+    mask_inv = cv2.bitwise_not(mask) ## mask 반전
+    background = cv2.bitwise_and(roi, roi, mask = mask) ## 캠화면에 넣을 위치 black
+    shadowpartner = cv2.bitwise_and(file_inv, file_inv, mask = mask_inv) ## 로고에서 캠화면에 출력할 부분
+    final1 = cv2.bitwise_or(background, shadowpartner) ## 캠화면의 검정부분과 로고 출력부분 합성
+    # display shadowpartner
+    if camID == RIGHT_CAM: 
+        frame[r:rows + r, c:cols + c] = final0 ## 캠화면에 실시간으로 출력하기 위해 합성 
+    elif camID == LEFT_CAM: ## cam1 에는 flip된 영상 출력         
+        frame[r:rows + r, c:cols + c] = final1   
+
 # make table
 def table(exercise, reps, status, sets, feedback, timer): 
-    table = cv2.imread("./table.PNG") # table 이미지 위치
+    table = cv2.imread("table/table.PNG") # table 이미지 위치
     cv2.putText(table, "Exercise            " + exercise.replace("-", " "), ## opencv문자열: table 운동타입(입력한 운동타입)
                 (1, 95), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Reps                " + str(reps), (1, 155), ## opencv문자열: table 운동 카운트
@@ -107,7 +140,7 @@ def table(exercise, reps, status, sets, feedback, timer):
 
 # make calculations table    
 def table_calculations(*args, **kwargs):
-    table_calculations = cv2.imread("./table_angle.PNG")
+    table_calculations = cv2.imread("table/table_angle.PNG")
     for i, key in enumerate(kwargs):
         cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
                     cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
