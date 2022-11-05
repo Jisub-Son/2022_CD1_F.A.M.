@@ -65,7 +65,7 @@ class VideoGet:
     def __init__(self, src=0):
         self.stream = cv2.VideoCapture(src)
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)     # 오디세이에서 imshow 관련 에러가 발생하면 여기서 사이즈를 줄여볼 것
         (self.grabbed, self.frame) = self.stream.read()
         self.frameBuf = self.frame
         self.stopped = False
@@ -183,7 +183,9 @@ class VideoGet:
 class VideoShow:
     def __init__(self, frame1=None, frame2=None, fps=0.0):
         self.frame1 = frame1
+        # print("frame1 : ", self.frame1.shape)
         self.frame2 = frame2
+        # print("frame2 : ", self.frame2.shape)     # 2개 프레임의 사이즈가 같아야 hconcat을 할 수 있음
         self.stopped = False
         self.fps = fps
         
@@ -230,7 +232,7 @@ class VideoShow:
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
-            cv2.imshow("table", tableMat)
+            # cv2.imshow("table", tableMat)
             exercise_type = state_info.mode ## shadow에서 사용할 변수
             status_type = state_info.status
             feedback_type = state_info.feedback
@@ -248,9 +250,11 @@ class VideoShow:
             # cv2.moveWindow("Video0", 0, 0) # 좌표 설정
             # cv2.imshow("Video1", self.frame2)
             # cv2.moveWindow("Video1", 640, 0) # 좌표 설정
-            totalFrame = cv2.hconcat([self.frame1, self.frame2])
-            totalShow = cv2.vconcat([totalFrame, tableMat])
+            totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
+            # cv2.imshow("totalFrame", totalFrame)
+            totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             cv2.imshow("totalShow", totalShow)
+            cv2.moveWindow("totalShow", 0, 0)
             
 
     def stop(self):
