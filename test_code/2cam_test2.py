@@ -1,13 +1,14 @@
 import cv2
 import time
+import numpy as np
 
 cap_0 = cv2.VideoCapture(0)
-# cap_0.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-# cap_0.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap_0.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap_0.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
 
 cap_1 = cv2.VideoCapture(1)
-# cap_1.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-# cap_1.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap_1.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+cap_1.set(cv2.CAP_PROP_FRAME_HEIGHT, 320)
 
 while True:
     # Capture frame-by-frame
@@ -51,6 +52,8 @@ while True:
 # Display the resulting frame
     cv2.imshow('video0', frame_0)
     cv2.imshow('video1', frame_1)
+    """total = np.hconcat([frame_0], [frame_1])
+    cv2.imshow("total", total)"""
     
     if cv2.waitKey(1) == ord('q'):
         break

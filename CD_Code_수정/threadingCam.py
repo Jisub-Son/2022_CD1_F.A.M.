@@ -64,6 +64,8 @@ class CountsPerSec:
 class VideoGet:
     def __init__(self, src=0):
         self.stream = cv2.VideoCapture(src)
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) 
         (self.grabbed, self.frame) = self.stream.read()
         self.frameBuf = self.frame
         self.stopped = False
@@ -76,10 +78,7 @@ class VideoGet:
 
     def get(self): 
         global state_info
-        
-        global exercise_type ## 가이드 전용 global 변수
-        global status_type
-        global feedback_type
+        global exercise_type, status_type, feedback_type    # 가이드 전용 global 변수
         
         squat_down = 1 ## 초기화
         squat_up = 51
@@ -103,6 +102,7 @@ class VideoGet:
                     results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    
                     # measure exercise with landmarks 
                     try:    
                         landmarks = results.pose_landmarks.landmark
@@ -117,7 +117,7 @@ class VideoGet:
                     # 카메라 좌우반전(운동 자세보기 편하게)
                     self.frameBuf = cv2.flip(self.frame, 1)
                     
-                    # display shadow partner
+                    ""# display shadow partner
                     # squat
                     if (exercise_type == "squat" and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
                         down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
@@ -176,7 +176,7 @@ class VideoGet:
                             sidelateralraise_down = 35  ## 초기화      
                         shadow(file, self.frameBuf, self.camID, 20, 150)
                     else:                          
-                        sidelateralraise_down = 35  ## 초기화
+                        sidelateralraise_down = 35  ## 초기화""
 
     def stop(self):
         self.stopped = True
@@ -194,10 +194,7 @@ class VideoShow:
 
     def show(self):
         global state_info
-                
-        global exercise_type ## 가이드 전용 global 변수
-        global status_type
-        global feedback_type
+        global exercise_type, status_type, feedback_type    # 가이드 전용 global 변수
             
         while not self.stopped:
             
@@ -218,7 +215,7 @@ class VideoShow:
                 state_info.__init__()
                 state_info.feedback = "choose exercise"
             
-            # calculate fps
+            """ # calculate fps # 최종에서는 안씀
             if self.fps == 0.0:
                 self.fps = 30.0
             time_per_frame_video = 1/self.fps
@@ -228,31 +225,30 @@ class VideoShow:
             time.sleep(time_sleep_frame)
             real_fps = 1/(time.perf_counter()-last_time)
             last_time = time.perf_counter()
-            str = "FPS : %0.2f" % real_fps
+            str = "FPS : %0.2f % real_fps
             cv2.putText(self.frame1, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
-            cv2.putText(self.frame2, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            cv2.putText(self.frame2, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))"""
             
             # make table
+            tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             exercise_type = state_info.mode ## shadow에서 사용할 변수
             status_type = state_info.status
             feedback_type = state_info.feedback
             
-            # make culculate table
+            """# make culculate table # 최종에서는 안씀
             if state_info.mode == "squat":
                 table_calculations(color, right_leg = right_leg_angle, avg_knee = avg_knee_angle, foot_ratio = heel_foot_ratio)
                 ##table_calculations(color, easter_elbow = right_elbow_angle, easter_shoulder = right_shoulder_angle, easter_wrist = right_wrist_angle) ## 이스터 확인용
             elif state_info.mode == "pushup":
                 table_calculations(color, right_arm = right_arm_angle, right_spine = right_spine_angle, wrist_ratio = wrist_shoulder_ratio)
             elif state_info.mode == "sidelateralraise":    
-                table_calculations(color, right_shoulder = right_shoulder_angle, right_elbow = right_elbow_angle, parellel_ratio = heel_foot_ratio)
+                table_calculations(color, right_shoulder = right_shoulder_angle, right_elbow = right_elbow_angle, parellel_ratio = heel_foot_ratio)"""
                         
-            cv2.imshow("Video0", self.frame1)
-            cv2.moveWindow("Video0", 0, 0) # 좌표 설정
-            cv2.imshow("Video1", self.frame2)
-            cv2.moveWindow("Video1", 640, 0) # 좌표 설정
-                
-            
+            totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
+            totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
+            cv2.imshow("totalShow", totalShow) # 합쳐진 frame
+            cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
 
     def stop(self):
         self.stopped = True

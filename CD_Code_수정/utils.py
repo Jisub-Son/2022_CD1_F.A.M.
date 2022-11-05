@@ -10,10 +10,11 @@ REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 2
 REF_SETS = 3
-RIGHT_CAM = 0
-LEFT_CAM = 1
+RIGHT_CAM = 0 # 노트북 캠(오디세이에서는 0,2)
+LEFT_CAM = 1 # usb 캠
 
-pygame.init()               # init mixer
+# init mixer
+pygame.init() # 윈도우는 역슬래쉬(\), 리눅스는 슬래쉬(/)
 pygame.mixer.Sound("sound\./rest_time.wav")     # 쉬는 시간입니다
 pygame.mixer.Sound("sound\./buzzer.wav")        # 버저음
 pygame.mixer.Sound("sound\./end.wav")           # 운동이 종료되었습니다 
@@ -134,14 +135,16 @@ def table(mode, reps, status, sets, feedback, timer):
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Timer               " + str(timer), (5, 390), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.imshow("Table", table) ## table 출력
-    cv2.moveWindow("Table", 0, 510)
+    
+    table = cv2.resize(table, dsize=(1280, 510))    # table.width == frame.width*2 와 같도록 설정
+                                                    # table.width = 1280 = 640*2, table.height = (1280/1012)*403 = 510 
+    return table
 
 # make calculations table    
-def table_calculations(*args, **kwargs):
+def table_calculations(*args, **kwargs): # 최종에서는 안씀
     table_calculations = cv2.imread("table\./table_angle.PNG")
     for i, key in enumerate(kwargs):
         cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.imshow("Table_calculations", table_calculations)
-    cv2.moveWindow("Table_calculations", 1013, 510) 
+    #cv2.moveWindow("Table_calculations", 1013, 510) 
