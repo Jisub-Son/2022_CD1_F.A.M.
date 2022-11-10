@@ -1,11 +1,10 @@
 import cv2
 import mediapipe as mp
-import time
 from threading import Thread
-from threading import active_count
 from datetime import datetime
 from utils import *
-from exercise import * # exercise.py의 전부 불러옴
+from exercise import *
+from guide import *
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -113,11 +112,11 @@ class VideoGet:
                             
                     # draw 함수화
                     draw(self.frame, results)
-
+                    
                     # 카메라 좌우반전(운동 자세보기 편하게)
                     self.frameBuf = cv2.flip(self.frame, 1)
                     
-                    ""# display shadow partner
+                    # display guide
                     # squat
                     if (exercise_type == "squat" and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
                         down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
