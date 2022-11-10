@@ -21,9 +21,7 @@ while True:
         break
     
     frame1 = video_getter0.frameBuf
-    frame2 = video_getter1.frameBuf                                
-    frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
-    frame2 = putIterationsPerSec(frame2, cps.countsPerSec())    
+    frame2 = video_getter1.frameBuf                                  
     video_shower.frame1 = frame1
     video_shower.frame2 = frame2                                
     cps.increment()

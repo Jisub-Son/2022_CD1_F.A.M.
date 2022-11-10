@@ -9,7 +9,7 @@ from guide import *
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
-exercise_type = 'default'
+exercise_type = 'default' # 가이드 전용 전역변수
 status_type = 'default'
 feedback_type = 'default'
                 
@@ -35,12 +35,6 @@ def draw(frame, results):
         mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=5, circle_radius=5), # keypoint 원 -> 초록색 
     )
 
-# iteration
-def putIterationsPerSec(frame, iterations_per_sec):
-    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
-        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
-    return frame
-    
 class CountsPerSec:
     def __init__(self):
         self._start_time = None
@@ -175,7 +169,7 @@ class VideoGet:
                             sidelateralraise_down = 35  ## 초기화      
                         shadow(file, self.frameBuf, self.camID, 20, 150)
                     else:                          
-                        sidelateralraise_down = 35  ## 초기화""
+                        sidelateralraise_down = 35  ## 초기화
 
     def stop(self):
         self.stopped = True
@@ -214,35 +208,12 @@ class VideoShow:
                 state_info.__init__()
                 state_info.feedback = "choose exercise"
             
-            """ # calculate fps # 최종에서는 안씀
-            if self.fps == 0.0:
-                self.fps = 30.0
-            time_per_frame_video = 1/self.fps
-            last_time = time.perf_counter()
-            time_per_frame = time.perf_counter() - last_time
-            time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
-            time.sleep(time_sleep_frame)
-            real_fps = 1/(time.perf_counter()-last_time)
-            last_time = time.perf_counter()
-            str = "FPS : %0.2f % real_fps
-            cv2.putText(self.frame1, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
-            cv2.putText(self.frame2, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))"""
-            
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             exercise_type = state_info.mode ## shadow에서 사용할 변수
             status_type = state_info.status
             feedback_type = state_info.feedback
-            
-            """# make culculate table # 최종에서는 안씀
-            if state_info.mode == "squat":
-                table_calculations(color, right_leg = right_leg_angle, avg_knee = avg_knee_angle, foot_ratio = heel_foot_ratio)
-                ##table_calculations(color, easter_elbow = right_elbow_angle, easter_shoulder = right_shoulder_angle, easter_wrist = right_wrist_angle) ## 이스터 확인용
-            elif state_info.mode == "pushup":
-                table_calculations(color, right_arm = right_arm_angle, right_spine = right_spine_angle, wrist_ratio = wrist_shoulder_ratio)
-            elif state_info.mode == "sidelateralraise":    
-                table_calculations(color, right_shoulder = right_shoulder_angle, right_elbow = right_elbow_angle, parellel_ratio = heel_foot_ratio)"""
                         
             totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)

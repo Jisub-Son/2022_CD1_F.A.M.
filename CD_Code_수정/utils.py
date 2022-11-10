@@ -22,6 +22,7 @@ pygame.mixer.Sound("sound\./kneedown.wav")      # 무릎을 넎으세요
 pygame.mixer.Sound("sound\./lessdown.wav")      # 너무 내려갔습니다
 pygame.mixer.Sound("sound\./moredown.wav")      # 더 내리세요
 pygame.mixer.Sound("sound\./parallel.wav")      # 발을 11자로 해주세요
+pygame.mixer.Sound("sound\./shoulder_length.wav")      # 발을 11자로 해주세요
 pygame.mixer.Sound("sound\./spine.wav")         # 허리를 더 펴주세요
 pygame.mixer.Sound("sound\./hand.wav")          # 손을 더 모아주세요
 pygame.mixer.Sound("sound\./lessraise.wav")     # 팔을 조금만 벌리세요
@@ -111,12 +112,3 @@ def table(mode, reps, status, sets, feedback, timer):
     table = cv2.resize(table, dsize=(1280, 510))    # table.width == frame.width*2 와 같도록 설정
                                                     # table.width = 1280 = 640*2, table.height = (1280/1012)*403 = 510 
     return table
-
-# make calculations table    
-"""def table_calculations(*args, **kwargs): # 최종에서는 안씀
-    table_calculations = cv2.imread("table\./table_angle.PNG")
-    for i, key in enumerate(kwargs):
-        cv2.putText(table_calculations, "{} : {:.4f}".format(key, kwargs[key]), (1, 150 + i*90), ## opencv문자열: table 운동 카운트
-                cv2.FONT_HERSHEY_SIMPLEX, 1, args[0][i], 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.imshow("Table_calculations", table_calculations)
-    #cv2.moveWindow("Table_calculations", 1013, 510) """

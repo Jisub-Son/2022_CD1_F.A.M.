@@ -57,7 +57,15 @@ class KEYPOINT:
             return calculate_length(r_foot_index, l_foot_index)
         else:
             return 0
-            
+        
+    def length_of_shoulder_to_shoulder(self): # 스쿼트, 푸쉬업 (어깨 사이 거리)
+        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
+        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
+        if r_shoulder[2] >= REF_ROUGH_VISIBILITY and l_shoulder[2] >= REF_ROUGH_VISIBILITY:
+            return calculate_length(r_shoulder, l_shoulder)
+        else:
+            return 0  
+                
     ############################################## pushup ##############################################
 
     def angle_of_the_left_arm(self): # 푸쉬업 (왼쪽: 어깨, 팔꿈치, 손목 각도)
@@ -102,15 +110,7 @@ class KEYPOINT:
         if r_wrist[2] >= REF_ROUGH_VISIBILITY and l_wrist[2] >= REF_ROUGH_VISIBILITY:
             return calculate_length(r_wrist, l_wrist)
         else:
-            return 0       
-        
-    def length_of_shoulder_to_shoulder(self): # 푸쉬업 (어깨 사이 거리)
-        r_shoulder = detection(self.landmarks, "RIGHT_SHOULDER")
-        l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
-        if r_shoulder[2] >= REF_ROUGH_VISIBILITY and l_shoulder[2] >= REF_ROUGH_VISIBILITY:
-            return calculate_length(r_shoulder, l_shoulder)
-        else:
-            return 0    
+            return 0  
         
     ############################################## sidelateralraise ##############################################  
     
