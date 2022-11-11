@@ -65,7 +65,7 @@ class VideoGet:
         
         with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
                     min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5     
-               
+            
             while not self.stopped:
                 if not self.grabbed:
                     self.stop()
@@ -165,13 +165,13 @@ def threadVideoShow(src1=0, src2=1):
         if not (grabbed1 or grabbed2) or video_shower.stopped:
             video_shower.stop()
             break
-
+        
         frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
         frame2 = putIterationsPerSec(frame2, cps.countsPerSec())
         video_shower.frame1 = frame1
         video_shower.frame2 = frame2
         cps.increment()
-   
+
 def threadBoth(src1=0, src2=1):
     video_getter0 = VideoGet(src=src1).start()
     video_getter1 = VideoGet(src=src2).start()
@@ -199,7 +199,7 @@ def threadBoth(src1=0, src2=1):
 # noThreading()
 # threadVideoGet()
 # threadVideoShow()
-threadBoth()
+threadBoth(0, 2)
 
 # getVideoThread 에 mp 내용을 삽입
 # getVideoThread(mp까지 처리) -> showVideoThread 구조
