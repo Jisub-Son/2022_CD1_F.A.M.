@@ -47,7 +47,7 @@ class VideoGet:
     
     def get(self):
         global state_info
-        
+        # prevTime = 0
         with mp_pose.Pose(model_complexity=0,
                         smooth_landmarks=True,
                         smooth_segmentation=True,
@@ -59,7 +59,7 @@ class VideoGet:
                     self.stop()
                 else:
                     (self.grabbed, self.frame) = self.stream.read()
-                    self.fps = self.stream.get(cv2.CAP_PROP_FPS)
+                    # self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame.flags.writeable = False
@@ -74,15 +74,20 @@ class VideoGet:
                             state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
                     except:
                         pass
-                            
+                    
                     # draw 함수화
                     draw(self.frame, results)
-                    
+
                     # 카메라 좌우반전(운동 자세보기 편하게)
                     self.frameBuf = cv2.flip(self.frame, 1)
                     
                     # display guide
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
+                    
+                    """ curTime = time.time()
+                    sec = curTime - prevTime
+                    prevTime = curTime            
+                    print("get : {:.03f} ms".format(sec*10**3))"""
 
     def stop(self):
         self.stopped = True
@@ -138,6 +143,9 @@ class VideoShow:
             str = "FPS : %0.1f" % fps
             cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 3)
             cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 3)
+            
+            # print("show : {:.03f} ms".format(sec*10**3))
+            # print("fps: ", fps)
             
             totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)

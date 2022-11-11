@@ -48,8 +48,8 @@ def getVideo(stream, src):
     # measure exercise with landmarks 
     try:    
         landmarks = results.pose_landmarks.landmark
-        state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID = EXERCISE(landmarks).calculate_exercise(
-            state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
+        state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, camID = EXERCISE(landmarks).calculate_exercise(
+            state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, camID)
     except:
         pass
     
