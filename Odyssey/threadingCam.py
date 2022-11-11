@@ -65,13 +65,18 @@ class VideoGet:
         Thread(target=self.get, args=()).start()
         return self
     
-    def get(self): 
+    def get(self):
+        prevTime = 0
         global state_info
         
-        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
-                    min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
+        with mp_pose.Pose(model_complexity=0,
+                        smooth_landmarks=True,
+                        smooth_segmentation=True,
+                        min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+                        min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
             
             while not self.stopped:
+                curTime = time.time()
                 if not self.grabbed:
                     self.stop()
                 else:
@@ -100,6 +105,9 @@ class VideoGet:
                     
                     # display guide
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
+                    sec = curTime - prevTime
+                    prevTime = curTime
+                    print("GetVideo runtime : {:.03f} ms".format(sec*10**3))
                     
     def stop(self):
         self.stopped = True
@@ -117,6 +125,8 @@ class VideoShow:
     
     def show(self):
         global state_info
+        
+        prevTime = 0    
             
         while not self.stopped:
             
@@ -140,6 +150,17 @@ class VideoShow:
                 state_info.__init__()
                 state_info.feedback = "choose exercise"
                 voiceFeedback('reset')
+            
+            # put txt: fps
+            curTime = time.time()
+            sec = curTime - prevTime
+            prevTime = curTime
+            fps = 1 / (sec)
+            str = "FPS : %0.1f" % fps
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+            
+            # print("ShowVideo runtime : {:.03f} ms".format(sec*10**3))
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)

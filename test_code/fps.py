@@ -1,7 +1,7 @@
 import cv2
 import time
 
-CAM_ID = 1
+CAM_ID = 2
 cam = cv2.VideoCapture(CAM_ID)
 
 if cam.isOpened() == False:
@@ -23,6 +23,8 @@ while (True):
     print("fps ", str)
     
     cv2.imshow('Cam', frame)
+    print("loop runtime : {:.03f} ms".format(sec*10**3))
+
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         cam.release()

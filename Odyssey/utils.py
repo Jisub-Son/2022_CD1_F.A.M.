@@ -11,29 +11,29 @@ REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 5
 REF_SETS = 3
 RIGHT_CAM = 0 # 노트북 캠(오디세이에서는 0,2)
-LEFT_CAM = 1 # usb 캠
+LEFT_CAM = 2 # usb 캠
 
 # init mixer
 pygame.init() # 윈도우는 역슬래쉬(\), 리눅스는 슬래쉬(/)
-pygame.mixer.Sound("sound\./rest_time.wav")        # 쉬는 시간입니다
-pygame.mixer.Sound("sound\./buzzer.wav")           # 버저음
-pygame.mixer.Sound("sound\./end.wav")              # 운동이 종료되었습니다 
-pygame.mixer.Sound("sound\./kneedown.wav")         # 무릎을 넎으세요
-pygame.mixer.Sound("sound\./lessdown.wav")         # 너무 내려갔습니다
-pygame.mixer.Sound("sound\./moredown.wav")         # 더 내리세요
-pygame.mixer.Sound("sound\./parallel.wav")         # 발을 11자로 해주세요
-pygame.mixer.Sound("sound\./shoulder_length.wav")  # 발을 어깨넓이로 벌리세요
-pygame.mixer.Sound("sound\./spine.wav")            # 허리를 더 펴주세요
-pygame.mixer.Sound("sound\./hand.wav")             # 손을 더 모아주세요
-pygame.mixer.Sound("sound\./lessraise.wav")        # 팔을 조금만 벌리세요
-pygame.mixer.Sound("sound\./moreraise.wav")        # 팔을 더 벌리세요
-pygame.mixer.Sound("sound\./lessbend.wav")         # 팔꿈치를 조금만 구부리세요
-pygame.mixer.Sound("sound\./start_exercise.wav")   # 쉬는 시간 종료
-pygame.mixer.Sound("sound\./easter.wav")           # 이스터(졸업을 축하합니다)
-pygame.mixer.Sound("sound\./squat.wav")            # 스쿼트 모드입니다 
-pygame.mixer.Sound("sound\./pushup.wav")           # 푸쉬업 모드입니다
-pygame.mixer.Sound("sound\./sidelateralraise.wav") # 사이드레터럴레이즈 모드입니다
-pygame.mixer.Sound("sound\./reset.wav")            # 초기화되었습니다 운동을 선택하세요
+pygame.mixer.Sound("sound/rest_time.wav")        # 쉬는 시간입니다
+pygame.mixer.Sound("sound/buzzer.wav")           # 버저음
+pygame.mixer.Sound("sound/end.wav")              # 운동이 종료되었습니다 
+pygame.mixer.Sound("sound/kneedown.wav")         # 무릎을 넎으세요
+pygame.mixer.Sound("sound/lessdown.wav")         # 너무 내려갔습니다
+pygame.mixer.Sound("sound/moredown.wav")         # 더 내리세요
+pygame.mixer.Sound("sound/parallel.wav")         # 발을 11자로 해주세요
+pygame.mixer.Sound("sound/shoulder_length.wav")  # 발을 어깨넓이로 벌리세요
+pygame.mixer.Sound("sound/spine.wav")            # 허리를 더 펴주세요
+pygame.mixer.Sound("sound/hand.wav")             # 손을 더 모아주세요
+pygame.mixer.Sound("sound/lessraise.wav")        # 팔을 조금만 벌리세요
+pygame.mixer.Sound("sound/moreraise.wav")        # 팔을 더 벌리세요
+pygame.mixer.Sound("sound/lessbend.wav")         # 팔꿈치를 조금만 구부리세요
+pygame.mixer.Sound("sound/start_exercise.wav")   # 쉬는 시간 종료
+pygame.mixer.Sound("sound/easter.wav")           # 이스터(졸업을 축하합니다)
+pygame.mixer.Sound("sound/squat.wav")            # 스쿼트 모드입니다 
+pygame.mixer.Sound("sound/pushup.wav")           # 푸쉬업 모드입니다
+pygame.mixer.Sound("sound/sidelateralraise.wav") # 사이드레터럴레이즈 모드입니다
+pygame.mixer.Sound("sound/reset.wav")            # 초기화되었습니다 운동을 선택하세요
 prev_sound = ""
 
 mp_pose = mp.solutions.pose # landmark
@@ -88,17 +88,17 @@ def voiceFeedback(sound):
     global prev_sound
     if pygame.mixer.get_busy() == False:
         prev_sound = sound
-        pygame.mixer.Sound('sound\./' +  sound + '.wav').play()
+        pygame.mixer.Sound('sound/' +  sound + '.wav').play()
     else:
         if prev_sound != sound:                             # 약간 인터럽트처럼 작동됨 end 재생       
             pygame.mixer.stop()                             # -> buzzer가 울리는 중에 end가 울려야 한다면 buzzer를 즉시 끄고 end 재생 
-            pygame.mixer.Sound('sound\./' + sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
+            pygame.mixer.Sound('sound/' + sound + '.wav').play()       # -> buzzer가 울리는 중에 buzzer가 약간 겹쳐서 호출되면 새로 재생하지는 않음    
         else:
             pass
 
 # make table
 def table(mode, reps, status, sets, feedback, timer): 
-    table = cv2.imread("table\./table.PNG") # table 이미지 위치
+    table = cv2.imread("table/table.PNG") # table 이미지 위치
     cv2.putText(table, "Exercise            " + str(mode), (1, 95), ## opencv문자열: table 운동타입(입력한 운동타입)
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Reps                " + str(reps), (1, 155), ## opencv문자열: table 운동 카운트
