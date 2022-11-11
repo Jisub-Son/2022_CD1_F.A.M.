@@ -7,14 +7,14 @@ pushup_down = 1
 pushup_up = 60
 sidelateralraise_up = 1
 sidelateralraise_down = 35
-    
+
 # display guide
 def shadow(file, frame, camID, r, c): 
     file_inv = cv2.flip(file, 1) ## 좌우반전
     
     if file is None:
         print('guide image load failed!')
-        
+    
     # logo with frame0   
     rows, cols, channels = file.shape ## 로고 픽셀값
     roi = frame[r:rows + r, c:cols + c] ## 로고를 필셀값 ROI(관심영역)
@@ -63,8 +63,8 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
         shadow(file, shadow_frame, shadow_camID, 20, 240) ## 가이드 불러오기
     else:                          
         squat_up = 51  ## 초기화 
-                    
-    if (shadow_mode == "pushup"):# and shadow_status == 'Up' and shadow_feedback == 'Start'): # pushup: up state 
+    
+    if (shadow_mode == "pushup" and shadow_status == 'Up' and shadow_feedback == 'Start'): # pushup: up state 
         down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.jpg') ## 1번부터 읽기
         down_flip = cv2.flip(down, 1) ## 좌우반전(실수로 반대로 찍음)
         file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
@@ -74,7 +74,7 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
         shadow(file, shadow_frame, shadow_camID, 150, 100) ## 가이드 불러오기
     else:
         pushup_down = 1  ## 초기화
-                    
+    
     if (shadow_mode == "pushup" and shadow_status == 'Down' and shadow_feedback == 'Success'): # pushup: down state
         up = cv2.imread('pushup\pushup_' + str(pushup_up) +'.jpg')
         up_flip = cv2.flip(up, 1) ## 좌우반전(실수로 반대로 찍음)
@@ -85,8 +85,8 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
         shadow(file, shadow_frame, shadow_camID, 150, 100)
     else:
         pushup_up = 60  ## 초기화         
-                    
-    if (shadow_mode == "sidelateralraise"):# and shadow_status == 'Down' and shadow_feedback == 'Start'): # side lateral raise: down state
+    
+    if (shadow_mode == "sidelateralraise" and shadow_status == 'Down' and shadow_feedback == 'Start'): # side lateral raise: down state
         down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.jpg') ## 1번부터 읽기
         file = cv2.resize(down, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
         sidelateralraise_up += 1 ## 증가     
@@ -95,7 +95,7 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
         shadow(file, shadow_frame, shadow_camID, 20, 150)
     else:
         sidelateralraise_up = 1  ## 초기화    
-                    
+    
     if (shadow_mode == "sidelateralraise" and shadow_status == 'Up' and shadow_feedback == 'Success'): # side lateral raise: upstate
         up = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_down) +'.jpg') ## 1번부터 읽기
         file = cv2.resize(up, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절

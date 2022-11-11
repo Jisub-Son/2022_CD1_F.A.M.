@@ -19,7 +19,6 @@ class stateInfo:
         self.sets = 0                        
         self.feedback = 'start exercise'     
         self.timer = REF_TIMER
-
 state_info = stateInfo()
 
 # drawing skeleton        
@@ -31,25 +30,6 @@ def draw(frame, results):
         mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2), # keypoint 연결선 -> 빨간색
         mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=5, circle_radius=5), # keypoint 원 -> 초록색 
     )
-
-class CountsPerSec:
-    def __init__(self):
-        self._start_time = None
-        self._num_occurrences = 0
-    
-    def start(self):
-        self._start_time = datetime.now()
-        return self
-    
-    def increment(self):
-        self._num_occurrences += 1
-    
-    def countsPerSec(self):
-        elapsed_time = (datetime.now() - self._start_time).total_seconds()
-        if elapsed_time == 0:
-            return 0
-        else:
-            return self._num_occurrences / elapsed_time
 
 class VideoGet:
     def __init__(self, src=0):
@@ -119,7 +99,7 @@ class VideoShow:
     def show(self):
         global state_info
         
-        prevTime = 0    
+        prevTime = 0
         
         while not self.stopped:
             
@@ -148,15 +128,15 @@ class VideoShow:
             curTime = time.time()
             sec = curTime - prevTime
             prevTime = curTime
-            fps = 1 / (sec)
-            str = "FPS : %0.1f" % fps
-            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
-            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
+            frame_per_sec = 1 / (sec)
+            str = "FPS : %0.1f" % frame_per_sec
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
-                        
+            
             totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             cv2.imshow("totalShow", totalShow) # 합쳐진 frame

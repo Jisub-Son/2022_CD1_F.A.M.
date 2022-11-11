@@ -69,10 +69,12 @@ class camThread(threading.Thread):
         global status_type
         global feedback_type
         
+        prevTime = 0
+        
         # mediapipe setting
         mp_drawing = mp.solutions.drawing_utils
         mp_pose = mp.solutions.pose
-
+        
         with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
                         min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5
             
@@ -85,7 +87,7 @@ class camThread(threading.Thread):
             pushup_up = 60
             sidelateralraise_up = 1
             sidelateralraise_down = 35
-
+            
             # open opencv window
             while capture.isOpened():              
                 
@@ -152,22 +154,15 @@ class camThread(threading.Thread):
                 
                 # 카메라 좌우반전(운동 자세 보기 편하게)
                 frame = cv2.flip(frame, 1)
-                        
-                # calculate fps
-                fps = capture.get(cv2.CAP_PROP_FPS)
-                # print('fps',fps)
-                if fps == 0.0:
-                    fps = 30.0
-                time_per_frame_video = 1/fps
-                last_time = time.perf_counter()
-                time_per_frame = time.perf_counter() - last_time
-                time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
-                time.sleep(time_sleep_frame)
-                real_fps = 1/(time.perf_counter()-last_time)
-                last_time = time.perf_counter()
-                str_fps = "camID : {} ".format(camID) + "FPS : %0.2f" % real_fps
-                cv2.putText(frame, str_fps, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)       
-                    
+                
+                # put txt: fps
+                curTime = time.time()
+                sec = curTime - prevTime
+                prevTime = curTime
+                frame_per_sec = 1 / (sec)
+                str_frame = "FPS : %0.1f" % frame_per_sec
+                cv2.putText(frame, str_frame, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)       
+                
                 # display shadow partner
                 # squat
                 if (exercise_type == "squat"):# and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
