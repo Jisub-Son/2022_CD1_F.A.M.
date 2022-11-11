@@ -24,8 +24,7 @@ while (True):
     
     cv2.imshow('Cam', frame)
     print("loop runtime : {:.03f} ms".format(sec*10**3))
-
-
+    
     if cv2.waitKey(1) & 0xFF == ord('q'):
         cam.release()
         cv2.destroyWindow('Cam')
