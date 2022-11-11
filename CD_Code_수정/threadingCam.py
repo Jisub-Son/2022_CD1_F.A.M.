@@ -5,6 +5,7 @@ from datetime import datetime
 from utils import *
 from exercise import *
 from guide import *
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -117,7 +118,9 @@ class VideoShow:
     
     def show(self):
         global state_info
-            
+        
+        prevTime = 0    
+        
         while not self.stopped:
             
             # key input for exit, mode, reset
@@ -140,6 +143,15 @@ class VideoShow:
                 state_info.__init__()
                 state_info.feedback = "choose exercise"
                 voiceFeedback('reset')
+            
+            # put txt: fps
+            curTime = time.time()
+            sec = curTime - prevTime
+            prevTime = curTime
+            fps = 1 / (sec)
+            str = "FPS : %0.1f" % fps
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)

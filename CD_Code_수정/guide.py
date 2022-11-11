@@ -51,7 +51,6 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
         if squat_down == 50: ## 범위 넘어가면
             squat_down = 1  ## 초기화        
         shadow(file, shadow_frame, shadow_camID, 20, 240) ## 가이드 불러오기
-        print("squat_down", squat_down)
     else:
         squat_down = 1  ## 초기화  
     
