@@ -1,6 +1,6 @@
 import cv2 as cv
 
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(1)
 
 while cap.isOpened():
     # Capture frame-by-frame

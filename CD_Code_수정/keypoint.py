@@ -3,10 +3,10 @@ from utils import *
 class KEYPOINT:
     def __init__(self, landmarks):
         self.landmarks = landmarks
-
+        
     ############################################## squat ##############################################
-
-    def angle_of_the_left_leg(self): # 스쿼트 (왼쪽: 허리, 무릎, 발목 각도) 완료
+    
+    def angle_of_the_left_leg(self): # 스쿼트 (왼쪽: 허리, 무릎, 발목 각도)
         l_hip = detection(self.landmarks, "LEFT_HIP")
         l_knee = detection(self.landmarks, "LEFT_KNEE")
         l_ankle = detection(self.landmarks, "LEFT_ANKLE")
@@ -15,7 +15,7 @@ class KEYPOINT:
         else:
             return 0
         
-    def angle_of_the_right_leg(self): # 스쿼트 (오른쪽: 허리, 무릎, 발목 각도) 완료
+    def angle_of_the_right_leg(self): # 스쿼트 (오른쪽: 허리, 무릎, 발목 각도)
         r_hip = detection(self.landmarks, "RIGHT_HIP")
         r_knee = detection(self.landmarks, "RIGHT_KNEE")
         r_ankle = detection(self.landmarks, "RIGHT_ANKLE")
@@ -67,7 +67,7 @@ class KEYPOINT:
             return 0  
                 
     ############################################## pushup ##############################################
-
+    
     def angle_of_the_left_arm(self): # 푸쉬업 (왼쪽: 어깨, 팔꿈치, 손목 각도)
         l_shoulder = detection(self.landmarks, "LEFT_SHOULDER")
         l_elbow = detection(self.landmarks, "LEFT_ELBOW")

@@ -36,7 +36,7 @@ color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)] # color 초기화
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
         super().__init__(landmarks)
-
+    
     # timer function
     def Rest_timer(self, reps, status, sets, feedback, timer):
         global cur, prev, timeElapsed, flag
@@ -135,7 +135,6 @@ class EXERCISE(KEYPOINT):
                 status = 'Congratulations'
                 feedback = 'Congratulations'
                 ##color = [(0, 255, 0), (0, 255, 0), (0, 255, 0)] # 이스터 확인할 때만 사용
-                
             # count logic    
             if KNEEDOWN_ANGLE and PARALLEL_RATIO and HEEL_RATIO:       # 기본 자세가 만족되고..
                 if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
@@ -206,7 +205,7 @@ class EXERCISE(KEYPOINT):
                 feedback = "Well done!"
             
         return [reps, status, sets, feedback, timer, camID]
-
+    
     # pushup function
     def pushup(self, reps, status, sets, feedback, timer, camID):
         global left_arm_angle, right_arm_angle,\
@@ -436,7 +435,7 @@ class EXERCISE(KEYPOINT):
                 feedback = "Well done!"
                 
         return [reps, status, sets, feedback, timer, camID]
-
+    
     # select mode
     def calculate_exercise(self, mode, reps, status, sets, feedback, timer, camID): 
         if mode == "squat":
@@ -447,7 +446,7 @@ class EXERCISE(KEYPOINT):
                 reps, status, sets, feedback, timer, camID)    
         elif mode == "sidelateralraise":
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).sidelateralraise(
-                reps, status, sets, feedback, timer, camID)    
+                reps, status, sets, feedback, timer, camID)     
         else:
             pass
         

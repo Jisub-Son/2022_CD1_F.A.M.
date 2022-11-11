@@ -10,8 +10,8 @@ REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 2        
 REF_SETS = 3         
-RIGHT_CAM = 0
-LEFT_CAM = 1 
+RIGHT_CAM = 1
+LEFT_CAM = 0
 
 pygame.init()               # init mixer
 pygame.mixer.Sound("sound\./rest_time.wav")     # 쉬는 시간입니다

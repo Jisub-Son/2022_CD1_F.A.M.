@@ -170,7 +170,7 @@ class camThread(threading.Thread):
                     
                 # display shadow partner
                 # squat
-                if (exercise_type == "squat" and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
+                if (exercise_type == "squat"):# and status_type == 'Up' and feedback_type == 'Start'): ## squat에서 서 있을 때(앉아야할 때) -> 서서 앉을 때까지만 출력
                     down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
                     file = cv2.resize(down, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
                     squat_down += 1 ## 증가     
