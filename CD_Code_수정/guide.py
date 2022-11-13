@@ -2,11 +2,11 @@ import cv2
 from utils import *
 
 squat_down = 1 ## 초기화
-squat_up = 51
+squat_up = 60
 pushup_down = 1
-pushup_up = 60
+pushup_up = 76
 sidelateralraise_up = 1
-sidelateralraise_down = 35
+sidelateralraise_down = 76
 
 # display guide
 def shadow(file, frame, camID, r, c): 
@@ -44,64 +44,64 @@ def shadow(file, frame, camID, r, c):
 def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camID): 
     global squat_down, squat_up, pushup_down, pushup_up, sidelateralraise_up, sidelateralraise_down # global 변수
     
-    if (shadow_mode == "squat"):# and shadow_status == 'Up' and shadow_feedback == 'Start'): # squat: up state
-        down = cv2.imread('squat\squat_' + str(squat_down) +'.jpg') ## 1번부터 읽기
-        file = cv2.resize(down, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
+    if (shadow_mode == "squat" and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state(1 ~ 59)
+        down = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
+        file = cv2.resize(down, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
         squat_down += 1 ## 증가     
-        if squat_down == 50: ## 범위 넘어가면
+        if squat_down == 60: ## 범위 넘어가면
             squat_down = 1  ## 초기화        
-        shadow(file, shadow_frame, shadow_camID, 20, 240) ## 가이드 불러오기
+        shadow(file, shadow_frame, shadow_camID, 0, 190) ## 가이드 불러오기
     else:
         squat_down = 1  ## 초기화  
     
-    if (shadow_mode == "squat" and shadow_status == 'Down' and shadow_feedback == 'Success'): # squat: down state
-        up = cv2.imread('squat\squat_' + str(squat_up) +'.jpg') ## 1번부터 읽기
-        file = cv2.resize(up, dsize = (0, 0), fx = 1.15, fy = 1.15) ## 크기 조절
+    if (shadow_mode == "squat" and shadow_status == 'Down' and shadow_feedback == 'Success'): ## down state (60 ~ 106)
+        up = cv2.imread('squat\squat_' + str(squat_up) +'.png') ## 1번부터 읽기
+        file = cv2.resize(up, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
         squat_up += 1 ## 증가     
-        if squat_up == 65: ## 범위 넘어가면
-            squat_up = 51  ## 초기화      
-        shadow(file, shadow_frame, shadow_camID, 20, 240) ## 가이드 불러오기
+        if squat_up == 107: ## 범위 넘어가면
+            squat_up = 60  ## 초기화      
+        shadow(file, shadow_frame, shadow_camID, 0, 190) ## 가이드 불러오기
     else:                          
-        squat_up = 51  ## 초기화 
+        squat_up = 60  ## 초기화 
     
-    if (shadow_mode == "pushup" and shadow_status == 'Up' and shadow_feedback == 'Start'): # pushup: up state 
-        down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.jpg') ## 1번부터 읽기
+    if (shadow_mode == "pushup" and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state (1 ~ 75)
+        down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.png') ## 1번부터 읽기
         down_flip = cv2.flip(down, 1) ## 좌우반전(실수로 반대로 찍음)
-        file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
+        file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
         pushup_down += 1 ## 증가    
-        if pushup_down == 59: ## 범위 넘어가면
+        if pushup_down == 76: ## 범위 넘어가면
             pushup_down = 1 ## 초기화     
-        shadow(file, shadow_frame, shadow_camID, 150, 100) ## 가이드 불러오기
+        shadow(file, shadow_frame, shadow_camID, 0, 20) ## 가이드 불러오기
     else:
         pushup_down = 1  ## 초기화
     
-    if (shadow_mode == "pushup" and shadow_status == 'Down' and shadow_feedback == 'Success'): # pushup: down state
-        up = cv2.imread('pushup\pushup_' + str(pushup_up) +'.jpg')
+    if (shadow_mode == "pushup" and shadow_status == 'Down' and shadow_feedback == 'Success'): ## down state (76 ~ 150)
+        up = cv2.imread('pushup\pushup_' + str(pushup_up) +'.png')
         up_flip = cv2.flip(up, 1) ## 좌우반전(실수로 반대로 찍음)
-        file = cv2.resize(up_flip, dsize = (0, 0), fx = 1.5, fy = 1.5) ## 크기 조절
+        file = cv2.resize(up_flip, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
         pushup_up += 1 ## 증가     
-        if pushup_up == 69: ## 범위 넘어가면
-            pushup_up = 60  ## 초기화        
-        shadow(file, shadow_frame, shadow_camID, 150, 100)
+        if pushup_up == 151: ## 범위 넘어가면
+            pushup_up = 76  ## 초기화        
+        shadow(file, shadow_frame, shadow_camID, 0, 20)
     else:
-        pushup_up = 60  ## 초기화         
+        pushup_up = 76  ## 초기화         
     
-    if (shadow_mode == "sidelateralraise" and shadow_status == 'Down' and shadow_feedback == 'Start'): # side lateral raise: down state
-        down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.jpg') ## 1번부터 읽기
-        file = cv2.resize(down, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
+    if (shadow_mode == "sidelateralraise" and shadow_status == 'Down' and shadow_feedback == 'Start'): ## down state (1 ~ 75)
+        down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.png') ## 1번부터 읽기
+        file = cv2.resize(down, dsize = (0, 0), fx = 1.8, fy = 1.8) ## 크기 조절
         sidelateralraise_up += 1 ## 증가     
-        if sidelateralraise_up == 35: ## 범위 넘어가면
+        if sidelateralraise_up == 76: ## 범위 넘어가면
             sidelateralraise_up = 1  ## 초기화        
-        shadow(file, shadow_frame, shadow_camID, 20, 150)
+        shadow(file, shadow_frame, shadow_camID, 0, 90)
     else:
         sidelateralraise_up = 1  ## 초기화    
     
-    if (shadow_mode == "sidelateralraise" and shadow_status == 'Up' and shadow_feedback == 'Success'): # side lateral raise: upstate
-        up = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_down) +'.jpg') ## 1번부터 읽기
-        file = cv2.resize(up, dsize = (0, 0), fx = 1.2, fy = 1.2) ## 크기 조절
+    if (shadow_mode == "sidelateralraise" and shadow_status == 'Up' and shadow_feedback == 'Success'): ## upstate (76 ~ 159)
+        up = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_down) +'.png') ## 1번부터 읽기
+        file = cv2.resize(up, dsize = (0, 0), fx = 1.8, fy = 1.8) ## 크기 조절
         sidelateralraise_down += 1 ## 증가     
-        if sidelateralraise_down == 63: ## 범위 넘어가면
-            sidelateralraise_down = 35  ## 초기화      
-        shadow(file, shadow_frame, shadow_camID, 20, 150)
+        if sidelateralraise_down == 160: ## 범위 넘어가면
+            sidelateralraise_down = 76  ## 초기화      
+        shadow(file, shadow_frame, shadow_camID, 0, 90)
     else:                          
-        sidelateralraise_down = 35  ## 초기화          
+        sidelateralraise_down = 76  ## 초기화

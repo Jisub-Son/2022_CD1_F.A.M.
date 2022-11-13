@@ -161,7 +161,7 @@ class camThread(threading.Thread):
                 prevTime = curTime
                 frame_per_sec = 1 / (sec)
                 str_frame = "FPS : %0.1f" % frame_per_sec
-                cv2.putText(frame, str_frame, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3)       
+                cv2.putText(frame, str_frame, (1,450), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)       
                 
                 # display shadow partner
                 # squat

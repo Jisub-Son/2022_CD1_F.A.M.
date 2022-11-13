@@ -86,7 +86,9 @@
 2. 앞으로 추가적인 기능 추가는 없음
 - 테스트 후 오류 수정만 계획 중  
 
-※ 1110 9차 수정(혹시 몰라서 "CD_Code_수정" 에만 적용함, main_dir를 백업용으로 보기)
+※ 1110 9차 수정
+(혹시 몰라서 "CD_Code_수정" 에만 적용함, main_dir를 백업용으로 보기)
+
 1. 그동안 진행했던 자잘한 수정(concat 등) 반영완료 
 + fps, iteration, calculate_table 삭제 
 - fps, itertion: 발표시 애매하므로 교체 필요, calculate_table: 최종에서 사용 x
@@ -100,3 +102,12 @@
 
 4. guide.py 생성
 - 함수화 완료
+
+※ 1113 10차 수정
+1.  totalFrame = cv2.hconcat([self.frame2, self.frame1]) 
+- frame 1 2 자리 바꿈(그래야 rightcam이 오른쪽에 있음)
+
+2. 가이드 재촬영 및 기존 코드에 반영 완료
+- 갑자기 빠르게 올라가거나 내려가는 현상 없음
+
++ 가이드의 딜레이 문제가 개선된 것으로 보임(thread 구조 개선 및 sleep 함수 사용 등으로 인해) 

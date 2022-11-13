@@ -137,7 +137,7 @@ class VideoShow:
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
-            totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
+            totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             cv2.imshow("totalShow", totalShow) # 합쳐진 frame
             cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
