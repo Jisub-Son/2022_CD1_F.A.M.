@@ -98,7 +98,7 @@ def voiceFeedback(sound):
 
 # make table
 def table(mode, reps, status, sets, feedback, timer): 
-    table = cv2.imread("table\./table.PNG") # table 이미지 위치
+    table = cv2.imread("table\./table.png") # table 이미지 위치
     cv2.putText(table, "Exercise            " + str(mode), (1, 95), ## opencv문자열: table 운동타입(입력한 운동타입)
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     cv2.putText(table, "Reps                " + str(reps), (1, 155), ## opencv문자열: table 운동 카운트
