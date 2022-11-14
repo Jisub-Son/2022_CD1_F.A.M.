@@ -4,8 +4,11 @@
 # Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
 # 
 
-from utils import *             
-from threadingCam import *
+from utils import LEFT_CAM
+from utils import RIGHT_CAM
+from threadingCam import VideoGet
+from threadingCam import VideoShow
+from datetime import datetime
 from threading import active_count
 from time import sleep
 
@@ -29,7 +32,7 @@ while True:
     video_shower.frame1 = video_getter0.frameBuf
     video_shower.frame2 = video_getter1.frameBuf
     
-    # sleep(0.034)
+    sleep(0.034)
 
 # 11-05 진행 상황 공유
 # threadingCam.py

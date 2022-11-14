@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 import cv2 
 import pygame
-import os
-from time import sleep
+# import os
+# from time import sleep
 
 # set constants for reference
 REF_TIMER = 5
@@ -12,8 +12,8 @@ REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 5
 REF_SETS = 3
-RIGHT_CAM = 2 # 노트북 캠(오디세이에서는 0,2)
-LEFT_CAM = 1 # usb 캠
+RIGHT_CAM = 1 # 노트북 캠(오디세이에서는 0,2)
+LEFT_CAM = 0 # usb 캠
 
 # init mixer
 pygame.init() # 윈도우는 역슬래쉬(\), 리눅스는 슬래쉬(/)

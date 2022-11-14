@@ -1,10 +1,11 @@
 import cv2
 import mediapipe as mp
 from threading import Thread
-from datetime import datetime
-from utils import *
-from exercise import *
-from guide import *
+from utils import REF_TIMER
+from utils import voiceFeedback
+from utils import table
+from exercise import EXERCISE
+from guide import guide
 import time
 
 mp_drawing = mp.solutions.drawing_utils
@@ -49,10 +50,15 @@ class VideoGet:
     def get(self): 
         global state_info
         
-        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+        with mp_pose.Pose(model_complexity=0,
+                    min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
                     min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
             
             while not self.stopped:
+                
+                cur = time.time()
+                prev = cur
+                
                 if not self.grabbed:
                     self.stop()
                 else:
@@ -81,6 +87,10 @@ class VideoGet:
                     
                     # display guide
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
+                    
+                    cur = time.time()
+                    sec = cur - prev
+                    print("get loop : {:.03f} ms".format(sec*10**3))
                     
     def stop(self):
         self.stopped = True
@@ -135,12 +145,11 @@ class VideoShow:
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
-            table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             cv2.imshow("totalShow", totalShow) # 합쳐진 frame
-            cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
+            # cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
     
     def stop(self):
         self.stopped = True

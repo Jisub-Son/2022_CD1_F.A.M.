@@ -1,5 +1,5 @@
 import time
-from keypoint import *
+from keypoint import KEYPOINT
 from utils import *  
 
 cur = 0.0 # 타이머 초기화
