@@ -1,7 +1,7 @@
 import cv2
 import time
 
-CAM_ID = 2
+CAM_ID = 0
 cam = cv2.VideoCapture(CAM_ID)
 
 if cam.isOpened() == False:
