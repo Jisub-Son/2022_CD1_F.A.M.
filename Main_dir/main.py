@@ -4,18 +4,23 @@
 # Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
 # 
 
-from utils import *             
-from threadingCam import *
+from utils import LEFT_CAM
+from utils import RIGHT_CAM
+from threadingCam import VideoGet
+from threadingCam import VideoShow
+from datetime import datetime
+from threading import active_count
+from time import sleep
 
-print("Main start")
+now = datetime.now()
+print("Main start: ", now.strftime('%Y-%m-%d %H:%M:%S')) # 현재 시간 출력(오디세이 로그 확인용)
 
 # state_infoM = stateInfo()
 video_getter0 = VideoGet(src=LEFT_CAM).start()
 video_getter1 = VideoGet(src=RIGHT_CAM).start()
 video_shower = VideoShow(frame1=video_getter0.frame, frame2=video_getter1.frame).start()
-cps = CountsPerSec().start()
 
-print("total thread : ", active_count())
+print("total thread : ", active_count()) # 총 thread 확인
 
 while True:
     if video_getter0.stopped or video_getter1.stopped or video_shower.stopped:
@@ -23,15 +28,12 @@ while True:
         video_getter1.stop()
         video_getter0.stop()
         break
-
-    frame1 = video_getter0.frameBuf
-    frame2 = video_getter1.frameBuf                                
-    frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
-    frame2 = putIterationsPerSec(frame2, cps.countsPerSec())    
-    video_shower.frame1 = frame1
-    video_shower.frame2 = frame2                                
-    cps.increment()
     
+    video_shower.frame1 = video_getter0.frameBuf
+    video_shower.frame2 = video_getter1.frameBuf
+    
+    sleep(0.034)
+
 # 11-05 진행 상황 공유
 # threadingCam.py
 # -> line 67 : 높이와 폭 설정을 해야 함, imshow 에러나 timeout이 발생하면 여기서 사이즈를 줄일 것

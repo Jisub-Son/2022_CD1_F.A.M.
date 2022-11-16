@@ -1,10 +1,11 @@
 import cv2 as cv
 
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(1)
 
 while cap.isOpened():
     # Capture frame-by-frame
     ret, frame = cap.read()
+    
     # if frame is read correctly ret is True
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
