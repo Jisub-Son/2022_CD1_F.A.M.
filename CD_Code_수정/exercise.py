@@ -1,6 +1,7 @@
 import time
 from keypoint import *
 from utils import *  
+from datetime import datetime
 
 cur = 0.0 # 타이머 초기화
 prev = 0.0
@@ -31,7 +32,7 @@ right_elbow_angle = 180.0
 
 right_hand_angle = 0.0 # 이스터 초기화
 
-color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)] # color 초기화
+now = datetime.now() # 프로그램 시작 시간
 
 class EXERCISE(KEYPOINT):
     def __init__(self, landmarks):
@@ -63,7 +64,9 @@ class EXERCISE(KEYPOINT):
                 heel_foot_ratio, heel_shoulder_ratio,\
                 left_elbow_angle, right_elbow_angle,\
                 left_shoulder_angle, right_shoulder_angle, right_hand_angle,\
-                prev, color
+                prev, squat_log
+        
+        squat_log = open('log\squat_log\SquatLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
         
         # reference angles
         REF_KNEE_ANGLE = 85.0 ## 무릎 나온거
@@ -134,7 +137,8 @@ class EXERCISE(KEYPOINT):
                 voiceFeedback('easter')
                 status = 'Congratulations'
                 feedback = 'Congratulations'
-                ##color = [(0, 255, 0), (0, 255, 0), (0, 255, 0)] # 이스터 확인할 때만 사용
+                squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+            
             # count logic    
             if KNEEDOWN_ANGLE and PARALLEL_RATIO and HEEL_RATIO:       # 기본 자세가 만족되고..
                 if LESSDOWN_CONDITION and LESSDOWN_ANGLE:   # 많이 구부렸을 때
@@ -142,47 +146,45 @@ class EXERCISE(KEYPOINT):
                     reps -= 1
                     status = 'Up'
                     feedback = 'Bend your legs less'
-                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif COUNT_CONDITION and COUNT_ANGLE:       # 적절히 구부렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                     prev = time.time()
-                    color = [(255, 0, 0), (255, 0, 0), (255, 0, 0), (0, 0, 0)]
-                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE: # 덜 구부렸을 때
+                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE: # 덜 구부렸을 때 (log 확인 배제)
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your legs more'
-                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
-                elif DEFAULT_CONDITION and DEFAULT_ANGLE and not EASTER_ANGLE and not EASTER_CONDITION :   # 구부리지 않았을 때
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE and not EASTER_ANGLE and not EASTER_CONDITION :   # 구부리지 않았을 때 (log 배제)
                     status = 'Up'
                     feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
             else:
                 if feedback == 'Success' and (not KNEEDOWN_ANGLE or not PARALLEL_RATIO or not HEEL_RATIO):    # 카운트가 된 직후 잘못 자세를 잡았을 때
                     reps -= 1
                     status = 'Up'
                     feedback = 'Keep your position to the end'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255), (0, 0, 0)]
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not KNEEDOWN_ANGLE:   # 무릎이 발끝 앞으로 나갔을 때
                     if feedback != 'Place your knees behind toes':
                         voiceFeedback('kneedown')
                     status = 'Up'
                     feedback = 'Place your knees behind toes'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 0), (0, 0, 0)] 
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not PARALLEL_RATIO: # 발이 11자가 아닐 때
                     if feedback != 'Parallel your feet':
                         voiceFeedback('parallel')
                     status = 'Up'
                     feedback = 'Parallel your feet'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)] 
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not HEEL_RATIO: # 발이 어깨넓이가 아닐 때
                     if feedback != 'Spread your feet shoulder width':
                         voiceFeedback('shoulder_length')
                     status = 'Up'
                     feedback = 'Spread your feet shoulder width'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)]         
+                    squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")        
             # after each set
             if AFTER_SET_CONDITION:
                 prev = time.time()
@@ -190,9 +192,11 @@ class EXERCISE(KEYPOINT):
                     voiceFeedback('rest_time')
                 status = 'Rest'
                 feedback = 'Take a breathe..'
+                squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if AFTER_REST_CONDITION: ## 쉬는 시간이 종료될 경우
                 voiceFeedback('start_exercise') ## 다시 운동할 시간
                 feedback = 'Start exercise again'
+                squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
             
@@ -203,6 +207,9 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
+                squat_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+                squat_log.write("Total Reps: " + str(REF_REPS) + '\n' + "Total Sets: " + str(REF_SETS) + "\n" + "Total Runtime: " +  str(datetime.now() - now) + "\n" + "\n")
+                squat_log.close()
             
         return [reps, status, sets, feedback, timer, camID]
     
@@ -211,7 +218,9 @@ class EXERCISE(KEYPOINT):
         global left_arm_angle, right_arm_angle,\
                 left_spine_angle, right_spine_angle,\
                 shoulder_length, wrist_length, wrist_shoulder_ratio,\
-                prev, color   
+                prev, pushup_log
+        
+        pushup_log = open('log\pushup_log\PushUpLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
         
         # reference angles
         REF_ARM_ANGLE = 80.0
@@ -256,34 +265,32 @@ class EXERCISE(KEYPOINT):
                     reps += 1
                     status = 'Down'
                     feedback = 'Success'
-                    color = [(255, 0, 0), (255, 0, 0), (255, 0, 0)]
-                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE:     # 너무 적게 구부렸을 때
+                    pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+                elif MOREDOWN_CONDITION and MOREDOWN_ANGLE:     # 너무 적게 구부렸을 때 (log 배제)
                     voiceFeedback('moredown')
                     status = 'Up'
                     feedback = 'Bend your arms more'
-                    color = [(0, 0, 255), (0, 0, 0), (0, 0, 0)]
-                elif DEFAULT_CONDITION and DEFAULT_ANGLE:       #구부리지 않았을 때
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE:       #구부리지 않았을 때 (log 배제)
                     status = 'Up'
                     feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
             else:
                 if feedback == 'Success' and (not SPINE_ANGLE or not WRIST_RATIO):  # 카운트가 된 직후 잘못 자세를 잡았을 때
                     reps -= 1
                     status = 'Up'
                     feedback = 'Keep your position to the end'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255)]
+                    pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not SPINE_ANGLE:   # 허리를 구부렸을 때
                     if feedback != 'Straight your spine':
                         voiceFeedback('spine')
                     status = 'Up'
                     feedback = 'Straight your spine'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 0)]
+                    pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not WRIST_RATIO:
                     if feedback != 'Put your hands together':
                         voiceFeedback('hand')
                     status = 'Up'
                     feedback = 'Put your hands together'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255)]
+                    pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                     
             # after each set
             if AFTER_SET_CONDITION:
@@ -292,9 +299,11 @@ class EXERCISE(KEYPOINT):
                     voiceFeedback('rest_time')
                 status = 'Rest'
                 feedback = 'Take a breathe..'
+                pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if AFTER_REST_CONDITION: ## 쉬는시간이 종료될 경우
                 voiceFeedback('start_exercise') ## 다시 운동 시작    
                 feedback = 'Start exercise again' 
+                pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
                 
@@ -305,6 +314,9 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
+                pushup_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+                pushup_log.write("Total Reps: " + str(REF_REPS) + '\n' + "Total Sets: " + str(REF_SETS) + "\n" + "Total Runtime: " +  str(datetime.now() - now) + "\n" + "\n")
+                pushup_log.close()
         
         return [reps, status, sets, feedback, timer, camID]
     
@@ -314,8 +326,10 @@ class EXERCISE(KEYPOINT):
                 left_shoulder_angle, right_shoulder_angle,\
                 heel_length, foot_length, shoulder_length,\
                 heel_foot_ratio, heel_shoulder_ratio,\
-                prev, color   
-                
+                prev, sidelateralraise_log
+        
+        sidelateralraise_log = open('log\sidelateralraise_log\SideLateralRaiseLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
+        
         # reference angles
         LESS_SHOULDER_ANGLE = 40.0 # 더 올리고
         REF_SHOULDER_ANGLE = 60.0  # 적당하고
@@ -372,46 +386,44 @@ class EXERCISE(KEYPOINT):
                     reps -= 1
                     status = 'Down'
                     feedback = 'raise your arm less'
-                    color = [(0, 0, 255), (0, 0, 255), (0, 0, 0)] 
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif COUNT_CONDITION and SHOULDER_ANGLE: # 적절하게 올렸을 때
                     voiceFeedback('buzzer')
                     reps += 1
                     status = 'Up'
                     feedback = 'Success'
-                    color = [(255, 0, 0), (255, 0, 0), (255, 0, 0)]
-                elif LESS_RAISE_CONDITION and LESS_RAISE_ANGLE:  ## 너무 적게 올렸을 때
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+                elif LESS_RAISE_CONDITION and LESS_RAISE_ANGLE:  ## 너무 적게 올렸을 때 (log 배제)
                     voiceFeedback('moreraise')
                     status = 'Down'
-                    feedback = 'raise your arm more'
-                    color = [(0, 0, 255), (0, 0, 255), (0, 0, 0)]        
-                elif DEFAULT_CONDITION and DEFAULT_ANGLE:  ## 디폴트 상태
+                    feedback = 'raise your arm more'    
+                elif DEFAULT_CONDITION and DEFAULT_ANGLE:  ## 디폴트 상태 (log 배제)
                     status = 'Down'
-                    feedback = 'Start'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]      
+                    feedback = 'Start'  
             else:
                 if feedback == 'Success' and (not ELBOW_ANGLE or not PARALLEL_RATIO or not HEEL_RATIO):  # 카운트가 된 직후 잘못 자세를 잡았을 때
                     reps -= 1
                     status = 'Down'
                     feedback = 'Keep your position to the end'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255)]
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and LESS_BEND_ANGLE:   ## 팔꿈치를 더 구부려야함
                     if feedback != 'bend your elbow less':
                         voiceFeedback('lessbend')
                     status = 'Down'
-                    feedback = 'bend your elbow less'
-                    color = [(0, 0, 0), (0, 0, 255), (0, 0, 255)]     
+                    feedback = 'bend your elbow less' 
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif PARALLEL_CONDITION and not PARALLEL_RATIO: # 발이 11자가 아닐 때
                     if feedback != 'Parallel your feet':
                         voiceFeedback('parallel')
                     status = 'Down'
-                    feedback = 'Parallel your feet'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255)]       
+                    feedback = 'Parallel your feet'    
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                 elif DEFAULT_CONDITION and not HEEL_RATIO: # 발이 어깨넓이가 아닐 때
                     if feedback != 'Spread your feet shoulder width':
                         voiceFeedback('shoulder_length')
                     status = 'Up'
                     feedback = 'Spread your feet shoulder width'
-                    color = [(0, 0, 0), (0, 0, 0), (0, 0, 255), (0, 0, 0)] 
+                    sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
                     
             # after each set
             if AFTER_SET_CONDITION:
@@ -420,9 +432,11 @@ class EXERCISE(KEYPOINT):
                     voiceFeedback('rest_time')
                 status = 'Rest'
                 feedback = 'Take a breathe..'
+                sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if AFTER_REST_CONDITION: ## 쉬는시간이 종료될 경우
                 voiceFeedback('start_exercise') ## 다시 운동 시작    
                 feedback = 'Start exercise again' 
+                sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
             if status == 'Rest':
                 reps, status, sets, feedback, timer = self.Rest_timer(reps, status, sets, feedback, timer)  # run timer function
                 
@@ -433,6 +447,9 @@ class EXERCISE(KEYPOINT):
                 status = 'All done'
                 sets = 0
                 feedback = "Well done!"
+                sidelateralraise_log.write(str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + str(feedback) + "\n")
+                sidelateralraise_log.write("Total Reps: " + str(REF_REPS) + '\n' + "Total Sets: " + str(REF_SETS) + "\n" + "Total Runtime: " +  str(datetime.now() - now) + "\n" + "\n")
+                sidelateralraise_log.close()
                 
         return [reps, status, sets, feedback, timer, camID]
     
