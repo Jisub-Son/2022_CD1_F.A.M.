@@ -74,11 +74,18 @@ class VideoGet:
                     
                     self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
+                    cur = time.time()
+                    prev = cur
+                    
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame.flags.writeable = False
                     results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    
+                    cur = time.time()
+                    sec = cur - prev
+                    print('mp.process : {:.03f}'.format(sec*10**3))
                     
                     # landmark detection and output -> 두번 쓰는거 말고 깔끔한 방향이 있을까?
                     mp_drawing.draw_landmarks(
@@ -107,7 +114,7 @@ def threadVideoGet(src1=0, src2=1):
         if (cv2.waitKey(1) == ord("q")) or video_getter.stopped:
             video_getter.stop()
             break
-
+        
         frame1 = video_getter.frame1
         frame2 = video_getter.frame2
         frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
@@ -128,20 +135,16 @@ class VideoShow:
         return self
 
     def show(self):
+        prevTime = 0
         while not self.stopped:
             
-            # calculate fps
-            if self.fps == 0.0:
-                self.fps = 30.0
-            time_per_frame_video = 1/self.fps
-            last_time = time.perf_counter()
-            time_per_frame = time.perf_counter() - last_time
-            time_sleep_frame = max(0,time_per_frame_video - time_per_frame)
-            time.sleep(time_sleep_frame)
-            real_fps = 1/(time.perf_counter()-last_time)
-            last_time = time.perf_counter()
-            str = "FPS : %0.2f" % real_fps
-            cv2.putText(self.frame1, str, (1,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            curTime = time.time()
+            sec = curTime - prevTime
+            prevTime = curTime
+            frame_per_sec = 1 / (sec)
+            str = "FPS : %0.1f" % frame_per_sec
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
             
             cv2.imshow("Video0", self.frame1)
             cv2.imshow("Video1", self.frame2)
@@ -176,7 +179,7 @@ def threadBoth(src1=0, src2=1):
     video_getter0 = VideoGet(src=src1).start()
     video_getter1 = VideoGet(src=src2).start()
     video_shower = VideoShow(frame1=video_getter0.frame, frame2=video_getter1.frame).start()
-    cps = CountsPerSec().start()
+    # cps = CountsPerSec().start()
 
     print("total thread : ", activeCount())
     
@@ -189,17 +192,17 @@ def threadBoth(src1=0, src2=1):
 
         frame1 = video_getter0.frameBuf
         frame2 = video_getter1.frameBuf                                # getThread에서 frame 받아오기
-        frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
-        frame2 = putIterationsPerSec(frame2, cps.countsPerSec())    # 스켈레톤 붙은 frame에 iterate 텍스트 넣기
+        # frame1 = putIterationsPerSec(frame1, cps.countsPerSec())
+        # frame2 = putIterationsPerSec(frame2, cps.countsPerSec())    # 스켈레톤 붙은 frame에 iterate 텍스트 넣기
         video_shower.frame1 = frame1
         video_shower.frame2 = frame2                                # 최종 frame를 showThread에 보내기
-        cps.increment()
+        # cps.increment()
 
 # 이 중에서 하나만 주석 해제해서 돌려볼 것
 # noThreading()
 # threadVideoGet()
 # threadVideoShow()
-threadBoth(0, 2)
+threadBoth(0, 1)
 
 # getVideoThread 에 mp 내용을 삽입
 # getVideoThread(mp까지 처리) -> showVideoThread 구조

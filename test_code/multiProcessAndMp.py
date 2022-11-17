@@ -5,8 +5,8 @@ from datetime import datetime
 import mediapipe as mp
 import time
 
-LEFT_CAM = 0
-RIGHT_CAM = 1
+LEFT_CAM = 1
+RIGHT_CAM = 0
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -55,11 +55,18 @@ class GetVideo(Process):
                 else:
                     (self.grabbed, self.frame) = self.stream.read()
                     
+                    cur = time.time()
+                    prev = cur
+                    
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
                     self.frame.flags.writeable = False
                     results = pose.process(self.frame)                   
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  
+                    
+                    cur = time.time()
+                    sec = cur - prev
+                    print('mp.process : {:.03f}'.format(sec*10**3))
                     
                     draw(self.frame, results)
                     
@@ -102,6 +109,7 @@ class ShowVideo(Process):
             if cv2.waitKey(1) == ord('q'):
                 break
         
+        self.showPipe_child.send(1)
         self.showPipe_child.close()
         print('ShowVideo end')
         
@@ -138,9 +146,10 @@ if __name__ == '__main__':
         frame0 = getPipe_parent0.recv()
         frame1 = getPipe_parent1.recv()
         
-        if proc_show.is_alive() == True:
+        if (proc_show.is_alive() == True) and (showPipe_parent.poll() == False):
             showPipe_parent.send([frame0, frame1])
         else:
+            print(showPipe_parent.recv())
             break
         
     '''while proc_show.is_alive():
