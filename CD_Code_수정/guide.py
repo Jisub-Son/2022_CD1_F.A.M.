@@ -44,7 +44,7 @@ def shadow(file, frame, camID, r, c):
 def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camID): 
     global squat_down, squat_up, pushup_down, pushup_up, sidelateralraise_up, sidelateralraise_down # global 변수
     
-    if (shadow_mode == "squat" and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state(1 ~ 59)
+    if (shadow_mode == "squat"):# and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state(1 ~ 59)
         down = cv2.imread('squat\squat_' + str(squat_down) +'.png') ## 1번부터 읽기
         file = cv2.resize(down, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
         squat_down += 1 ## 증가     
