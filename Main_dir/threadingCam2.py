@@ -1,17 +1,16 @@
 import cv2
 import mediapipe as mp
-from multiprocessing import Process
+from multiprocessing import Process, shared_memory
 from multiprocessing import current_process
 from utils import REF_TIMER
 from utils import voiceFeedback
 from utils import table
-from exercise import EXERCISE
+from exercise2 import EXERCISE
 from guide import guide
 from datetime import datetime
 import time
-
-mp_drawing = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
+from sys import getsizeof
+import numpy as np
 
 # initialize variables
 class stateInfo:
@@ -25,6 +24,9 @@ class stateInfo:
 
 state_info = stateInfo()
 
+mp_drawing = mp.solutions.drawing_utils
+mp_pose = mp.solutions.pose
+
 def draw(frame, results):
     mp_drawing.draw_landmarks(
         frame,
@@ -35,14 +37,16 @@ def draw(frame, results):
     )
 
 class GetVideo(Process):
-    def __init__(self, src, getPipe_child):
+    def __init__(self, src, getPipe_child, shm):
         Process.__init__(self, daemon=True)
         self.src = src
         self.getPipe_child = getPipe_child
+        self.shm = shared_memory.SharedMemory(shm)
         self.stream = None
         self.grabbed = False
         self.frame = None
         self.stopped = False
+        self.camID = src
         
     def run(self):
         self.get()
@@ -84,14 +88,10 @@ class GetVideo(Process):
                     sec = cur - prev
                     print('pid :', current_process().pid, 'mp.process : {:.03f}'.format(sec*10**3))
                     
-                    # measure exercise with landmarks 
-                    try:    
-                        landmarks = results.pose_landmarks.landmark
-                        # state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID = EXERCISE(landmarks).calculate_exercise(
-                        #     state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
-                    except:
-                        print('except')
-                        pass
+                    print('pid :', current_process().pid, 'id :', id(results), 'size', getsizeof(results))
+                    
+                    results2 = np.ndarray(results, buffer=self.shm.buf)
+                    print(results2)
                     
                     draw(self.frame, results)
                     
