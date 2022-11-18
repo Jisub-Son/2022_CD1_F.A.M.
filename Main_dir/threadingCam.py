@@ -33,7 +33,7 @@ def draw(frame, results):
     )
 
 class VideoGet:
-    def __init__(self, src=0):
+    def __init__(self, src, getPipe_child):
         self.stream = cv2.VideoCapture(src)
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) 
@@ -42,6 +42,7 @@ class VideoGet:
         self.stopped = False
         self.fps = 0.0
         self.camID = src
+        self.getPipe_child = getPipe_child
         
     def start(self):
         Thread(target=self.get, args=()).start()
@@ -87,6 +88,8 @@ class VideoGet:
                     
                     # display guide
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
+                    
+                    self.getPipe_child.send(self.frameBuf)
                     
                     cur = time.time()
                     sec = cur - prev

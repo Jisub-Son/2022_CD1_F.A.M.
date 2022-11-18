@@ -1,6 +1,6 @@
 import time
 from keypoint import KEYPOINT
-from utils import *  
+from utils import *
 
 cur = 0.0 # 타이머 초기화
 prev = 0.0
@@ -439,12 +439,15 @@ class EXERCISE(KEYPOINT):
     # select mode
     def calculate_exercise(self, mode, reps, status, sets, feedback, timer, camID): 
         if mode == "squat":
+            # print('squat')
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).squat(
                 reps, status, sets, feedback, timer, camID)
         elif mode == "pushup":
+            # print('pushup')
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).pushup(
                 reps, status, sets, feedback, timer, camID)    
         elif mode == "sidelateralraise":
+            # print('sidlateralraise')
             reps, status, sets, feedback, timer, camID = EXERCISE(self.landmarks).sidelateralraise(
                 reps, status, sets, feedback, timer, camID)     
         else:
