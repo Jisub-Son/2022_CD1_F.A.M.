@@ -112,6 +112,6 @@ def table(mode, reps, status, sets, feedback, timer):
     cv2.putText(table, "            " + str(timer), (1, 370), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     
-    table = cv2.resize(table, dsize=(1280, 480))    # table.width == frame.width*2 와 같도록 설정
+    table = cv2.resize(table, dsize=(1080, 360))    # table.width == frame.width*2 와 같도록 설정
                                                     # table.width = 1280 = 640*2, table.height = 480(frame_height)
     return table

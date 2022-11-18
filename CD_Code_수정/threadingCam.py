@@ -34,8 +34,8 @@ def draw(frame, results):
 class VideoGet:
     def __init__(self, src=0):
         self.stream = cv2.VideoCapture(src)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) 
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
         (self.grabbed, self.frame) = self.stream.read()
         self.frameBuf = self.frame
         self.stopped = False
@@ -139,12 +139,12 @@ class VideoShow:
             
             # make option table
             capstone = cv2.imread("table\./capstone.png") # option
-            capstone = cv2.resize(capstone, dsize=(640, 960)) # 수치조정 필요
+            capstone = cv2.resize(capstone, dsize=(360, 1440)) # 수치조정 필요
             
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
-            totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
-            realshow = cv2.hconcat([totalShow, capstone])           # add option table
-            cv2.imshow("Capstone", realshow) # 합쳐진 frame
+            # totalShow = cv2.vconcat([totalFrame, capstone])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
+            # realshow = cv2.hconcat([totalShow, tableMat])           # add option table
+            cv2.imshow("Capstone", totalFrame) # 합쳐진 frame
             cv2.moveWindow("Capstone", 0, 0) # 좌표 설정
     
     def stop(self):
