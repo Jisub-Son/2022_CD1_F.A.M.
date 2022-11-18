@@ -5,7 +5,7 @@ from datetime import datetime
 import mediapipe as mp
 import time
 
-LEFT_CAM = 1
+LEFT_CAM = 2
 RIGHT_CAM = 0
 
 mp_drawing = mp.solutions.drawing_utils
@@ -66,7 +66,7 @@ class GetVideo(Process):
                     
                     cur = time.time()
                     sec = cur - prev
-                    print('mp.process : {:.03f}'.format(sec*10**3))
+                    print(current_process().pid,'mp.process : {:.03f}'.format(sec*10**3))
                     
                     draw(self.frame, results)
                     
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     while True:
         frame0 = getPipe_parent0.recv()
         frame1 = getPipe_parent1.recv()
-        
+        print("bbbb")
         if (proc_show.is_alive() == True) and (showPipe_parent.poll() == False):
             showPipe_parent.send([frame0, frame1])
         else:

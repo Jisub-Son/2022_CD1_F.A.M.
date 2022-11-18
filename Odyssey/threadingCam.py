@@ -5,6 +5,7 @@ from datetime import datetime
 from utils import *
 from exercise import *
 from guide import *
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -45,33 +46,24 @@ class VideoGet:
         Thread(target=self.get, args=()).start()
         return self
     
-    def get(self):
+    def get(self): 
         global state_info
-        prevTime = 0
-        with mp_pose.Pose(model_complexity=0,
-                        smooth_landmarks=True,
-                        smooth_segmentation=True,
-                        min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
-                        min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
+        
+        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+                    min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
             
             while not self.stopped:
                 if not self.grabbed:
                     self.stop()
                 else:
                     (self.grabbed, self.frame) = self.stream.read()
-                    # self.fps = self.stream.get(cv2.CAP_PROP_FPS)
-                    curTime = time.time()
-                    prevTime = curTime
+                    self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame.flags.writeable = False
                     results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
-                    
-                    curTime = time.time()
-                    sec = curTime - prevTime
-                    print("process runtime : ", sec*10**3)
                     
                     # measure exercise with landmarks 
                     try:    
@@ -80,21 +72,16 @@ class VideoGet:
                             state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
                     except:
                         pass
-                    
+                            
                     # draw 함수화
                     draw(self.frame, results)
-
+                    
                     # 카메라 좌우반전(운동 자세보기 편하게)
                     self.frameBuf = cv2.flip(self.frame, 1)
                     
                     # display guide
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
                     
-                    """ curTime = time.time()
-                    sec = curTime - prevTime
-                    prevTime = curTime            
-                    print("get : {:.03f} ms".format(sec*10**3))"""
-
     def stop(self):
         self.stopped = True
 
@@ -112,8 +99,8 @@ class VideoShow:
     def show(self):
         global state_info
         
-        prevTime = 0    
-            
+        prevTime = 0
+        
         while not self.stopped:
             
             # key input for exit, mode, reset
@@ -137,23 +124,20 @@ class VideoShow:
                 state_info.feedback = "choose exercise"
                 voiceFeedback('reset')
             
-            # make table
-            tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
-            table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
-            
             # put txt: fps
             curTime = time.time()
             sec = curTime - prevTime
             prevTime = curTime
-            fps = 1 / (sec)
-            str = "FPS : %0.1f" % fps
-            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 3)
-            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 3)
+            frame_per_sec = 1 / (sec)
+            str = "FPS : %0.1f" % frame_per_sec
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
             
-            # print("show : {:.03f} ms".format(sec*10**3))
-            # print("fps: ", fps)
+            # make table
+            tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
+            table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
-            totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
+            totalFrame = cv2.hconcat([self.frame1, self.frame2])    # hconcat : 가로 방향 합치기(높이가 같아야 함) frame1: left / frame2: right
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             cv2.imshow("totalShow", totalShow) # 합쳐진 frame
             cv2.moveWindow("totalShow", 0, 0) # 좌표 설정

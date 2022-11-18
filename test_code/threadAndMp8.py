@@ -202,7 +202,7 @@ def threadBoth(src1=0, src2=1):
 # noThreading()
 # threadVideoGet()
 # threadVideoShow()
-threadBoth(0, 1)
+threadBoth(0, 2)
 
 # getVideoThread 에 mp 내용을 삽입
 # getVideoThread(mp까지 처리) -> showVideoThread 구조

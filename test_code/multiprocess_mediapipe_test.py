@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parnetPipe0, childPipe0 = Pipe()
     parnetPipe1, childPipe1 = Pipe()
     
-    proc_get1 = GetVideo(1, childPipe1)
+    proc_get1 = GetVideo(2, childPipe1)
     proc_get0 = GetVideo(0, childPipe0)
     proc_show = ShowVideo(proc_get0.frame, proc_get1.frame)
     
