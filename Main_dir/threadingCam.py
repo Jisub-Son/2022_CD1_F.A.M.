@@ -66,11 +66,18 @@ class VideoGet:
                     (self.grabbed, self.frame) = self.stream.read()
                     self.fps = self.stream.get(cv2.CAP_PROP_FPS)
                     
+                    curTime = time.time()
+                    prevTime = curTime
+                    
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                     self.frame.flags.writeable = False
                     results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    
+                    curTime = time.time()
+                    secTime = curTime - prevTime
+                    print(self.camID, ': mp.process : {:.03f}'.format(secTime*10**3))
                     
                     # measure exercise with landmarks 
                     try:    
@@ -90,10 +97,11 @@ class VideoGet:
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
                     
                     self.getPipe_child.send(self.frameBuf)
-                    
+                    s = self.getPipe_child.recv()
+                    print(s)
                     cur = time.time()
                     sec = cur - prev
-                    print("get loop : {:.03f} ms".format(sec*10**3))
+                    # print("get loop : {:.03f} ms".format(sec*10**3))
                     
     def stop(self):
         self.stopped = True

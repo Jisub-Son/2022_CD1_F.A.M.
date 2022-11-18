@@ -5,7 +5,7 @@ from datetime import datetime
 import mediapipe as mp
 import time
 
-LEFT_CAM = 2
+LEFT_CAM = 1
 RIGHT_CAM = 0
 
 mp_drawing = mp.solutions.drawing_utils
