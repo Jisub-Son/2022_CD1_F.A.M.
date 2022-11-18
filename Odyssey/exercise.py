@@ -9,6 +9,7 @@ timeElapsed = 0.0
 
 left_leg_angle = 180.0 # 스쿼트 초기화
 right_leg_angle = 180.0
+avg_leg_angle = 180.0
 left_knee_angle = 120.0
 right_knee_angle = 120.0
 avg_knee_angle = 120.0
@@ -27,10 +28,10 @@ wrist_shoulder_ratio = 1.0
 
 left_shoulder_angle = 110.0 # 사레레 초기화
 right_shoulder_angle = 110.0
+avg_shoulder_angle = 110
 left_elbow_angle = 180.0
 right_elbow_angle = 180.0
-
-right_hand_angle = 0.0 # 이스터 초기화
+avg_elbow_angle = 180
 
 now = datetime.now() # 프로그램 시작 시간
 
@@ -59,23 +60,22 @@ class EXERCISE(KEYPOINT):
     # squat function
     def squat(self, reps, status, sets, feedback, timer, camID):
         global left_knee_angle, right_knee_angle, avg_knee_angle,\
-                left_leg_angle, right_leg_angle,\
+                left_leg_angle, right_leg_angle, avg_leg_angle,\
                 heel_length, foot_length, shoulder_length,\
                 heel_foot_ratio, heel_shoulder_ratio,\
-                left_elbow_angle, right_elbow_angle,\
-                left_shoulder_angle, right_shoulder_angle, right_hand_angle,\
+                right_elbow_angle, right_shoulder_angle,\
                 prev, squat_log
         
         squat_log = open('log/squat_log/SquatLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
         
-        # reference angles
-        REF_KNEE_ANGLE = 85.0 ## 무릎 나온거
-        REF_LEG_ANGLE = 140.0 ## 140 이하일 때 정답
-        MORE_LEG_ANGLE = 160.0 ## 160부터 더 내려가
-        LESS_LEG_ANGLE = 70.0 ## 너무 내려갔고
+        # reference angles: 1차 테스트 완료
+        REF_KNEE_ANGLE = 140.0 ## 무릎 나온거
+        MORE_LEG_ANGLE = 160.0 ## 더 내려가
+        REF_LEG_ANGLE = 140.0 ## 정답
+        LESS_LEG_ANGLE = 90.0 ## 너무 내려갔고
         LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
-        MORE_HEEL_FOOT_RATIO = 1.4
-        LESS_SHOULDER_RATIO = 0.6 # 두 발 어깨 넓이     
+        MORE_HEEL_FOOT_RATIO = 1.2
+        LESS_SHOULDER_RATIO = 0.4 # 두 발 어깨 넓이     
         MORE_SHOULDER_RATIO = 1.1
         
         # conditions
@@ -91,25 +91,22 @@ class EXERCISE(KEYPOINT):
         KNEEDOWN_ANGLE = (avg_knee_angle > REF_KNEE_ANGLE)
         PARALLEL_RATIO = (LESS_HEEL_FOOT_RATIO < heel_foot_ratio < MORE_HEEL_FOOT_RATIO)
         HEEL_RATIO = (LESS_SHOULDER_RATIO < heel_shoulder_ratio < MORE_SHOULDER_RATIO)
-        DEFAULT_ANGLE = (left_leg_angle > MORE_LEG_ANGLE and right_leg_angle > MORE_LEG_ANGLE)
-        MOREDOWN_ANGLE = (REF_LEG_ANGLE < left_leg_angle < MORE_LEG_ANGLE and REF_LEG_ANGLE < right_leg_angle < MORE_LEG_ANGLE)
-        COUNT_ANGLE = (LESS_LEG_ANGLE < left_leg_angle < REF_LEG_ANGLE and LESS_LEG_ANGLE < right_leg_angle < REF_LEG_ANGLE)
-        LESSDOWN_ANGLE = (left_leg_angle < LESS_LEG_ANGLE and right_leg_angle < LESS_LEG_ANGLE)
+        DEFAULT_ANGLE = (avg_leg_angle > MORE_LEG_ANGLE)
+        MOREDOWN_ANGLE = (REF_LEG_ANGLE < avg_leg_angle < MORE_LEG_ANGLE)
+        COUNT_ANGLE = (LESS_LEG_ANGLE < avg_leg_angle < REF_LEG_ANGLE)
+        LESSDOWN_ANGLE = (avg_leg_angle < LESS_LEG_ANGLE)
         
-        ## easter egg 
-        EASTER_ELBOW_ANGLE = (40.0 < right_elbow_angle < 60.0 and 160.0 < left_elbow_angle)
-        EASTER_SHOULDER_ANGLE = (60.0 < right_shoulder_angle < 120 and 60.0 < left_shoulder_angle < 100.0)
-        RIHGHT_HAND_ANGLE = (140.0 < right_hand_angle < 160.0)    
+        ## easter egg: 1차 테스트 완료
+        EASTER_ELBOW_ANGLE = (30.0 < right_elbow_angle < 50.0)
+        EASTER_SHOULDER_ANGLE = (60.0 < right_shoulder_angle < 100)
         EASTER_CONDITION = (status == 'Up' and feedback == 'Start')
-        EASTER_ANGLE = (DEFAULT_ANGLE and EASTER_ELBOW_ANGLE and EASTER_SHOULDER_ANGLE and RIHGHT_HAND_ANGLE) # 
+        EASTER_ANGLE = (DEFAULT_ANGLE and EASTER_ELBOW_ANGLE and EASTER_SHOULDER_ANGLE)
         
         # get angles from eact CamID
         if camID == LEFT_CAM: ## cam1
             left_leg_angle = self.angle_of_the_left_leg()
             left_knee_angle = self.angle_of_the_left_knee()
             
-            left_elbow_angle = self.angle_of_the_left_elbow() ## 이스터
-            left_shoulder_angle = self.angle_of_the_left_shoulder()
         elif camID == RIGHT_CAM: ## cam0
             right_leg_angle = self.angle_of_the_right_leg()
             right_knee_angle = self.angle_of_the_right_knee()
@@ -119,10 +116,10 @@ class EXERCISE(KEYPOINT):
             
             right_elbow_angle = self.angle_of_the_right_elbow() ## 이스터
             right_shoulder_angle = self.angle_of_the_right_shoulder()
-            right_hand_angle = self.angle_of_the_right_hand()
             
             # get average    
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
+            avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
             
             #get ratio
             foot_length = round(foot_length, 4)
@@ -322,22 +319,22 @@ class EXERCISE(KEYPOINT):
     
     # side lateral raise function
     def sidelateralraise(self, reps, status, sets, feedback, timer, camID):
-        global left_elbow_angle, right_elbow_angle,\
-                left_shoulder_angle, right_shoulder_angle,\
+        global left_elbow_angle, right_elbow_angle, avg_elbow_angle,\
+                left_shoulder_angle, right_shoulder_angle, avg_shoulder_angle,\
                 heel_length, foot_length, shoulder_length,\
                 heel_foot_ratio, heel_shoulder_ratio,\
                 prev, sidelateralraise_log
         
         sidelateralraise_log = open('log/sidelateralraise_log/SideLateralRaiseLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
         
-        # reference angles
-        LESS_SHOULDER_ANGLE = 40.0 # 더 올리고
+        # reference angles: 1차 수정 완료
+        LESS_SHOULDER_ANGLE = 35.0 # 더 올리고
         REF_SHOULDER_ANGLE = 60.0  # 적당하고
-        MORE_SHOULDER_ANGLE = 90.0 # 너무많이 올렸고
-        REF_ELBOW_ANGLE = 110.0 ## 팔꿈치
-        LESS_HEEL_FOOT_RATIO = 0.6 # 발 11자
-        MORE_HEEL_FOOT_RATIO = 1.4 
-        LESS_SHOULDER_RATIO = 0.6 # 두 발 어깨 넓이     
+        MORE_SHOULDER_ANGLE = 75.0 # 너무많이 올렸고
+        REF_ELBOW_ANGLE = 140.0 ## 팔꿈치
+        LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 1.2
+        LESS_SHOULDER_RATIO = 0.4 # 두 발 어깨 넓이     
         MORE_SHOULDER_RATIO = 1.1
         
         # conditions
@@ -351,12 +348,12 @@ class EXERCISE(KEYPOINT):
         DEFAULT_CONDITION = (status != 'Rest')  # 운동 중인데 아무것도 아닌 경우      
         
         # angles in conditions -> '만족하는' 각도
-        ELBOW_ANGLE = (REF_ELBOW_ANGLE < left_elbow_angle and REF_ELBOW_ANGLE < right_elbow_angle) ## 정확한 팔꿈치 각도
-        LESS_BEND_ANGLE = (left_elbow_angle < REF_ELBOW_ANGLE and right_elbow_angle < REF_ELBOW_ANGLE)  ## 너무 적게 폈을 때
-        SHOULDER_ANGLE = (REF_SHOULDER_ANGLE < left_shoulder_angle < MORE_SHOULDER_ANGLE and REF_SHOULDER_ANGLE < right_shoulder_angle < MORE_SHOULDER_ANGLE)   ## 정확한 어깨 각도
-        MORE_RAISE_ANGLE = (left_shoulder_angle > MORE_SHOULDER_ANGLE or right_shoulder_angle > MORE_SHOULDER_ANGLE)   ## 너무 많이 벌렸을 때
-        LESS_RAISE_ANGLE = (LESS_SHOULDER_ANGLE < left_shoulder_angle < REF_SHOULDER_ANGLE) or (LESS_SHOULDER_ANGLE < right_shoulder_angle < REF_SHOULDER_ANGLE) ## 너무 많이 벌렸음 
-        DEFAULT_ANGLE = (left_shoulder_angle < LESS_SHOULDER_ANGLE and right_shoulder_angle < LESS_SHOULDER_ANGLE) ## 기본자세
+        ELBOW_ANGLE = (REF_ELBOW_ANGLE < avg_elbow_angle) ## 정확한 팔꿈치 각도
+        LESS_BEND_ANGLE = (avg_elbow_angle < REF_ELBOW_ANGLE)  ## 너무 적게 폈을 때
+        SHOULDER_ANGLE = (REF_SHOULDER_ANGLE < avg_shoulder_angle < MORE_SHOULDER_ANGLE)   ## 정확한 어깨 각도
+        MORE_RAISE_ANGLE = (avg_shoulder_angle > MORE_SHOULDER_ANGLE)   ## 너무 많이 벌렸을 때
+        LESS_RAISE_ANGLE = (LESS_SHOULDER_ANGLE < avg_shoulder_angle < REF_SHOULDER_ANGLE) ## 너무 많이 벌렸음 
+        DEFAULT_ANGLE = (avg_shoulder_angle < LESS_SHOULDER_ANGLE) ## 기본자세
         PARALLEL_RATIO = (LESS_HEEL_FOOT_RATIO < heel_foot_ratio < MORE_HEEL_FOOT_RATIO)
         HEEL_RATIO = (LESS_SHOULDER_RATIO < heel_shoulder_ratio < MORE_SHOULDER_RATIO)
         
@@ -370,6 +367,10 @@ class EXERCISE(KEYPOINT):
             heel_length = self.length_of_heel_to_heel()
             foot_length = self.length_of_foot_to_foot()
             shoulder_length = self.length_of_shoulder_to_shoulder()
+            
+            # get average    
+            avg_shoulder_angle = (left_shoulder_angle + right_shoulder_angle) // 2  
+            avg_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2
             
             # get ratio
             foot_length = round(foot_length, 4)

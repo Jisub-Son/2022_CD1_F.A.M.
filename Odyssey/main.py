@@ -22,4 +22,4 @@ while True:
     
     video_shower.frame1 = video_getter0.frameBuf
     video_shower.frame2 = video_getter1.frameBuf
-    sleep(0.034)
+    sleep(0.028) # 육안으로는 0.025가 가장 베스트
