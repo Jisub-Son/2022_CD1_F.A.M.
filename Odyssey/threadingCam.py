@@ -139,17 +139,13 @@ class VideoShow:
             
             # make option table
             capstone = cv2.imread("table/capstone2.PNG")
-            capstone = cv2.resize(capstone, dsize=(640, 960))
-            
-            # self.frame1 = cv2.resize(self.frame1, dsize=(720, 540)) # 일단 보류
-            # self.frame2 = cv2.resize(self.frame2, dsize=(720, 540)) 
+            capstone = cv2.resize(capstone, dsize=(480, 960))
             
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함) frame1: left / frame2: right
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
-            # realShow = cv2.hconcat([totalShow, capstone])
+            realShow = cv2.hconcat([totalShow, capstone])
             
-            # cv2.imshow("totalShow", realShow) # 합쳐진 frame
-            cv2.imshow("totalShow", totalShow)
+            cv2.imshow("totalShow", realShow) # 합쳐진 frame
             cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
     
     def stop(self):

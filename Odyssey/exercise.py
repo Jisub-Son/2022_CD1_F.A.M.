@@ -21,8 +21,10 @@ heel_shoulder_ratio = 1.0
 
 left_arm_angle = 180.0 # 푸쉬업 초기화
 right_arm_angle = 180.0
+avg_arm_angle = 180.0
 left_spine_angle = 180.0
 right_spine_angle = 180.0
+avg_spine_angle = 180.0
 wrist_length = 10.0
 wrist_shoulder_ratio = 1.0
 
@@ -63,7 +65,8 @@ class EXERCISE(KEYPOINT):
                 left_leg_angle, right_leg_angle, avg_leg_angle,\
                 heel_length, foot_length, shoulder_length,\
                 heel_foot_ratio, heel_shoulder_ratio,\
-                right_elbow_angle, right_shoulder_angle,\
+                left_elbow_angle, right_elbow_angle,\
+                left_shoulder_angle, right_shoulder_angle,\
                 prev, squat_log
         
         squat_log = open('log/squat_log/SquatLog_' + str(now.strftime('%Y%m%d %H%M%S')) + '.txt', 'a') # a: 이어쓰기
@@ -73,8 +76,8 @@ class EXERCISE(KEYPOINT):
         MORE_LEG_ANGLE = 160.0 ## 더 내려가
         REF_LEG_ANGLE = 140.0 ## 정답
         LESS_LEG_ANGLE = 90.0 ## 너무 내려갔고
-        LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
-        MORE_HEEL_FOOT_RATIO = 1.2
+        LESS_HEEL_FOOT_RATIO = 0.5 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 1.3
         LESS_SHOULDER_RATIO = 0.4 # 두 발 어깨 넓이     
         MORE_SHOULDER_RATIO = 1.1
         
@@ -97,8 +100,8 @@ class EXERCISE(KEYPOINT):
         LESSDOWN_ANGLE = (avg_leg_angle < LESS_LEG_ANGLE)
         
         ## easter egg: 1차 테스트 완료
-        EASTER_ELBOW_ANGLE = (30.0 < right_elbow_angle < 50.0)
-        EASTER_SHOULDER_ANGLE = (60.0 < right_shoulder_angle < 100)
+        EASTER_ELBOW_ANGLE = (170.0 < left_elbow_angle and 30.0 < right_elbow_angle < 50.0)
+        EASTER_SHOULDER_ANGLE = (70.0 < left_shoulder_angle < 120.0 and 60.0 < right_shoulder_angle < 100)
         EASTER_CONDITION = (status == 'Up' and feedback == 'Start')
         EASTER_ANGLE = (DEFAULT_ANGLE and EASTER_ELBOW_ANGLE and EASTER_SHOULDER_ANGLE)
         
@@ -106,6 +109,9 @@ class EXERCISE(KEYPOINT):
         if camID == LEFT_CAM: ## cam1
             left_leg_angle = self.angle_of_the_left_leg()
             left_knee_angle = self.angle_of_the_left_knee()
+            
+            left_elbow_angle = self.angle_of_the_left_elbow()
+            left_shoulder_angle = self.angle_of_the_left_shoulder()
             
         elif camID == RIGHT_CAM: ## cam0
             right_leg_angle = self.angle_of_the_right_leg()
@@ -212,8 +218,8 @@ class EXERCISE(KEYPOINT):
     
     # pushup function
     def pushup(self, reps, status, sets, feedback, timer, camID):
-        global left_arm_angle, right_arm_angle,\
-                left_spine_angle, right_spine_angle,\
+        global left_arm_angle, right_arm_angle, avg_arm_angle,\
+                left_spine_angle, right_spine_angle, avg_spine_angle,\
                 shoulder_length, wrist_length, wrist_shoulder_ratio,\
                 prev, pushup_log
         
@@ -221,8 +227,8 @@ class EXERCISE(KEYPOINT):
         
         # reference angles
         REF_ARM_ANGLE = 80.0
-        REF_SPINE_ANGLE = 130.0
-        MORE_ARM_ANGLE = 100.0
+        MORE_ARM_ANGLE = 110.0
+        REF_SPINE_ANGLE = 140.0
         REF_WRIST_SHOULDER_RATIO = 1.8
         
         # conditions
@@ -234,21 +240,25 @@ class EXERCISE(KEYPOINT):
         AFTER_REST_CONDITION = (timer == 1 and feedback == 'Take a breathe..') ## 쉬는시간이 끝난 경우(timer가 0이 되는 순간 feedback 출력값이 변경되므로 1로 설정)
         
         # angles in conditions -> '만족하는' 각도
-        SPINE_ANGLE = (left_spine_angle > REF_SPINE_ANGLE and right_spine_angle > REF_SPINE_ANGLE)
+        SPINE_ANGLE = (avg_spine_angle > REF_SPINE_ANGLE)
         WRIST_RATIO = (wrist_shoulder_ratio < REF_WRIST_SHOULDER_RATIO)
-        DEFAULT_ANGLE = (left_arm_angle > MORE_ARM_ANGLE and right_arm_angle > MORE_ARM_ANGLE)
-        MOREDOWN_ANGLE = (REF_ARM_ANGLE < left_arm_angle < MORE_ARM_ANGLE and REF_ARM_ANGLE < right_arm_angle < MORE_ARM_ANGLE)
-        COUNT_ANGLE = (left_arm_angle < REF_ARM_ANGLE and right_arm_angle < REF_ARM_ANGLE)
+        DEFAULT_ANGLE = (avg_arm_angle > MORE_ARM_ANGLE)
+        MOREDOWN_ANGLE = (REF_ARM_ANGLE < avg_arm_angle < MORE_ARM_ANGLE)
+        COUNT_ANGLE = (avg_arm_angle < REF_ARM_ANGLE)
         
         # get angles from eact CamID
-        if camID == LEFT_CAM:
+        if camID == RIGHT_CAM: # 푸쉬업은 반대로
             left_arm_angle = self.angle_of_the_left_arm()
             left_spine_angle = self.angle_of_the_left_spine()
-        elif camID == RIGHT_CAM:
+        elif camID == LEFT_CAM:
             right_arm_angle = self.angle_of_the_right_arm()
             right_spine_angle = self.angle_of_the_right_spine()
             wrist_length = self.length_of_wrist_to_wrist()
             shoulder_length = self.length_of_shoulder_to_shoulder()
+            
+            # get average    
+            avg_arm_angle = (left_arm_angle + right_arm_angle) // 2
+            avg_spine_angle = (left_spine_angle + right_spine_angle) // 2
             
             # get ratio
             shoulder_length = round(shoulder_length, 4)
