@@ -33,13 +33,22 @@ while True:
         video_getter0.stop()
         break
     
+    # if (getPipe_parent0.poll() == True) or (getPipe_parent1.poll() == True):
     frame1 = getPipe_parent0.recv()
     frame2 = getPipe_parent1.recv()
+    # else:
+        # break
     
     video_shower.frame1 = frame1
     video_shower.frame2 = frame2
+    
+    getPipe_parent0.send('start')
+    getPipe_parent1.send('start')
     
     # video_shower.frame1 = video_getter0.frameBuf
     # video_shower.frame2 = video_getter1.frameBuf
     
     # sleep(0.034)
+
+getPipe_parent0.close()
+getPipe_parent1.close()
