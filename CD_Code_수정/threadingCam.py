@@ -145,7 +145,7 @@ class VideoShow:
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             realshow = cv2.hconcat([totalShow, capstone])           # add option table
             cv2.imshow("Capstone", realshow) # 합쳐진 frame
-            cv2.moveWindow("Capstone", 0, 0) # 좌표 설정
+            # cv2.moveWindow("Capstone", 0, 0) # 좌표 설정 없어야함
     
     def stop(self):
         self.stopped = True
