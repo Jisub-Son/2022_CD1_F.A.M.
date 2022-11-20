@@ -10,7 +10,7 @@ from threadingCam2 import VideoGet
 from threadingCam2 import VideoShow
 from datetime import datetime
 from threading import active_count
-from time import sleep
+import time
 from multiprocessing import Pipe
 
 now = datetime.now()
@@ -25,7 +25,7 @@ video_getter1 = VideoGet(src=RIGHT_CAM, getPipe_child=getPipe_child1).start()
 video_shower = VideoShow(frame1=video_getter0.frame, frame2=video_getter1.frame).start()
 
 print("total thread : ", active_count()) # 총 thread 확인
-
+prevTime = 0
 while True:
     if video_getter0.stopped or video_getter1.stopped or video_shower.stopped:
         video_shower.stop()
@@ -38,6 +38,13 @@ while True:
     
     video_shower.frame1 = frame1
     video_shower.frame2 = frame2
+    
+    # put txt: fps
+    curTime = time.time()
+    sec = curTime - prevTime
+    prevTime = curTime
+    frame_per_sec = 1 / (sec)
+    # print('fps :', frame_per_sec)
 
 getPipe_child0.close()
 getPipe_child1.close()

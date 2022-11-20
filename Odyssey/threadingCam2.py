@@ -93,7 +93,7 @@ class VideoGet:
                     
                     cur = time.time()
                     sec = cur - prev
-                    print("get loop : {:.03f} ms".format(sec*10**3))
+                    # print("get loop : {:.03f} ms".format(sec*10**3))
                     
     def stop(self):
         self.stopped = True
