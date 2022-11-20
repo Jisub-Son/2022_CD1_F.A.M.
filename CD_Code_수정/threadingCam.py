@@ -1,7 +1,6 @@
 import cv2
 import mediapipe as mp
 from threading import Thread
-from datetime import datetime
 from utils import *
 from exercise import *
 from guide import *
@@ -34,8 +33,8 @@ def draw(frame, results):
 class VideoGet:
     def __init__(self, src=0):
         self.stream = cv2.VideoCapture(src)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) 
         (self.grabbed, self.frame) = self.stream.read()
         self.frameBuf = self.frame
         self.stopped = False
@@ -130,21 +129,22 @@ class VideoShow:
             prevTime = curTime
             frame_per_sec = 1 / (sec)
             str = "FPS : %0.1f" % frame_per_sec
-            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
-            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 3)
+            cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
             # make option table
-            capstone = cv2.imread("table\./capstone.png") # option
-            capstone = cv2.resize(capstone, dsize=(360, 1440)) # 수치조정 필요
+            capstone = cv2.imread("table\./capstone2.png") # option
+            capstone = cv2.resize(capstone, dsize=(384, 1000)) # 이게 젤 나음
             
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
-            # totalShow = cv2.vconcat([totalFrame, capstone])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
-            # realshow = cv2.hconcat([totalShow, tableMat])           # add option table
-            cv2.imshow("Capstone", totalFrame) # 합쳐진 frame
+            totalFrame = cv2.resize(totalFrame, dsize=(1536,576)) # 1.2배 늘림
+            totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
+            realshow = cv2.hconcat([totalShow, capstone])           # add option table
+            cv2.imshow("Capstone", realshow) # 합쳐진 frame
             cv2.moveWindow("Capstone", 0, 0) # 좌표 설정
     
     def stop(self):
