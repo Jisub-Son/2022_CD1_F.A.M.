@@ -145,8 +145,12 @@ class VideoShow:
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             realShow = cv2.hconcat([totalShow, capstone])
             
-            cv2.imshow("totalShow", realShow) # 합쳐진 frame
-            cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
+            cv2.namedWindow("totalShow_full", cv2.WND_PROP_FULLSCREEN)
+            cv2.moveWindow("totalShow_full", 1920-1, 1080-1)
+            cv2.setWindowProperty("totalShow_full", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            cv2.imshow("totalShow_full", realShow)
+            # cv2.imshow("totalShow", realShow) # 합쳐진 frame
+            # cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
     
     def stop(self):
         self.stopped = True

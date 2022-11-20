@@ -103,7 +103,7 @@ class VideoShow:
         self.frame1 = frame1
         self.frame2 = frame2
         self.stopped = False
-        self.fps = fps
+        self.frame_per_sec = 0.0
     
     def start(self):
         Thread(target=self.show, args=()).start()
@@ -112,14 +112,12 @@ class VideoShow:
     def show(self):
         global state_info
         
-        prevTime = 0
-        
         while not self.stopped:
             
             # key input for exit, mode, reset
             key = cv2.waitKey(1) & 0xFF     # 키보드 입력
             if key == ord('q'):             # exit
-                self.stopped = True  
+                self.stopped = True
             elif key == ord('s'):           # squat mode
                 state_info.__init__()
                 state_info.mode = "squat"
@@ -136,13 +134,8 @@ class VideoShow:
                 state_info.__init__()
                 state_info.feedback = "choose exercise"
                 voiceFeedback('reset')
-            
-            # put txt: fps
-            curTime = time.time()
-            sec = curTime - prevTime
-            prevTime = curTime
-            frame_per_sec = 1 / (sec)
-            str = "FPS : %0.1f" % frame_per_sec
+
+            str = "FPS : %0.1f" % self.frame_per_sec
             cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
             cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
             
@@ -157,8 +150,12 @@ class VideoShow:
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             realShow = cv2.hconcat([totalShow, capstone])
             
-            cv2.imshow("totalShow", realShow) # 합쳐진 frame
-            cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
+            cv2.namedWindow("totalShow_full", cv2.WND_PROP_FULLSCREEN)
+            cv2.moveWindow("totalShow_full", 1920-1, 1080-1)
+            cv2.setWindowProperty("totalShow_full", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            cv2.imshow("totalShow_full", realShow)
+            # cv2.imshow("totalShow", realShow) # 합쳐진 frame
+            # cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
     
     def stop(self):
         self.stopped = True
