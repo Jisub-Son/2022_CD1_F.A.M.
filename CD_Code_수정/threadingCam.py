@@ -136,16 +136,10 @@ class VideoShow:
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
-            # make option table
-            capstone = cv2.imread("table\./capstone2.png") # option
-            capstone = cv2.resize(capstone, dsize=(384, 1000)) # 이게 젤 나음
-            
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함)
-            totalFrame = cv2.resize(totalFrame, dsize=(1536,576)) # 1.2배 늘림
+            totalFrame = cv2.resize(totalFrame, dsize=(1920, 700)) # 1.5배 늘림
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
-            realshow = cv2.hconcat([totalShow, capstone])           # add option table
-            cv2.imshow("Capstone", realshow) # 합쳐진 frame
-            # cv2.moveWindow("Capstone", 0, 0) # 좌표 설정 없어야함
+            cv2.imshow("Capstone", totalShow) # 합쳐진 frame (좌표 설정하면 안되더라)
     
     def stop(self):
         self.stopped = True
