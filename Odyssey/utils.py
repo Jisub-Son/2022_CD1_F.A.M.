@@ -98,20 +98,20 @@ def voiceFeedback(sound):
 
 # make table
 def table(mode, reps, status, sets, feedback, timer): 
-    table = cv2.imread("table/table.PNG") # table 이미지 위치
-    cv2.putText(table, "            " + str(mode), (1, 100), ## opencv문자열: table 운동타입(입력한 운동타입)
+    table = cv2.imread("table/finaltable.PNG") # table 이미지 위치
+    cv2.putText(table, "              " + str(mode), (1, 70), ## opencv문자열: table 운동타입(입력한 운동타입)
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "            " + str(reps), (1, 150), ## opencv문자열: table 운동 카운트
+    cv2.putText(table, "              " + str(reps), (1, 120), ## opencv문자열: table 운동 카운트
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "            " + str(status), (1, 205), ## opencv문자열: table 운동 상태
+    cv2.putText(table, "              " + str(status), (1, 160), ## opencv문자열: table 운동 상태
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "            " + str(sets), (1, 260), ## opencv문자열: table 세트수
+    cv2.putText(table, "              " + str(sets), (1, 200), ## opencv문자열: table 세트수
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "            " + str(feedback), (1, 315), ## opencv문자열: table 피드백
+    cv2.putText(table, "              " + str(feedback), (1, 240), ## opencv문자열: table 피드백
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
-    cv2.putText(table, "            " + str(timer), (1, 370), ## opencv문자열: table 타이머
+    cv2.putText(table, "              " + str(timer), (1, 285), ## opencv문자열: table 타이머
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA) ## 문자열: 위치, 크기, 색상(검정) 설정
     
-    table = cv2.resize(table, dsize=(1280, 480))    # table.width == frame.width*2 와 같도록 설정
-                                                    # table.width = 1280 = 640*2, table.height = 480(frame_height)
+    table = cv2.resize(table, dsize=(1920, 360))    # table.width == frame.width*2 와 같도록 설정
+                                                    # table.width = 1920 = 960*2, table.height = 360
     return table

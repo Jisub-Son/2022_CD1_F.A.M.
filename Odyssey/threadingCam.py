@@ -124,33 +124,27 @@ class VideoShow:
                 state_info.feedback = "choose exercise"
                 voiceFeedback('reset')
             
-            # put txt: fps
+            """# put txt: fps
             curTime = time.time()
             sec = curTime - prevTime
             prevTime = curTime
             frame_per_sec = 1 / (sec)
             str = "FPS : %0.1f" % frame_per_sec
             cv2.putText(self.frame1, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
-            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)  
+            cv2.putText(self.frame2, str, (1, 450), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)  """
             
             # make table
             tableMat = table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             table(state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer)
             
-            # make option table
-            capstone = cv2.imread("table/capstone2.PNG")
-            capstone = cv2.resize(capstone, dsize=(480, 960))
-            
             totalFrame = cv2.hconcat([self.frame2, self.frame1])    # hconcat : 가로 방향 합치기(높이가 같아야 함) frame1: left / frame2: right
+            totalFrame = cv2.resize(totalFrame, dsize=(1920, 700))
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
-            realShow = cv2.hconcat([totalShow, capstone])
             
             cv2.namedWindow("totalShow_full", cv2.WND_PROP_FULLSCREEN)
             cv2.moveWindow("totalShow_full", 1920-1, 1080-1)
             cv2.setWindowProperty("totalShow_full", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-            cv2.imshow("totalShow_full", realShow)
-            # cv2.imshow("totalShow", realShow) # 합쳐진 frame
-            # cv2.moveWindow("totalShow", 0, 0) # 좌표 설정
+            cv2.imshow("totalShow_full", totalShow)
     
     def stop(self):
         self.stopped = True
