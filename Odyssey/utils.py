@@ -5,10 +5,10 @@ import cv2
 import pygame
 
 # set constants for reference
-REF_TIMER = 3
+REF_TIMER = 10
 REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
-REF_REPS = 3
+REF_REPS = 5
 REF_SETS = 2
 RIGHT_CAM = 2 # usb 2-input port 위: 2번 카메라
 LEFT_CAM = 0 # usb 2-input port 아래: 0번 카메라
