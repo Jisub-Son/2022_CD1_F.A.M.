@@ -64,7 +64,7 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
     else:                          
         squat_up = 60  ## 초기화 
     
-    if (shadow_mode == "pushup" and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state (1 ~ 75)
+    if (shadow_mode == "pushup"):# and shadow_status == 'Up' and shadow_feedback == 'Start'): ## up state (1 ~ 75)
         down = cv2.imread('pushup\pushup_' + str(pushup_down) +'.png') ## 1번부터 읽기
         down_flip = cv2.flip(down, 1) ## 좌우반전(실수로 반대로 찍음)
         file = cv2.resize(down_flip, dsize = (0, 0), fx = 1.7, fy = 1.7) ## 크기 조절
@@ -86,7 +86,7 @@ def guide(shadow_mode, shadow_status, shadow_feedback, shadow_frame, shadow_camI
     else:
         pushup_up = 76  ## 초기화         
     
-    if (shadow_mode == "sidelateralraise" and shadow_status == 'Down' and shadow_feedback == 'Start'): ## down state (1 ~ 75)
+    if (shadow_mode == "sidelateralraise"):# and shadow_status == 'Down' and shadow_feedback == 'Start'): ## down state (1 ~ 75)
         down = cv2.imread('sidelateralraise\sidelateralraise_' + str(sidelateralraise_up) +'.png') ## 1번부터 읽기
         file = cv2.resize(down, dsize = (0, 0), fx = 1.8, fy = 1.8) ## 크기 조절
         sidelateralraise_up += 1 ## 증가     
