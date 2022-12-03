@@ -78,7 +78,7 @@ class GetVideo(Process):
                     
                     # receive mode
                     if self.getPipe_child.recv() == 'state':
-                        mode = self.getPipe_child.recv()
+                        mode, status, feedback = self.getPipe_child.recv()
                     
                     cur = time.time()
                     prev = cur
@@ -106,7 +106,7 @@ class GetVideo(Process):
                     self.frame = cv2.flip(self.frame, 1)
                     
                     # display guide
-                    # guide(state_info.mode, state_info.status, state_info.feedback, self.frame, self.camID)
+                    guide(mode, status, feedback, self.frame, self.camID)
                     
                     # send frame to main loop
                     try:

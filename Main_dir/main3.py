@@ -44,8 +44,8 @@ if __name__ == '__main__':
         # send state
         getPipe_parent0.send('state')
         getPipe_parent1.send('state')
-        getPipe_parent0.send(state_info.mode)
-        getPipe_parent1.send(state_info.mode)
+        getPipe_parent0.send([state_info.mode, state_info.status, state_info.feedback])
+        getPipe_parent1.send([state_info.mode, state_info.status, state_info.feedback])
         
         # receive frame
         frame0, angle_list0 = getPipe_parent0.recv()
