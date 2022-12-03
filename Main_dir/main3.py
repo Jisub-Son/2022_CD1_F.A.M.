@@ -1,7 +1,6 @@
 import cv2
 import time
 from multiprocessing import Pipe
-from multiprocessing import current_process
 from datetime import datetime
 from threadingCam3 import GetVideo, ShowVideo, stateInfo
 from exercise3 import MEASURE
@@ -44,8 +43,8 @@ if __name__ == '__main__':
         # send state
         getPipe_parent0.send('state')
         getPipe_parent1.send('state')
-        getPipe_parent0.send(state_info.mode)
-        getPipe_parent1.send(state_info.mode)
+        getPipe_parent0.send([state_info.mode, state_info.status, state_info.feedback])
+        getPipe_parent1.send([state_info.mode, state_info.status, state_info.feedback])
         
         # receive frame
         frame0, angle_list0 = getPipe_parent0.recv()
@@ -75,3 +74,22 @@ if __name__ == '__main__':
         
 
     print('main : end')
+    
+    
+# 12월 4일 진행 상황
+# main_dir에 main3.py threadingCam3.py exercise3.py 3개 업로드
+# 멀티 프로세싱 적용 -> 데탑에서는 구동에는 문제 없었음(30fps 이상)
+#                    -> 노트북에서도 구동에는 문제 없었음(10~12fps)
+#
+# main3.py : 오디세이에서 바꿔야할 거 없을 듯, 그대로 복사
+# threadingCam3.py : 159줄 밑으로 풀스크린 관련 구문 주석처리되어 있음. 오디세이에서는 주석 해제. 나머진 그대로 복사
+# exercise3.py : 라스트 기준값들이 오디세이에만 있음 -> 기준값 변경
+#                로그 파일 관련 주석처리되어 있음 -> 주석 해제
+# guide.py : import 구문만 바뀜 -> 오디세이 파일에도 변경하길 바람(사소한 차이이긴 하나 필요한 것만 import)
+# keypoint.py : import 구문만 바뀜 -> 오디세이 파일에도 변경하길 바람(사소한 차이이긴 하나 필요한 것만 import)
+# utils.py : 오디세이에 있는거 그대로 쓰면 됨
+# 그 외 세부 코드 설명은 일단 생략
+#
+# runningtime 테스트 : threadingCam3.py line 93 주석 해제해서 런닝 타임 비교
+# 오디세이 폴더 기준 main, main2, main3의 런닝타임 비교 바람
+# 라이브러리 수정 전, 후 런닝타임 비교 바람

@@ -1,11 +1,9 @@
 import mediapipe as mp
 import cv2
 import time
-
 from multiprocessing import Process
 from multiprocessing import current_process
 from datetime import datetime
-
 from exercise3 import EXERCISE
 from guide import guide
 from utils import voiceFeedback, table
@@ -78,7 +76,7 @@ class GetVideo(Process):
                     
                     # receive mode
                     if self.getPipe_child.recv() == 'state':
-                        mode = self.getPipe_child.recv()
+                        mode, status, feedback = self.getPipe_child.recv()
                     
                     cur = time.time()
                     prev = cur
@@ -106,7 +104,7 @@ class GetVideo(Process):
                     self.frame = cv2.flip(self.frame, 1)
                     
                     # display guide
-                    # guide(state_info.mode, state_info.status, state_info.feedback, self.frame, self.camID)
+                    guide(mode, status, feedback, self.frame, self.camID)
                     
                     # send frame to main loop
                     try:
