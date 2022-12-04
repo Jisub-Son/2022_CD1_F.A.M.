@@ -27,7 +27,6 @@ def draw(frame, results):
         results.pose_landmarks,                     # landmark 좌표
         mp_pose.POSE_CONNECTIONS,                   # landmark 구현
         mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2), # keypoint 연결선 -> 빨간색
-        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=5, circle_radius=5), # keypoint 원 -> 초록색 
     )
 
 class VideoGet:

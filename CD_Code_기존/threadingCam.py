@@ -91,6 +91,8 @@ class camThread(threading.Thread):
             # open opencv window
             while capture.isOpened():              
                 
+                prevTime = 0
+                
                 # key input for exit, mode, reset
                 key = cv2.waitKey(1) & 0xFF     # 키보드 입력
                 if key == ord('q'):             # exit
@@ -113,12 +115,19 @@ class camThread(threading.Thread):
                     print("Ignoring empty camera frame\r\n")
                     continue
                 
+                cur = time.time()
+                prev = cur
+                    
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
                 frame.flags.writeable = False
                 results = pose.process(frame)                   # landmark 구현
                 frame.flags.writeable = True
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
                 
+                cur = time.time()
+                sec = cur - prev
+                print(camID, 'mp.process : {:.03f}'.format(sec*10**3))
+                    
                 # measure exervise with landmarks
                 try:    
                     landmarks = results.pose_landmarks.landmark
