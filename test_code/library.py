@@ -24,6 +24,7 @@ with mp_pose.Pose(
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # OpenCV에서는 BGR 순서로 저장/RGB로 바꿔야 제대로 표시
         image.flags.writeable = False
         results = pose.process(image)                   # landmark 구현
+        print(results.pose_landmarks)
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
         
