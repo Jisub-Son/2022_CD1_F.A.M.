@@ -98,10 +98,9 @@ class EXERCISE(KEYPOINT):
         
         ## easter egg 
         EASTER_ELBOW_ANGLE = (40.0 < right_elbow_angle < 60.0 and 160.0 < left_elbow_angle)
-        EASTER_SHOULDER_ANGLE = (60.0 < right_shoulder_angle < 120 and 60.0 < left_shoulder_angle < 100.0)
-        RIHGHT_HAND_ANGLE = (140.0 < right_hand_angle < 160.0)    
+        EASTER_SHOULDER_ANGLE = (60.0 < right_shoulder_angle < 120 and 60.0 < left_shoulder_angle < 100.0)  
         EASTER_CONDITION = (status == 'Up' and feedback == 'Start')
-        EASTER_ANGLE = (DEFAULT_ANGLE and EASTER_ELBOW_ANGLE and EASTER_SHOULDER_ANGLE and RIHGHT_HAND_ANGLE) # 
+        EASTER_ANGLE = (DEFAULT_ANGLE and EASTER_ELBOW_ANGLE and EASTER_SHOULDER_ANGLE)
         
         # get angles from eact CamID
         if camID == LEFT_CAM: ## cam1
@@ -119,7 +118,6 @@ class EXERCISE(KEYPOINT):
             
             right_elbow_angle = self.angle_of_the_right_elbow() ## 이스터
             right_shoulder_angle = self.angle_of_the_right_shoulder()
-            right_hand_angle = self.angle_of_the_right_hand()
             
             # get average    
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  

@@ -1,11 +1,9 @@
 import mediapipe as mp
 import cv2
 import time
-
 from multiprocessing import Process
 from multiprocessing import current_process
 from datetime import datetime
-
 from exercise3 import EXERCISE
 from guide import guide
 from utils import voiceFeedback, table

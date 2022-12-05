@@ -1,4 +1,5 @@
-from utils import *
+from utils import detection, calculate_angle, calculate_length
+from utils import REF_VISIBILITY, REF_ROUGH_VISIBILITY
 
 class KEYPOINT:
     def __init__(self, landmarks):
@@ -148,15 +149,4 @@ class KEYPOINT:
         if r_shoulder[2] >= REF_VISIBILITY and r_elbow[2]  >= REF_VISIBILITY and r_wrist[2] >= REF_VISIBILITY:
             return calculate_angle(r_shoulder, r_elbow, r_wrist)
         else:
-            return 0         
-        
-    ############################################## easteregg ##############################################
-        
-    def angle_of_the_right_hand(self): # 이스터 (오른쪽: 팔꿈치, 손목, 엄지 각도)
-        r_elbow = detection(self.landmarks, "RIGHT_ELBOW")
-        r_wrist = detection(self.landmarks, "RIGHT_WRIST")
-        r_thumb = detection(self.landmarks, "RIGHT_THUMB")
-        if r_elbow[2] >= REF_VISIBILITY and r_wrist[2] >= REF_VISIBILITY and r_thumb[2] >= REF_VISIBILITY:
-            return calculate_angle(r_elbow, r_wrist, r_thumb)
-        else:
-            return 0    
+            return 0
