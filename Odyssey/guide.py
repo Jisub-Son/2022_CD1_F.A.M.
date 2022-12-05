@@ -1,6 +1,5 @@
 import cv2
-from utils import *
-
+from utils import RIGHT_CAM, LEFT_CAM
 squat_down = 1 ## 초기화
 squat_up = 60
 pushup_down = 1

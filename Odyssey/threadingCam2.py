@@ -31,6 +31,7 @@ def draw(frame, results):
         mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2), # keypoint 연결선 -> 빨간색
         mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=5, circle_radius=5), # keypoint 원 -> 초록색 
     )
+    
 
 class VideoGet:
     def __init__(self, src, getPipe_child):
@@ -72,9 +73,14 @@ class VideoGet:
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
                     
+                    cur = time.time()
+                    sec = cur - prev
+                    # print("get loop : {:.03f} ms".format(sec*10**3))
+                    
                     # measure exercise with landmarks 
                     try:    
                         landmarks = results.pose_landmarks.landmark
+                        # print(landmarks)
                         state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID = EXERCISE(landmarks).calculate_exercise(
                             state_info.mode, state_info.reps, state_info.status, state_info.sets, state_info.feedback, state_info.timer, self.camID)
                     except:
@@ -90,10 +96,6 @@ class VideoGet:
                     guide(state_info.mode, state_info.status, state_info.feedback, self.frameBuf, self.camID)
                     
                     self.getPipe_child.send(self.frameBuf)
-                    
-                    cur = time.time()
-                    sec = cur - prev
-                    # print("get loop : {:.03f} ms".format(sec*10**3))
                     
     def stop(self):
         self.stopped = True
@@ -146,9 +148,9 @@ class VideoShow:
             totalFrame = cv2.resize(totalFrame, dsize=(1920, 700))
             totalShow = cv2.vconcat([totalFrame, tableMat])         # vconcat : 세로 방향 합치기(폭이 같아야 함)
             
-            cv2.namedWindow("totalShow_full", cv2.WND_PROP_FULLSCREEN)
-            cv2.moveWindow("totalShow_full", 1920-1, 1080-1)
-            cv2.setWindowProperty("totalShow_full", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            # cv2.namedWindow("totalShow_full", cv2.WND_PROP_FULLSCREEN)
+            # cv2.moveWindow("totalShow_full", 1920-1, 1080-1)
+            # cv2.setWindowProperty("totalShow_full", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.imshow("totalShow_full", totalShow)
     
     def stop(self):

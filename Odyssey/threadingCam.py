@@ -49,10 +49,14 @@ class VideoGet:
     def get(self): 
         global state_info
         
-        with mp_pose.Pose(min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
+        with mp_pose.Pose(model_complexity=0,
+                    min_detection_confidence=0.5,         # 최소감지신뢰값( [0.0, 1.0] ) 기본값 = 0.5
                     min_tracking_confidence=0.5) as pose:   # 최소추적신뢰값( [0.0, 1.0] ) 기본값 = 0.5    
             
             while not self.stopped:
+                cur = time.time()
+                prev = cur
+                
                 if not self.grabbed:
                     self.stop()
                 else:
@@ -64,6 +68,10 @@ class VideoGet:
                     results = pose.process(self.frame)                   # landmark 구현
                     self.frame.flags.writeable = True
                     self.frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)  # 원본 frame의 배열 RGB를 BGR로 변경
+                    
+                    cur = time.time()
+                    sec = cur - prev
+                    print("get loop : {:.03f} ms".format(sec*10**3))
                     
                     # measure exercise with landmarks 
                     try:    

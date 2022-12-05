@@ -10,8 +10,8 @@ REF_VISIBILITY = 0.7
 REF_ROUGH_VISIBILITY = 0.0
 REF_REPS = 5
 REF_SETS = 2
-RIGHT_CAM = 2 # usb 2-input port 위: 2번 카메라
-LEFT_CAM = 0 # usb 2-input port 아래: 0번 카메라
+RIGHT_CAM = 0 # usb 2-input port 위: 2번 카메라
+LEFT_CAM = 2 # usb 2-input port 아래: 0번 카메라
 
 # init mixer
 pygame.init() # 윈도우는 역슬래쉬(\), 리눅스는 슬래쉬(/)

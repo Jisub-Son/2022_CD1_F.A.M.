@@ -1,6 +1,7 @@
 import time
 from keypoint import *
-from utils import *  
+from utils import voiceFeedback
+from utils import LEFT_CAM, RIGHT_CAM, REF_TIMER, REF_SETS, REF_REPS
 from datetime import datetime
 
 cur = 0.0 # 타이머 초기화
@@ -76,8 +77,8 @@ class EXERCISE(KEYPOINT):
         MORE_LEG_ANGLE = 160.0 ## 더 내려가
         REF_LEG_ANGLE = 140.0 ## 정답
         LESS_LEG_ANGLE = 90.0 ## 너무 내려갔고
-        LESS_HEEL_FOOT_RATIO = 0.5 ## 발 11자 조건
-        MORE_HEEL_FOOT_RATIO = 1.3
+        LESS_HEEL_FOOT_RATIO = 0.63 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 0.9
         LESS_SHOULDER_RATIO = 0.4 # 두 발 어깨 넓이     
         MORE_SHOULDER_RATIO = 1.1
         
@@ -126,6 +127,9 @@ class EXERCISE(KEYPOINT):
             # get average    
             avg_knee_angle = (left_knee_angle + right_knee_angle) // 2  
             avg_leg_angle = (left_leg_angle + right_leg_angle) // 2
+            
+            # print('knee: ', avg_knee_angle)
+            # print('heel foot: ', heel_foot_ratio)
             
             #get ratio
             foot_length = round(foot_length, 4)
@@ -342,8 +346,8 @@ class EXERCISE(KEYPOINT):
         REF_SHOULDER_ANGLE = 60.0  # 적당하고
         MORE_SHOULDER_ANGLE = 75.0 # 너무많이 올렸고
         REF_ELBOW_ANGLE = 140.0 ## 팔꿈치
-        LESS_HEEL_FOOT_RATIO = 0.6 ## 발 11자 조건
-        MORE_HEEL_FOOT_RATIO = 1.2
+        LESS_HEEL_FOOT_RATIO = 0.63 ## 발 11자 조건
+        MORE_HEEL_FOOT_RATIO = 0.9
         LESS_SHOULDER_RATIO = 0.4 # 두 발 어깨 넓이     
         MORE_SHOULDER_RATIO = 1.1
         
@@ -381,6 +385,9 @@ class EXERCISE(KEYPOINT):
             # get average    
             avg_shoulder_angle = (left_shoulder_angle + right_shoulder_angle) // 2  
             avg_elbow_angle = (left_elbow_angle + right_elbow_angle) // 2
+            
+            # print('elbow: ', avg_elbow_angle)
+            # print('heel foot: ', heel_foot_ratio)
             
             # get ratio
             foot_length = round(foot_length, 4)

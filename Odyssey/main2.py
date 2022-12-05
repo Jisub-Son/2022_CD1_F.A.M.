@@ -4,6 +4,7 @@
 # Member        : 손지섭(팀장), 강태영, 이석진, 정홍택
 # 
 
+import cv2
 from utils import LEFT_CAM
 from utils import RIGHT_CAM
 from threadingCam2 import VideoGet
@@ -52,3 +53,4 @@ while True:
 
 getPipe_child0.close()
 getPipe_child1.close()
+cv2.destroyAllWindows()
